@@ -16,6 +16,15 @@ Everything runs in a single self-contained `index.html`: no build step, no
 dependencies, no network after load. It runs comfortably in Chromium on a
 Raspberry Pi 5. Progress auto-saves to your browser's local storage.
 
+## Saving and Carrying On Elsewhere
+
+Press **💾 Save / Load** for a **save link**: the whole railway is compressed
+into the link itself (in the `#save=` part, which never leaves your browser,
+so nothing is uploaded). **Copy** it, **email it to yourself**, or **download**
+it as a small text file. Opening the link on any device (another computer, a
+phone, the Pi) asks whether to load that railway. You can also paste a link or
+open a save file from the same dialog.
+
 ## The Line
 
 | Station | Mile | Passing loop | Notes |
@@ -75,9 +84,20 @@ closes.
 | Beer &amp; Music Festival | Spring–Autumn | 14 extra volunteers | Crowds peak in the evening; big bar takings |
 | 1940s Wartime Weekend | Spring–Autumn | — | Steam and Gresley teak coaches add to the draw |
 | Santa Specials | December weekends | — | The winter goldmine |
+| Visiting Engine Running Days | Any time | — | Ordinary running days with visiting stock; you choose 1, 2 or (school holidays) 4 days |
 
-Guest engines for galas include *Flying Scotsman*, an A4, *The Great
-Marquess*, a 9F, a Deltic and a 'Western'.
+## Visiting Stock
+
+Any event can bring **visiting engines** (up to three) and **visiting
+carriages** (up to two) on hire for that week. Each draws extra visitors.
+
+- **Steam:** *Flying Scotsman*, *Union of South Africa*, *Tornado*, *Duchess of
+  Sutherland*, *Royal Scot*, *Green Arrow*, *Bahamas*, *Braunton*, *Duke of
+  Gloucester*, *The Great Marquess*, 9F, Q6, Ivatt 'Flying Pig', J72.
+- **Diesel:** Deltic, 'Western', 'Hoover', 'Hymek', Class 40 *Andania*, Class
+  56, 60, 33, 47, and pairs of Class 20s and 26s.
+- **Carriages:** a Pullman train, Gresley teak, a Mk1 9-coach rake,
+  observation saloons, Victorian four-wheelers and a Royal Mail TPO set.
 
 ## Motive Power and Stock
 
@@ -100,8 +120,13 @@ Marquess*, a 9F, a Deltic and a 'Western'.
 | Class 101 (2-car) | DMU | 0.92× | 140 seats |
 | Class 110 'Calder Valley' (3-car) | DMU | 0.98× | 210 seats |
 
-Carriage sets: Mk1 4- and 6-coach, Mk2 7-coach, Gresley teak, and a Pullman
-dining set.
+Also for sale: Hunslet 'Jessie', LMS 'Jinty', L&Y Class 27, BR Standard 2MT
+and 5MT, LMS 'Crab', LNER K1 and USATC S160 steam; Class 08, 20, 24, 26, 33,
+46 and 47 diesels; Class 108, 104 and 144 'Pacer' units and a Wickham railbus.
+
+Carriage sets: Mk1 4-, 6- and 8-coach, Mk2 7-coach, Mk1 with restaurant car,
+Gresley teak, LNER Thompson, Victorian six-wheelers, an observation car set,
+a Pullman dining set, and brake-van rides.
 
 ## Infrastructure
 
