@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heritage Railway Manager</title>
+<style>
+  :root{
+    --br-blue:#12395f;        /* BR corporate blue */
+    --br-blue-dk:#0c2740;
+    --lms-maroon:#6e1f24;     /* LMS crimson lake */
+    --gwr-green:#0f5132;
+    --coach-cream:#f4ecd6;
+    --warn:#e0a800;
+    --danger:#a83232;
+    --good:#2e7d32;
+    --ink:#1b2430;
+    --panel:#fbf7ee;
+    --line:#d7cdb8;
+    --shadow:0 2px 6px rgba(0,0,0,.18);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Segoe UI",Tahoma,Verdana,sans-serif;
+    background:#e7e1d3 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><rect width='40' height='40' fill='%23e7e1d3'/><path d='M0 39 H40' stroke='%23d9d1c0' stroke-width='1'/></svg>");
+    color:var(--ink);
+    line-height:1.45;
+  }
+  header{
+    background:linear-gradient(180deg,var(--gwr-green),#0a3a24);
+    color:#fff;border-bottom:4px solid var(--warn);
+  }
+  .brand{
+    display:flex;align-items:center;gap:14px;padding:12px 18px;max-width:1200px;margin:0 auto;
+    flex-wrap:wrap;
+  }
+  .totem{
+    width:40px;height:40px;flex:0 0 auto;border-radius:50%;background:var(--coach-cream);
+    border:4px solid var(--lms-maroon);display:flex;align-items:center;justify-content:center;
+    font:700 .62rem/1 Georgia,serif;color:var(--lms-maroon);letter-spacing:.5px;
+  }
+  h1{font-size:1.35rem;margin:0;letter-spacing:.5px;font-weight:700}
+  h1 small{display:block;font-size:.72rem;font-weight:400;opacity:.8;letter-spacing:2px;text-transform:uppercase}
+  .stats{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .stat{
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);
+    border-radius:6px;padding:5px 11px;min-width:86px;text-align:center;
+  }
+  .stat b{display:block;font-size:1.02rem}
+  .stat span{font-size:.62rem;text-transform:uppercase;letter-spacing:1px;opacity:.8}
+  .stat.cash b{color:#ffe9a8}
+  nav{background:#0a3a24;border-bottom:3px solid var(--warn)}
+  .tabs{max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap}
+  .tabs button{
+    background:none;border:none;color:#cfe3d6;padding:12px 15px;cursor:pointer;
+    font-size:.8rem;font-weight:600;letter-spacing:.4px;border-bottom:3px solid transparent;
+    text-transform:uppercase;
+  }
+  .tabs button:hover{color:#fff;background:rgba(255,255,255,.06)}
+  .tabs button.active{color:#fff;border-bottom-color:var(--warn);background:rgba(255,255,255,.09)}
+  main{max-width:1200px;margin:0 auto;padding:18px}
+  .view{display:none;animation:fade .2s ease}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1}}
+  h2{color:var(--gwr-green);border-bottom:2px solid var(--line);padding-bottom:6px;margin-top:0;font-size:1.2rem}
+  .lede{color:#4a545f;font-size:.9rem;margin-top:-4px}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    box-shadow:var(--shadow);padding:14px;position:relative;
+  }
+  .card h3{margin:0 0 2px;font-size:1.02rem;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .badge{
+    font-size:.6rem;text-transform:uppercase;letter-spacing:.6px;padding:2px 7px;border-radius:20px;
+    color:#fff;font-weight:700;vertical-align:middle;
+  }
+  .b-steam{background:var(--lms-maroon)}
+  .b-diesel{background:var(--br-blue)}
+  .b-dmu{background:#3d6b2a}
+  .b-rake{background:var(--gwr-green)}
+  .b-guest{background:#7a4a12}
+  .b-event{background:#5b2a86}
+  .sub{color:#6a7480;font-size:.8rem;margin:0 0 8px;font-style:italic}
+  .specs{list-style:none;padding:0;margin:8px 0;font-size:.82rem}
+  .specs li{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px dashed #e4dcc8}
+  .specs li span:last-child{font-weight:600}
+  .price{font-size:1.1rem;font-weight:700;color:var(--lms-maroon)}
+  button.act{
+    background:var(--br-blue);color:#fff;border:none;border-radius:6px;padding:9px 14px;
+    cursor:pointer;font-weight:600;font-size:.85rem;width:100%;margin-top:6px;
+  }
+  button.act:hover{background:var(--br-blue-dk)}
+  button.act:disabled{background:#9aa2ab;cursor:not-allowed}
+  button.act.warnbtn{background:var(--lms-maroon)}
+  button.act.warnbtn:hover{background:#521418}
+  button.act.greenbtn{background:var(--gwr-green)}
+  button.act.greenbtn:hover{background:#0b3d26}
+  button.small{width:auto;padding:6px 12px;font-size:.78rem;margin:0}
+  .bar{height:9px;border-radius:5px;background:#e2dac6;overflow:hidden;margin:3px 0 2px}
+  .bar > i{display:block;height:100%;transition:width .3s}
+  .cond-lbl{font-size:.72rem;color:#6a7480;display:flex;justify-content:space-between}
+  .swatch{display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid rgba(0,0,0,.35);vertical-align:middle;margin-right:6px}
+  .empty{color:#8a94a0;font-style:italic;padding:24px;text-align:center;border:2px dashed var(--line);border-radius:8px}
+  select.sel{padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:#fff;font-size:.82rem;color:var(--ink);max-width:100%}
+  .projection{
+    background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px;margin-top:16px;box-shadow:var(--shadow);
+  }
+  .proj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:10px 0}
+  .proj-cell{text-align:center;background:var(--panel);border-radius:6px;padding:8px}
+  .proj-cell b{display:block;font-size:1.15rem}
+  .proj-cell span{font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:#6a7480}
+  .ledger{font-size:.8rem;max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+  .ledger table{width:100%;border-collapse:collapse}
+  .ledger td{padding:6px 10px;border-bottom:1px solid #eae1cd}
+  .ledger td:last-child{text-align:right;font-weight:600;white-space:nowrap}
+  .pos{color:var(--good)} .neg{color:var(--danger)}
+  /* modal */
+  .modal-bg{
+    display:none;position:fixed;inset:0;background:rgba(12,25,40,.65);z-index:50;
+    align-items:center;justify-content:center;padding:16px;
+  }
+  .modal-bg.show{display:flex}
+  .modal{
+    background:var(--coach-cream);border:3px solid var(--gwr-green);border-radius:10px;max-width:640px;width:100%;
+    max-height:90vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.4);
+  }
+  .modal .head{background:var(--gwr-green);color:#fff;padding:12px 18px;font-weight:700;font-size:1.05rem}
+  .modal .body{padding:18px}
+  .modal .body p{margin:.4rem 0;font-size:.9rem}
+  .event{background:#fff;border-left:4px solid var(--warn);padding:8px 12px;margin:8px 0;font-size:.85rem;border-radius:0 6px 6px 0}
+  .event.bad{border-left-color:var(--danger)}
+  .event.good{border-left-color:var(--good)}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 14px;align-items:center}
+  .toolbar .chip{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 12px;font-size:.82rem}
+  .toolbar label{font-size:.78rem;color:#4a545f;text-transform:uppercase;letter-spacing:.4px;font-weight:600}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
+  .seg button{border:none;background:none;padding:6px 11px;font-size:.8rem;cursor:pointer;color:var(--ink);border-right:1px solid var(--line)}
+  .seg button:last-child{border-right:none}
+  .seg button.on{background:var(--gwr-green);color:#fff;font-weight:700}
+  .seg button:disabled{color:#aab;cursor:not-allowed}
+  footer{max-width:1200px;margin:10px auto 30px;padding:0 18px;color:#6a7480;font-size:.76rem;text-align:center}
+  a{color:var(--br-blue)}
+  .win-banner{background:var(--gwr-green);color:#fff;padding:10px 16px;border-radius:8px;margin-bottom:14px;font-weight:600}
+  .busy-tag{background:#fbeecb;border:1px solid #e5c977;color:#7a5a12;font-size:.74rem;font-weight:600;border-radius:6px;padding:4px 8px;margin:2px 0 8px}
+  .actionbar{
+    position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    background:var(--coach-cream);border:1px solid var(--line);border-left:5px solid var(--warn);
+    border-radius:8px;padding:9px 14px;margin-bottom:14px;box-shadow:var(--shadow);
+  }
+  .actionbar #ab-info{font-size:.85rem;color:var(--ink)}
+  .actionbar #ab-info b{color:var(--gwr-green)}
+  .actionbar button{margin-left:auto;width:auto;background:var(--gwr-green)}
+  .actionbar button:hover{background:#0b3d26}
+  /* timetable */
+  .diag{border-left:6px solid var(--br-blue)}
+  .diag .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0;font-size:.8rem}
+  .diag .row > span:first-child{width:52px;color:#6a7480;text-transform:uppercase;font-size:.68rem;letter-spacing:.4px;font-weight:700}
+  .deps{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0}
+  .dep{background:#fff;border:1px solid var(--line);border-radius:14px;padding:2px 4px 2px 9px;font-size:.78rem;font-weight:600;font-variant-numeric:tabular-nums;display:inline-flex;align-items:center;gap:3px}
+  .dep.late{border-color:var(--warn);background:#fff6dc}
+  .dep.cx{border-color:var(--danger);background:#fbeaea;text-decoration:line-through}
+  .dep button{border:none;background:none;cursor:pointer;color:#8a94a0;font-size:.85rem;padding:0 4px}
+  .dep button:hover{color:var(--danger)}
+  .issue{font-size:.76rem;color:var(--danger);margin:4px 0}
+  .graphbox{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:14px;box-shadow:var(--shadow);overflow-x:auto}
+  .graphbox svg{display:block;width:100%;min-width:640px;height:auto}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:900px){.two{grid-template-columns:1fr}}
+  /* map */
+  .mapwrap{background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);overflow:hidden}
+  .mapwrap svg{display:block;width:100%;height:auto}
+  .replay{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 12px;background:var(--panel);border-top:1px solid var(--line)}
+  .replay input[type=range]{flex:1;min-width:160px}
+  .clock{font:700 1.25rem/1 "Courier New",monospace;background:#1b2430;color:#ffe9a8;padding:5px 10px;border-radius:5px;letter-spacing:1px}
+  .stn{cursor:pointer}
+  .stn:hover circle,.stn:hover rect{stroke:#e0a800}
+  #stnInfo{min-height:60px}
+  /* calendar */
+  .cal{width:100%;border-collapse:collapse;font-size:.82rem;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .cal td,.cal th{padding:7px 9px;border-bottom:1px solid #eae1cd;text-align:left;vertical-align:middle}
+  .cal th{background:#ece4d1;font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:#4a545f}
+  .cal tr.now td{background:#fff6dc}
+  .cal .ev{display:inline-block;background:#efe6f7;border:1px solid #cdb6e6;border-radius:6px;padding:3px 8px;font-weight:600}
+  .calwrap{overflow-x:auto}
+  .chk{display:flex;gap:8px;align-items:flex-start;font-size:.84rem;padding:6px 0;border-bottom:1px dashed #e4dcc8}
+  .chk input{margin-top:3px}
+  .evopt{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:9px 11px;margin-bottom:8px;cursor:pointer;font-size:.84rem}
+  .evopt.sel{border:2px solid #5b2a86;background:#f6f0fb}
+  .evopt.disabled{opacity:.45;cursor:not-allowed}
+  table.trips{width:100%;border-collapse:collapse;font-size:.78rem;margin:8px 0;background:#fff}
+  table.trips td,table.trips th{padding:4px 6px;border-bottom:1px solid #eae1cd;text-align:left}
+  table.trips th{font-size:.66rem;text-transform:uppercase;color:#6a7480}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="totem" title="Ravensgill &amp; Highmoor Railway">R&amp;H</div>
+    <h1>Heritage Railway Manager<small>Ravensgill &amp; Highmoor Railway</small></h1>
+    <div class="stats">
+      <div class="stat cash"><b id="s-cash">—</b><span>Balance</span></div>
+      <div class="stat"><b id="s-rep">—</b><span>Reputation</span></div>
+      <div class="stat"><b id="s-vol">—</b><span>Volunteers</span></div>
+      <div class="stat"><b id="s-week">—</b><span id="s-season">Season</span></div>
+    </div>
+  </div>
+</header>
+<nav>
+  <div class="tabs">
+    <button data-tab="tt" class="active">Timetable</button>
+    <button data-tab="map">Line Map</button>
+    <button data-tab="events">Events Calendar</button>
+    <button data-tab="depot">Depot</button>
+    <button data-tab="power">Motive Power</button>
+    <button data-tab="carriages">Carriages</button>
+    <button data-tab="works">Works</button>
+    <button data-tab="railway">Volunteers &amp; Upgrades</button>
+    <button data-tab="log">Ledger</button>
+    <button data-tab="help">How to Play</button>
+  </div>
+</nav>
+
+<main>
+  <div class="actionbar">
+    <div id="ab-info"></div>
+    <button class="act" id="btn-advance">Run the Weekend ▸</button>
+  </div>
+  <div id="winBanner"></div>
+
+  <!-- TIMETABLE -->
+  <section class="view active" id="v-tt">
+    <h2>This Week's Timetable</h2>
+    <p class="lede">Every train starts at Ravensgill Junction, runs up the dale to Moorend and back. Give each locomotive (and its carriage set) a list of departure times. The line is single track: trains can only pass at the loops at Lowerdale and Fellside (and Brackenby or Highmoor Summit, if you build them), so the signallers will hold one train at a loop until the other has cleared the single line.</p>
+    <div class="toolbar" id="tt-toolbar"></div>
+    <div id="tt-event"></div>
+    <div class="toolbar">
+      <label>Quick patterns</label>
+      <button class="act small" onclick="applyPreset(1)">1 train</button>
+      <button class="act small" onclick="applyPreset(2)">2 trains</button>
+      <button class="act small" onclick="applyPreset(3)">3 trains</button>
+      <button class="act small" onclick="applyPreset(9)">Intensive (all stock)</button>
+      <button class="act small warnbtn" onclick="clearTimetable()">Clear</button>
+    </div>
+    <div class="grid" id="tt-diagrams"></div>
+    <div id="tt-projection"></div>
+    <div class="graphbox"><div class="sub" style="margin:2px 4px 6px">Train graph — time runs left to right, distance up the line from bottom to top. Flat lines are trains standing at a station; a long flat line at a loop is a train being held for a crossing.</div><div id="tt-graph"></div></div>
+  </section>
+
+  <!-- MAP -->
+  <section class="view" id="v-map">
+    <h2>Line Map</h2>
+    <p class="lede">The Ravensgill &amp; Highmoor Railway: 14 miles of single line from the main-line interchange at Ravensgill Junction, up the valley of the River Raven, over Brackenby Viaduct and through Highmoor Tunnel to the moorland terminus at Moorend. Click a station for details, and press play to watch the timetable run.</p>
+    <div class="mapwrap">
+      <div id="map"></div>
+      <div class="replay">
+        <button class="act small greenbtn" id="rp-play">▶ Play</button>
+        <span class="clock" id="rp-clock">09:00</span>
+        <input type="range" id="rp-slider" min="480" max="1380" step="1" value="540">
+        <select class="sel" id="rp-speed">
+          <option value="1">1 min/s</option>
+          <option value="4" selected>4 min/s</option>
+          <option value="10">10 min/s</option>
+          <option value="30">30 min/s</option>
+        </select>
+        <select class="sel" id="rp-source">
+          <option value="plan">This week's plan</option>
+          <option value="last">Last day run</option>
+        </select>
+      </div>
+    </div>
+    <div class="two" style="margin-top:14px">
+      <div class="card" id="stnInfo"><p class="sub">Click a station on the map.</p></div>
+      <div class="card" id="mapTrains"></div>
+    </div>
+    <div class="graphbox"><div id="map-graph"></div></div>
+  </section>
+
+  <!-- EVENTS -->
+  <section class="view" id="v-events">
+    <h2>Events Calendar</h2>
+    <p class="lede">Book galas, festivals and specials for future weekends. Book early: posters, adverts and the enthusiast press need about four weeks to spread the word, and an event booked at short notice draws a smaller crowd. A quarter of the cost is paid as a deposit when you book.</p>
+    <div class="calwrap"><table class="cal" id="cal"></table></div>
+  </section>
+
+  <!-- DEPOT -->
+  <section class="view" id="v-depot">
+    <h2>Ravensgill Shed</h2>
+    <p class="lede">The railway's own locomotives and carriage sets. Keep condition healthy: a failure on the line strands passengers and blocks the single track.</p>
+    <h3 style="color:#6e1f24">Motive Power</h3>
+    <div class="grid" id="depot-locos"></div>
+    <h3 style="color:#0f5132;margin-top:22px">Carriage Sets</h3>
+    <div class="grid" id="depot-rakes"></div>
+  </section>
+
+  <!-- MARKET: LOCOS -->
+  <section class="view" id="v-power">
+    <h2>Motive Power</h2>
+    <p class="lede">Steam pulls the crowds but needs three crew and costs most to run. Heritage diesels are cheaper and reliable, and the diesel-gala crowd loves them. A diesel multiple unit needs no carriage set and turns round in minutes, but nobody travels specially to ride one.</p>
+    <div class="grid" id="market-locos"></div>
+  </section>
+
+  <!-- MARKET: CARRIAGES -->
+  <section class="view" id="v-carriages">
+    <h2>Carriage Sets</h2>
+    <p class="lede">A locomotive needs a rake. Longer sets carry more people but are harder work up the 1 in 60 to Highmoor Summit: check the loco can haul it.</p>
+    <div class="grid" id="market-rakes"></div>
+  </section>
+
+  <!-- WORKS -->
+  <section class="view" id="v-works">
+    <h2>Works &amp; Overhaul</h2>
+    <p class="lede">A running repair is quick. A heavy overhaul restores a loco to as-new but takes it out of traffic for weeks: do them in winter.</p>
+    <div class="grid" id="works-list"></div>
+  </section>
+
+  <!-- RAILWAY -->
+  <section class="view" id="v-railway">
+    <h2>Volunteers &amp; Upgrades</h2>
+    <p class="lede">Like every heritage line, the R&amp;H runs on volunteers. Each operating day needs signallers and station staff, a crew for every train (three for steam, two for a diesel or DMU) and stewards for events. Busy weekends tire them out.</p>
+    <div class="grid" id="vol-cards"></div>
+    <h3 style="color:#0f5132;margin-top:22px">Infrastructure</h3>
+    <div class="grid" id="upgrade-cards"></div>
+  </section>
+
+  <!-- LOG -->
+  <section class="view" id="v-log">
+    <h2>Railway Ledger</h2>
+    <p class="lede">Every transaction, operating day and mishap, most recent first.</p>
+    <div class="ledger"><table id="ledger-body"></table></div>
+  </section>
+
+  <!-- HELP -->
+  <section class="view" id="v-help">
+    <h2>How to Play</h2>
+    <div class="card" style="max-width:800px">
+      <p>You are general manager of the <b>Ravensgill &amp; Highmoor Railway</b>, a preserved branch line in the Pennine dales of the north of England. Run normal services, organise steam and diesel galas, beer and music festivals, 1940s weekends and Santa specials, and grow the line until it's named <i>Heritage Railway of the Year</i>.</p>
+      <ul style="font-size:.9rem">
+        <li><b>Each turn is one week.</b> Plan the weekend on the <b>Timetable</b> tab, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week.</li>
+        <li><b>Timetabling:</b> every train is a round trip from Ravensgill Junction to Moorend and back, about two hours with turn-rounds. Give each loco a set of departure times. If a train isn't back in time, its next trip leaves late.</li>
+        <li><b>Single line:</b> trains can only pass at the loops (Lowerdale and Fellside, plus Brackenby and Highmoor Summit once built), and only one train may be on each single-line section. The train graph shows where trains are held. Each loop has one road for each direction (Moorend holds two trains), so too many trains with too few loops means trains are held and run late.</li>
+        <li><b>Passengers</b> arrive through the day (mostly late morning and lunchtime) and take the next train. A gap of more than two hours loses them; a full train turns them away. Steam draws more people than diesel, and both draw more than a DMU.</li>
+        <li><b>Events</b> are booked on the calendar, ideally four weeks ahead. Galas need at least three engines of the right type in the timetable: hire guest engines when you book. Beer &amp; music festivals fill the evening trains and the bar. Santa specials are the winter goldmine.</li>
+        <li><b>Volunteers</b> crew every train. If a day needs more than turn up, you can't run it. Recruit, and keep morale up with a quiet week or a social.</li>
+        <li><b>Condition</b> falls with every mile. Worn locos fail, and a failure blocks the line, refunds fares and costs reputation. Use the <b>Works</b>, and do heavy overhauls in winter.</li>
+        <li><b>Seasons:</b> spring and autumn are steady, summer is busy and the school holidays busiest of all; winter is dead apart from Santa specials. Weather matters too: check the forecast.</li>
+        <li><b>Goal:</b> reach a net worth of <b>£500,000</b> with a reputation of <b>110</b> or more. Finish two weeks in a row overdrawn and the railway closes.</li>
+      </ul>
+      <div class="toolbar">
+        <button class="act small warnbtn" id="btn-newgame">Start a New Railway</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Heritage Railway Manager · a self-contained browser tycoon · progress auto-saves in your browser ·
+  the Ravensgill &amp; Highmoor Railway and its stations are fictional; the rolling stock is inspired by real preserved locomotives.
+</footer>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="head" id="modalHead">Report</div>
+    <div class="body" id="modalBody"></div>
+    <div class="body" style="padding-top:0"><button class="act" id="modalClose">Continue</button></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============================ THE LINE ============================ */
+// Up = Ravensgill Junction -> Moorend. Loops are where trains can pass.
+const STATIONS = [
+  {key:"RVG", name:"Ravensgill Junction", mile:0.0, loop:true,  blurb:"Interchange with the main line. Three platforms, the loco shed, the works and the car park. Every train starts and ends here."},
+  {key:"KTH", name:"Kirkby Thorpe",       mile:2.4, loop:false, blurb:"A single-platform village halt among the pastures, with a level crossing and a pub."},
+  {key:"LWD", name:"Lowerdale",           mile:4.6, loop:true,  blurb:"Passing loop, signal box and water column. The old goods shed is now a tea room."},
+  {key:"BRK", name:"Brackenby",           mile:7.1, loop:false, blurb:"Just beyond the twelve-arch Brackenby Viaduct over the Raven. A loop here would split the longest single-line section."},
+  {key:"FEL", name:"Fellside",            mile:9.0, loop:true,  blurb:"Passing loop at the foot of the climb. Ramblers set off for Raven Force from here."},
+  {key:"HSM", name:"Highmoor Summit",     mile:11.8,loop:false, blurb:"The summit of the line at 1,120 ft, just beyond Highmoor Tunnel after two miles at 1 in 60. A loop here would split the steep Fellside–Moorend section, the bottleneck of the line."},
+  {key:"MOR", name:"Moorend",             mile:14.0,loop:true,  blurb:"Moorland terminus with a run-round loop, beside Highmoor Reservoir."}
+];
+const LINE_MILES = 14.0;
+// Gradient of each section in the up direction (positive = climbing towards Moorend).
+const GRADE = [0.15, 0.25, 0.35, 0.45, 0.95, -0.35];
+const LINE_SPEED = 25;      // mph — Light Railway Order limit
+const DWELL = 2;            // minutes at each station
+const SIM_START = 7*60, SIM_END = 23*60+30, DT = 0.25;
+const DEP_TIMES = []; for(let m=8*60+30; m<=20*60; m+=5) DEP_TIMES.push(m);
+
+/* ============================ CATALOGUE ============================ */
+const CATALOG_STEAM = [
+  {key:"wd",    name:"Austerity 0-6-0ST", number:"68005", cost:28000, draw:1.02, reliability:0.88, maxHaul:5, runPerMile:8, wear:1.0, pace:0.92,
+   blurb:"Ex-colliery saddle tank from the Yorkshire coalfield. Small, sturdy, cheap to run."},
+  {key:"pannier", name:"GWR 57xx Pannier Tank", number:"7714", cost:32000, draw:1.06, reliability:0.87, maxHaul:5, runPerMile:8, wear:1.0, pace:0.95,
+   blurb:"A Great Western pannier a long way from home. Everyone's favourite little engine."},
+  {key:"ivatt", name:"LMS Ivatt 2MT 2-6-2T", number:"41241", cost:38000, draw:1.08, reliability:0.88, maxHaul:6, runPerMile:9, wear:0.95, pace:1.0,
+   blurb:"A light, free-steaming branch-line tank built for exactly this sort of railway."},
+  {key:"j27",   name:"NER J27 0-6-0", number:"65894", cost:46000, draw:1.16, reliability:0.84, maxHaul:6, runPerMile:10, wear:1.05, pace:0.95,
+   blurb:"North Eastern freight engine, the last steam built for the NER's coal trains. A local hero."},
+  {key:"4mt",   name:"BR Standard 4MT 2-6-4T", number:"80136", cost:55000, draw:1.18, reliability:0.86, maxHaul:7, runPerMile:11, wear:1.0, pace:1.0,
+   blurb:"A powerful, modern tank engine. Takes a long train up the bank without fuss."},
+  {key:"8f",    name:"LMS 8F 2-8-0", number:"48151", cost:68000, draw:1.20, reliability:0.83, maxHaul:9, runPerMile:13, wear:1.1, pace:0.95,
+   blurb:"Stanier's heavy freight engine. Slow, but it'll drag anything to Highmoor Summit."},
+  {key:"b1",    name:"LNER B1 4-6-0", number:"61264", cost:72000, draw:1.28, reliability:0.82, maxHaul:8, runPerMile:13, wear:1.1, pace:1.0,
+   blurb:"Thompson's mixed-traffic 4-6-0 in apple green or black. A big engine for a small line."},
+  {key:"black5",name:"LMS 'Black Five' 4-6-0", number:"44871", cost:78000, draw:1.30, reliability:0.85, maxHaul:8, runPerMile:13, wear:1.05, pace:1.0,
+   blurb:"The engine that worked the last steam trains in the north in 1968."}
+];
+const CATALOG_DIESEL = [
+  {key:"c14",  name:"Class 14 'Teddy Bear'", number:"D9529", cost:26000, draw:1.00, reliability:0.90, maxHaul:5, runPerMile:5, wear:0.8, pace:0.95,
+   blurb:"A stubby diesel-hydraulic built for trip freight. Popular with the children."},
+  {key:"c25",  name:"Class 25 'Rat'", number:"25059", cost:34000, draw:1.05, reliability:0.90, maxHaul:6, runPerMile:6, wear:0.8, pace:1.0,
+   blurb:"The ubiquitous Sulzer Type 2. Cheap to run and almost impossible to break."},
+  {key:"c31",  name:"Class 31", number:"31466", cost:38000, draw:1.07, reliability:0.89, maxHaul:7, runPerMile:6, wear:0.85, pace:1.0,
+   blurb:"Brush Type 2 with a growl all of its own."},
+  {key:"c37",  name:"Class 37", number:"37264", cost:48000, draw:1.16, reliability:0.91, maxHaul:9, runPerMile:7, wear:0.8, pace:1.0,
+   blurb:"The English Electric 'Tractor'. Thrash up the bank guaranteed."},
+  {key:"c45",  name:"Class 45 'Peak'", number:"45133", cost:60000, draw:1.24, reliability:0.85, maxHaul:9, runPerMile:8, wear:0.9, pace:1.0,
+   blurb:"The Midland Main Line's Sulzer Type 4."},
+  {key:"c40",  name:"Class 40 'Whistler'", number:"40135", cost:62000, draw:1.27, reliability:0.84, maxHaul:9, runPerMile:8, wear:0.95, pace:1.0,
+   blurb:"The famous turbocharger whistle echoes all the way up the dale."}
+];
+const CATALOG_DMU = [
+  {key:"c101", name:"Class 101 Metro-Cammell (2-car)", number:"E50170", cost:30000, draw:0.92, reliability:0.89, seats:140, runPerMile:3, wear:0.8, pace:1.05,
+   blurb:"First-generation DMU with a view through the driver's window. Cheap, quick, no carriages needed."},
+  {key:"c110", name:"Class 110 'Calder Valley' (3-car)", number:"E51813", cost:44000, draw:0.98, reliability:0.87, seats:210, runPerMile:4, wear:0.85, pace:1.05,
+   blurb:"Built for the steep lines of the West Riding. Plenty of power for the bank."}
+];
+const CATALOG_RAKE = [
+  {key:"mk1x4",  name:"BR Mk1 4-coach set", cars:4, capacity:256, comfort:1.0,  cost:18000, upkeep:220,
+   blurb:"Maroon Mk1s: the heritage-railway standard."},
+  {key:"mk1x6",  name:"BR Mk1 6-coach set", cars:6, capacity:384, comfort:1.0,  cost:30000, upkeep:320,
+   blurb:"A full-length train for busy days. Needs a strong engine on the bank."},
+  {key:"mk2x7",  name:"Mk2 7-coach set",    cars:7, capacity:448, comfort:1.06, cost:42000, upkeep:400,
+   blurb:"High capacity for galas and festivals."},
+  {key:"teak",   name:"Gresley teak 4-coach set", cars:4, capacity:220, comfort:1.2, cost:46000, upkeep:380, vintage:true,
+   blurb:"Varnished teak LNER coaches. The 1940s weekend crowd adores them."},
+  {key:"pullman",name:"Pullman dining set", cars:3, capacity:120, comfort:1.7, cost:55000, upkeep:480,
+   blurb:"Umber and cream with brass table lamps. Premium fares, few seats."}
+];
+// Visiting engines, hired for one event weekend when you book a gala.
+const GUESTS = [
+  {key:"g-scot", kind:"steam",  name:"LNER A3 'Flying Scotsman'", number:"60103", fee:24000, draw:1.95, boost:0.55, reliability:0.80, maxHaul:9, runPerMile:16, pace:1.0},
+  {key:"g-a4",   kind:"steam",  name:"LNER A4 'Union of South Africa'", number:"60009", fee:15000, draw:1.70, boost:0.40, reliability:0.80, maxHaul:9, runPerMile:15, pace:1.0},
+  {key:"g-k4",   kind:"steam",  name:"LNER K4 'The Great Marquess'", number:"61994", fee:9000, draw:1.45, boost:0.25, reliability:0.83, maxHaul:8, runPerMile:13, pace:1.0},
+  {key:"g-9f",   kind:"steam",  name:"BR 9F 2-10-0", number:"92214", fee:8000, draw:1.35, boost:0.20, reliability:0.84, maxHaul:9, runPerMile:14, pace:0.95},
+  {key:"g-q6",   kind:"steam",  name:"NER Q6 0-8-0", number:"63395", fee:5000, draw:1.25, boost:0.15, reliability:0.85, maxHaul:9, runPerMile:12, pace:0.92},
+  {key:"g-ivatt4",kind:"steam", name:"LMS Ivatt 4MT 'Flying Pig'", number:"43106", fee:4000, draw:1.18, boost:0.10, reliability:0.86, maxHaul:7, runPerMile:11, pace:1.0},
+  {key:"g-deltic",kind:"diesel",name:"Class 55 'Deltic'", number:"55009", fee:12000, draw:1.55, boost:0.45, reliability:0.82, maxHaul:9, runPerMile:12, pace:1.0},
+  {key:"g-western",kind:"diesel",name:"Class 52 'Western'", number:"D1015", fee:10000, draw:1.45, boost:0.35, reliability:0.80, maxHaul:9, runPerMile:11, pace:1.0},
+  {key:"g-c50",  kind:"diesel", name:"Class 50 'Hoover'", number:"50007", fee:7000, draw:1.32, boost:0.25, reliability:0.84, maxHaul:9, runPerMile:10, pace:1.0},
+  {key:"g-c33",  kind:"diesel", name:"Class 33 'Crompton'", number:"33012", fee:5000, draw:1.20, boost:0.15, reliability:0.88, maxHaul:8, runPerMile:8, pace:1.0},
+  {key:"g-c20",  kind:"diesel", name:"Class 20 pair", number:"20142+20189", fee:4000, draw:1.15, boost:0.12, reliability:0.90, maxHaul:9, runPerMile:9, pace:1.0},
+  {key:"g-c47",  kind:"diesel", name:"Class 47", number:"47790", fee:4000, draw:1.12, boost:0.12, reliability:0.89, maxHaul:9, runPerMile:8, pace:1.0}
+];
+const EVENTS = {
+  steamgala: {name:"Steam Gala", icon:"🚂", demand:1.65, fare:24, spend:5, fixed:3500, staff:8, curve:"gala", need:{kind:"steam",n:3}, guests:"steam",
+              seasons:["Spring","Summer","Autumn"], blurb:"Every engine in steam and visiting stars. Needs at least 3 steam locos timetabled; an intensive service pays."},
+  dieselgala:{name:"Diesel Gala", icon:"🚃", demand:1.5, fare:22, spend:5, fixed:3000, staff:8, curve:"gala", need:{kind:"diesel",n:3}, guests:"diesel",
+              seasons:["Spring","Summer","Autumn"], blurb:"Thrash, clag and a cab-ride raffle. Needs at least 3 diesels (not DMUs) timetabled."},
+  beerfest:  {name:"Beer & Music Festival", icon:"🍺", demand:1.5, fare:14, spend:13, fixed:7500, staff:14, curve:"evening",
+              seasons:["Spring","Summer","Autumn"], blurb:"Real ale in the goods shed, bands on the platforms at Lowerdale. Crowds peak in the evening, so run late trains."},
+  wartime:   {name:"1940s Wartime Weekend", icon:"🎖️", demand:1.4, fare:19, spend:7, fixed:4000, staff:8, curve:"gala",
+              seasons:["Spring","Summer","Autumn"], blurb:"Re-enactors, a Spitfire fly-past and swing bands. Steam and vintage teak coaches add to the draw."},
+  santa:     {name:"Santa Specials", icon:"🎅", demand:5.0, fare:22, spend:4, fixed:3000, perHead:4, staff:10, curve:"santa",
+              seasons:["Winter"], festiveOnly:true, blurb:"Mince pies, a present for every child and Santa in the guard's van. December weekends only."}
+};
+const CURVES = { // passenger arrivals per hour, 09:00 .. 21:00
+  normal: [0.4,1.0,1.5,1.5,1.4,1.2,0.9,0.5,0.25,0.1,0.05,0.02,0],
+  gala:   [0.8,1.3,1.5,1.5,1.4,1.3,1.1,0.8,0.5,0.3,0.15,0.05,0],
+  evening:[0.15,0.3,0.6,0.9,1.1,1.3,1.5,1.6,1.6,1.4,1.0,0.6,0.3],
+  santa:  [0.6,1.2,1.4,1.4,1.4,1.3,1.0,0.5,0.1,0,0,0,0]
+};
+const UPGRADES = [
+  {key:"brkLoop",  name:"Brackenby passing loop", cost:85000, icon:"🔀",
+   blurb:"A loop and signal box at Brackenby, splitting the Lowerdale–Fellside section so trains can cross mid-valley."},
+  {key:"hsmLoop",  name:"Highmoor Summit passing loop", cost:95000, icon:"⛰️",
+   blurb:"A loop on the summit, splitting the steep Fellside–Moorend section, where trains wait longest. Together with Brackenby it lets a gala run far more trains."},
+  {key:"cafe",     name:"Ravensgill refreshment room & shop", cost:28000, icon:"☕",
+   blurb:"Bacon rolls, guidebooks and model railways. +£2.50 spent by every passenger."},
+  {key:"carpark",  name:"Car park extension", cost:24000, icon:"🅿️",
+   blurb:"No more visitors driving away from a full car park. +12% passengers."},
+  {key:"turntable",name:"Moorend turntable", cost:38000, icon:"🔄",
+   blurb:"Steam engines turn at Moorend in 10 minutes instead of 15 and run chimney-first both ways (+0.03 draw)."},
+  {key:"cshed",    name:"Carriage shed", cost:45000, icon:"🏚️",
+   blurb:"Coaches kept out of the Pennine weather: carriage wear halved."},
+  {key:"workshop", name:"Loco works extension", cost:60000, icon:"🔧",
+   blurb:"Overhauls 30% cheaper and a week quicker."}
+];
+const WEATHER = {
+  fine:   {name:"Fine",    icon:"☀️", f:1.15},
+  mixed:  {name:"Mixed",   icon:"⛅", f:1.0},
+  wet:    {name:"Wet",     icon:"🌧️", f:0.72},
+  snow:   {name:"Snow",    icon:"❄️", f:0.8}
+};
+const MARKETING = [
+  {spend:0,    f:1.00, name:"None"},
+  {spend:500,  f:1.07, name:"Posters (£500)"},
+  {spend:1500, f:1.15, name:"Local radio (£1,500)"},
+  {spend:3000, f:1.24, name:"Regional campaign (£3,000)"}
+];
+const BASE_DEMAND = 700;
+const BASE_FARE = 13;
+const WEEKLY_OVERHEAD = 5500;
+const GRAPH_MR = 24;
+const SET_COLOURS = ["#6e1f24","#12395f","#0f5132","#b8860b","#5b2a86","#1e7a8a","#c05621","#4a545f","#a83232"];
+
+/* ============================ STATE ============================ */
+const SAVE_KEY = "heritage_railway_manager_v1";
+let state = null;
+let uid = 1;
+let lastDaySim = null;   // most recent operating day, for the map replay
+
+function newGame(){
+  uid = 1;
+  const ivatt = mkLoco(catOf("loco","ivatt"), 0.78);
+  const rat   = mkLoco(catOf("loco","c25"), 0.8);
+  const r4    = mkRake(catOf("rake","mk1x4"), 0.8);
+  const r6    = mkRake(catOf("rake","mk1x6"), 0.75);
+  state = {
+    cash: 60000,
+    rep: 35,
+    week: 10,                 // mid-March, start of the running season
+    locos: [ivatt, rat],
+    rakes: [r4, r6],
+    tt: [ {loco:ivatt.id, rake:r6.id, deps:[600, 750, 900]},
+          {loco:rat.id,   rake:r4.id, deps:[]} ],
+    days: 2,
+    marketing: 0,
+    weather: "mixed",
+    events: {},               // absolute week -> {type, bookedWeek, guests:[], deposit}
+    vol: {count:56, morale:0.8, socialWeek:0},
+    upgrades: {},
+    ledger: [],
+    overdrawnWeeks: 0,
+    won: false,
+    over: false
+  };
+  state.weather = rollWeather(state.week);
+  lastDaySim = null;
+  logEntry("You've taken over the Ravensgill & Highmoor Railway: £60,000 in the bank, Ivatt tank 41241, Class 25 25059 and two Mk1 sets. The season starts this weekend.", 0);
+  save(); render();
+}
+function mkLoco(cat, cond){
+  const kind = CATALOG_STEAM.includes(cat)?"steam":CATALOG_DMU.includes(cat)?"dmu":"diesel";
+  return {id:uid++, cat:cat.key, kind, name:cat.name, number:cat.number, condition:cond, busyUntil:0};
+}
+function mkRake(cat, cond){ return {id:uid++, cat:cat.key, name:cat.name, condition:cond, busyUntil:0}; }
+function catOf(kind, key){
+  if(kind==="rake") return CATALOG_RAKE.find(r=>r.key===key);
+  if(kind==="guest") return GUESTS.find(g=>g.key===key);
+  return [...CATALOG_STEAM,...CATALOG_DIESEL,...CATALOG_DMU].find(l=>l.key===key);
+}
+
+function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify({state,uid})); }catch(e){} }
+function load(){
+  try{
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return false;
+    const d = JSON.parse(raw);
+    if(!d || !d.state || !Array.isArray(d.state.tt)) return false;
+    state = d.state; uid = d.uid || 1;
+    return true;
+  }catch(e){ return false; }
+}
+
+/* ============================ HELPERS ============================ */
+const money = n => (n<0?"-":"")+"£"+Math.round(Math.abs(n)).toLocaleString("en-GB");
+const fmtT = m => { m = Math.round(m); return String(Math.floor(m/60)%24).padStart(2,"0")+":"+String(m%60).padStart(2,"0"); };
+const woy = (w=state.week) => ((w-1)%52)+1;
+const yearOf = (w=state.week) => Math.floor((w-1)/52)+1;
+function seasonName(w=state.week){
+  const x = woy(w);
+  if(x>=48 || x<=9) return "Winter";
+  if(x<=22) return "Spring";
+  if(x<=35) return "Summer";
+  return "Autumn";
+}
+function isSchoolHols(w=state.week){ const x=woy(w); return x>=30 && x<=35; }
+function isFestive(w=state.week){ const x=woy(w); return x>=48 && x<=51; }
+function seasonFactor(w=state.week){
+  if(isSchoolHols(w)) return 1.5;
+  return {Winter:0.35, Spring:0.9, Summer:1.25, Autumn:0.95}[seasonName(w)];
+}
+function dateLabel(w=state.week){
+  const d = new Date(2026, 0, 3 + (woy(w)-1)*7);   // the Saturday of that week
+  return d.toLocaleDateString("en-GB",{day:"numeric", month:"short"});
+}
+function rollWeather(w){
+  const r = Math.random(), s = seasonName(w);
+  if(s==="Winter") return r<0.2?"fine":r<0.55?"mixed":r<0.85?"wet":"snow";
+  if(s==="Summer") return r<0.55?"fine":r<0.85?"mixed":"wet";
+  return r<0.4?"fine":r<0.75?"mixed":"wet";
+}
+function repTier(){
+  const r=state.rep;
+  if(r>=140) return "Legendary"; if(r>=110) return "Award-winning";
+  if(r>=80) return "Renowned"; if(r>=50) return "Popular";
+  if(r>=25) return "Local"; return "Struggling";
+}
+function condColour(c){ return c>0.6?"var(--good)":c>0.3?"var(--warn)":"var(--danger)"; }
+function isBusy(item){ return (item.busyUntil||0) > state.week; }
+function sellValue(kind, item){
+  const cat = catOf(kind, item.cat);
+  return Math.round(cat.cost * (0.35 + 0.4*item.condition));
+}
+function netWorth(){
+  let w = state.cash;
+  state.locos.forEach(l=> w+=sellValue("loco",l));
+  state.rakes.forEach(r=> w+=sellValue("rake",r));
+  return w;
+}
+function logEntry(text, delta){
+  state.ledger.unshift({week:state.week, text, delta});
+  if(state.ledger.length>250) state.ledger.pop();
+}
+function kindBadge(kind){ return `<span class="badge b-${kind}">${kind==="dmu"?"DMU":kind}</span>`; }
+function eventThisWeek(w=state.week){ return state.events[w] || null; }
+function publicity(ev, w){ return Math.min(1, Math.max(0.15, (w - ev.bookedWeek)/4)); }
+function loopSet(){ const s = new Set([0,2,4,6]); if(state.upgrades.brkLoop) s.add(3); if(state.upgrades.hsmLoop) s.add(5); return s; }
+
+/* ============================ PLANNING ============================ */
+// Turn the timetable into runnable "sets" (a loco plus its carriages) and a list of problems.
+function currentPlan(){
+  const ev = eventThisWeek();
+  const def = ev ? EVENTS[ev.type] : null;
+  const sets = [], issues = [];
+  const usedLoco = new Set(), usedRake = new Set();
+  state.tt.forEach((d, i)=>{
+    const err = m => issues.push({i, msg:m});
+    if(!d.deps.length) return;
+    let loco = null, lcat = null, kind = null, guest = false;
+    if(typeof d.loco==="string"){
+      lcat = catOf("guest", d.loco);
+      if(!lcat || !ev || !ev.guests.includes(d.loco)){ err("Guest engine is not on hire this week — diagram skipped."); return; }
+      kind = lcat.kind; guest = true;
+      loco = {id:d.loco, number:lcat.number, condition:0.92};
+    } else {
+      loco = state.locos.find(l=>l.id===d.loco);
+      if(!loco){ err("No locomotive chosen."); return; }
+      if(isBusy(loco)){ err(`${loco.number} is in the works until week ${loco.busyUntil} — diagram skipped.`); return; }
+      if(loco.condition<0.15){ err(`${loco.number} is too run-down to run: send it to the works.`); return; }
+      lcat = catOf("loco", loco.cat); kind = loco.kind;
+    }
+    if(usedLoco.has(String(d.loco))){ err(`${loco.number} is already working another diagram.`); return; }
+    let rake = null, rcat = null, cars, cap, comfort, maxHaul;
+    if(kind==="dmu"){
+      cars = lcat.seats/70; cap = lcat.seats; comfort = 0.95; maxHaul = 99;
+    } else {
+      rake = state.rakes.find(r=>r.id===d.rake);
+      if(!rake){ err("No carriage set chosen."); return; }
+      if(isBusy(rake)){ err(`${rake.name} is in the works — diagram skipped.`); return; }
+      if(usedRake.has(rake.id)){ err(`${rake.name} is already in another diagram.`); return; }
+      rcat = catOf("rake", rake.cat);
+      if(rcat.cars > lcat.maxHaul){ err(`${loco.number} can only take ${lcat.maxHaul} coaches up the bank; the ${rcat.name} has ${rcat.cars}.`); return; }
+      cars = rcat.cars; cap = rcat.capacity; comfort = rcat.comfort; maxHaul = lcat.maxHaul;
+      usedRake.add(rake.id);
+    }
+    usedLoco.add(String(d.loco));
+    let draw = lcat.draw;
+    if(kind==="steam" && state.upgrades.turntable) draw += 0.03;
+    sets.push({diag:i, label:loco.number, colour:SET_COLOURS[i%SET_COLOURS.length], kind, guest,
+      loco, rake, lcat, rcat, cars, maxHaul, cap, comfort, draw, pace:lcat.pace||1,
+      runPerMile:lcat.runPerMile, reliability:lcat.reliability, condition:loco.condition,
+      crew: kind==="steam"?3:2, deps:[...d.deps].sort((a,b)=>a-b)});
+  });
+  const kinds = {steam:0, diesel:0, dmu:0};
+  sets.forEach(s=>kinds[s.kind]++);
+  const volNeed = sets.length ? 8 + sets.reduce((a,s)=>a+s.crew,0) + (def?def.staff:0) : 0;
+  return {ev, def, sets, issues, kinds, volNeed, volAvail: volunteersAvailable()};
+}
+function volunteersAvailable(){
+  return Math.floor(state.vol.count * 0.55 * (0.55 + 0.45*state.vol.morale));
+}
+function daysThisWeek(){
+  if(eventThisWeek()) return 2;
+  if(state.days===4 && !isSchoolHols()) return 2;
+  return state.days;
+}
+
+/* ============================ SINGLE-LINE SIMULATION ============================ */
+function segMinutes(seg, dir, set, failed){
+  const miles = STATIONS[seg+1].mile - STATIONS[seg].mile;
+  const climb = GRADE[seg]*dir;
+  const load = Math.min(1, set.cars/set.maxHaul);
+  let v = LINE_SPEED * set.pace;
+  if(climb>0) v = v / (1 + climb*(0.35 + 0.75*load));
+  if(failed) v *= 0.55;                       // limping home behind the rescue engine
+  return miles/v*60 + 1;                       // +1 min to start and stop
+}
+function turnTop(set){ return set.kind==="dmu"?5 : set.kind==="diesel"?10 : (state.upgrades.turntable?10:15); }
+function turnHome(set){ return set.kind==="dmu"?6 : set.kind==="diesel"?10 : 20; }   // steam takes water and coal
+function idealRound(set){
+  let t = 0;
+  for(let s=0;s<STATIONS.length-1;s++) t += segMinutes(s, 1, set) + segMinutes(s,-1,set);
+  return t + DWELL*2*(STATIONS.length-2) + turnTop(set);
+}
+
+// Minute-by-minute dispatcher. Each single-line section between loops holds one train
+// (token working); a train may only enter if there is room in the loop at the far end.
+// A passing loop keeps one road for each direction, so down trains can always drain
+// back to Ravensgill and the line can never lock solid (Moorend holds any two trains).
+// failTrip: per set, the trip on which it fails at Moorend (-1 = none).
+function simulateDay(sets, failTrip){
+  const loops = loopSet(), N = STATIONS.length, LAST = N-1;
+  const tokens = {}, occ = [...Array(N)].map(()=>({u:0,d:0})), resv = [...Array(N)].map(()=>({u:0,d:0}));
+  const dk = dir => dir>0 ? "u" : "d";
+  // room at loop i for a train arriving in direction dir
+  const room = (i,dir) => i===0 ? true
+    : i===LAST ? occ[i].u+occ[i].d+resv[i].u+resv[i].d < 2
+    : occ[i][dk(dir)] + resv[i][dk(dir)] < 1;
+  const nextLoop = (i,dir) => { let j=i+dir; while(j>0 && j<LAST && !loops.has(j)) j+=dir; return j; };
+  const key = (a,b) => Math.min(a,b)+"-"+Math.max(a,b);
+  const A = sets.map((s,k)=>({k, s, st:0, dir:1, phase:"idle", timer:0, trip:0, readyAt:0,
+    path:[], trips:[], hold:null, waitSince:0, waitNow:0, cur:null, failed:false, done:false}));
+  let deadlock = null, holds = 0, holdMins = 0;
+
+  function arrive(a,t){
+    a.st += a.dir; const st = a.st;
+    a.path.push({t, m:STATIONS[st].mile});
+    if(loops.has(st)){ tokens[a.hold]=null; a.hold=null; resv[st][dk(a.dir)]--; if(st!==0) occ[st][dk(a.dir)]++; }
+    if(st===LAST){
+      occ[st].u--; occ[st].d++;                 // the train turns round here
+      a.cur.arrTop = t; a.dir = -1; a.phase = "turn"; a.timer = turnTop(a.s);
+      if(failTrip && failTrip[a.k]===a.trip){ a.failed = true; a.cur.failed = true; a.timer += 70; }
+    } else if(st===0){
+      a.cur.arrHome = t; a.phase = "idle"; a.readyAt = t + turnHome(a.s); a.trip++; a.cur = null;
+      if(a.failed) a.done = true;
+    } else { a.phase = "dwell"; a.timer = DWELL; }
+  }
+
+  for(let t=SIM_START; t<=SIM_END; t+=DT){
+    for(const a of A){
+      if(a.phase==="run"){ a.timer -= DT; if(a.timer<=1e-9) arrive(a,t); }
+      else if(a.phase==="dwell" || a.phase==="turn"){ a.timer -= DT; if(a.timer<=1e-9){ a.phase="want"; a.waitSince=t; } }
+      else if(a.phase==="idle" && !a.done && a.trip<a.s.deps.length && t>=a.s.deps[a.trip] && t>=a.readyAt){
+        a.cur = {sched:a.s.deps[a.trip], dep:null, arrTop:null, arrHome:null, wait:0, failed:false};
+        a.trips.push(a.cur); a.dir = 1; a.phase = "want"; a.waitSince = t;
+      }
+    }
+    // first come, first served at each loop
+    const wanting = A.filter(a=>a.phase==="want").sort((x,y)=>x.waitSince-y.waitSince || x.k-y.k);
+    for(const a of wanting){
+      const st = a.st; let ok = true;
+      if(loops.has(st)){
+        const dest = nextLoop(st, a.dir), kk = key(st, dest);
+        if(tokens[kk]!=null || !room(dest, a.dir)) ok = false;
+        if(ok){ tokens[kk]=a.k; a.hold=kk; resv[dest][dk(a.dir)]++; if(st!==0) occ[st][dk(a.dir)]--; }
+      }
+      if(ok){
+        if(a.cur.dep==null) a.cur.dep = t;
+        if(a.waitNow>=1 && st!==0 && st!==LAST){ holds++; holdMins += a.waitNow; }
+        a.path.push({t, m:STATIONS[st].mile});
+        a.phase = "run"; a.waitNow = 0;
+        a.timer = segMinutes(Math.min(st, st+a.dir), a.dir, a.s, a.failed);
+      } else {
+        a.waitNow += DT;
+        if(a.cur.dep!=null) a.cur.wait += DT;
+        if(a.waitNow > 180 && !deadlock) deadlock = {t, at:STATIONS[st].name};
+      }
+    }
+    if(deadlock) break;
+  }
+  // tidy up: every scheduled departure gets a trip record.
+  // Delay = late start + any hold at loops beyond the 12 minutes of crossings a timetable books per round trip.
+  const trips = [];
+  A.forEach(a=>{
+    a.s.deps.forEach((sched, i)=>{
+      const r = a.trips[i];
+      if(r && r.arrHome!=null){
+        trips.push({set:a.s, k:a.k, sched, dep:r.dep, arrHome:r.arrHome, late:Math.max(0,r.dep-sched), wait:r.wait,
+                    delay:Math.max(0,r.dep-sched)+Math.max(0,r.wait-12), failed:r.failed, cancelled:false});
+      } else if(r && r.dep!=null){
+        trips.push({set:a.s, k:a.k, sched, dep:r.dep, arrHome:null, late:Math.max(0,r.dep-sched), wait:r.wait,
+                    delay:Math.max(0,r.dep-sched)+Math.max(0,r.wait-12), failed:r.failed, stranded:true, cancelled:false});
+      } else {
+        trips.push({set:a.s, k:a.k, sched, cancelled:true, reason: a.done?"failure":deadlock?"lock-up":"too late"});
+      }
+    });
+  });
+  trips.sort((x,y)=>x.sched-y.sched);
+  return {agents:A.map(a=>({k:a.k, label:a.s.label, colour:a.s.colour, kind:a.s.kind, path:a.path, failed:a.failed})),
+          trips, deadlock, holds, holdMins};
+}
+
+/* ============================ PASSENGERS & MONEY ============================ */
+function dayDemand(plan, noise){
+  let d = BASE_DEMAND * seasonFactor() * WEATHER[state.weather].f * (0.55 + 0.6*state.rep/100)
+        * MARKETING[state.marketing].f * (state.upgrades.carpark?1.12:1);
+  const notes = [];
+  if(plan.def){
+    const def = plan.def; let m = def.demand;
+    if(def.need){
+      const n = plan.kinds[def.need.kind];
+      if(n < def.need.n){
+        m = 1.1;
+        notes.push({cls:"bad", text:`😠 <b>A gala with only ${n} ${def.need.kind} engine${n===1?"":"s"}.</b> Visitors were promised at least ${def.need.n}. Many went home early.`});
+      } else {
+        const boost = plan.sets.filter(s=>s.guest).reduce((a,s)=>a+s.lcat.boost,0);
+        m = def.demand * (1 + 0.1*(Math.min(n,7)-def.need.n)) * (1+boost);
+        const trips = plan.sets.reduce((a,s)=>a+s.deps.length,0);
+        m *= 0.6 + 0.4*Math.min(1, trips/10);          // a gala needs an intensive service
+      }
+    }
+    if(plan.ev.type==="wartime"){
+      const vint = plan.sets.some(s=>s.rcat && s.rcat.vintage), steam = plan.kinds.steam>0;
+      m *= (vint?1.18:1) * (steam?1.1:0.85);
+    }
+    d *= 1 + (m-1)*(0.35 + 0.65*publicity(plan.ev, state.week));
+  }
+  return {demand: d*(noise||1), notes};
+}
+// Passengers turn up through the day and catch the next train within two hours.
+function allocatePassengers(trips, demand, curveName){
+  const curve = CURVES[curveName] || CURVES.normal;
+  const sumW = curve.reduce((a,b)=>a+b,0);
+  const dens = m => { const i = Math.floor(m/60)-9; return (curve[i]||0)/sumW/60; };
+  let prev = -Infinity, carry = 0, turned = 0, lost = 0;
+  trips.forEach(tr=>{
+    const from = Math.max(prev, tr.sched-120);
+    let arrivals = 0; for(let m=Math.floor(from); m<tr.sched; m++) arrivals += dens(m);
+    const want = arrivals*demand*tr.set.draw + carry;
+    prev = tr.sched;
+    if(tr.cancelled){ tr.pax = 0; tr.want = want; carry = 0; lost += want; return; }
+    tr.want = want;
+    tr.pax = Math.round(Math.min(tr.set.cap, want));
+    const over = want - tr.pax;
+    carry = over*0.55; turned += over*0.45;
+  });
+  turned += carry;
+  return {turned:Math.max(0,Math.round(turned)), lost:Math.round(lost)};
+}
+const trips_per = sim => sim.trips.filter(t=>!t.cancelled).length;
+function evaluateDay(plan, sim, noise){
+  const def = plan.def;
+  const {demand, notes} = dayDemand(plan, noise);
+  const alloc = allocatePassengers(sim.trips, demand, def?def.curve:"normal");
+  const fareBase = def ? def.fare : BASE_FARE;
+  const spendPer = (def ? def.spend : 3) + (state.upgrades.cafe ? 2.5 : 0);
+  let pax=0, fares=0, refunds=0, legs=0, fuel=0, delaySum=0, ran=0, seats=0;
+  sim.trips.forEach(tr=>{
+    if(tr.cancelled) return;
+    ran++;
+    const fare = Math.round(fareBase * (1 + (tr.set.comfort-1)*0.6));
+    tr.fare = fare;
+    pax += tr.pax; seats += tr.set.cap;
+    fares += tr.pax*fare;
+    if(tr.failed){ const r = Math.round(tr.pax*fare*0.5); refunds += r; }
+    legs += tr.arrHome!=null ? 2 : 1;
+    fuel += tr.set.runPerMile * LINE_MILES * (tr.arrHome!=null?2:1);
+    delaySum += tr.delay;
+  });
+  const spend = Math.round(pax*spendPer);
+  const upkeep = plan.sets.filter(s=>s.rcat).reduce((a,s)=>a+s.rcat.upkeep,0);
+  const volCost = plan.volNeed*6;
+  const gifts = def && def.perHead ? pax*def.perHead : 0;
+  const revenue = fares + spend - refunds;
+  const cost = Math.round(fuel + upkeep + volCost + gifts);
+  const avgDelay = ran ? delaySum/ran : 0;
+  const lf = seats ? pax/seats : 0;
+  // reputation for the day
+  const fails = sim.trips.filter(t=>t.failed).length;
+  let rep = 0;
+  if(lf>0.85) rep += 2; else if(lf>0.6) rep += 1;
+  if(alloc.turned > pax*0.2 && alloc.turned>40) rep -= 2;
+  if(avgDelay>20) rep -= 3; else if(avgDelay>10) rep -= 1; else if(ran && avgDelay<4 && !fails) rep += 1;
+  if(ran && trips_per(sim)>=4) rep += 1;                       // a proper service, not one train a day
+  rep -= 3*fails;
+  if(sim.deadlock) rep -= 8;
+  return {pax, seats, fares, spend, refunds, revenue, fuel:Math.round(fuel), upkeep, volCost, gifts, cost,
+          net: revenue-cost, avgDelay, lf, rep, turned:alloc.turned, lost:alloc.lost, notes, fails,
+          ran, cancelled: sim.trips.filter(t=>t.cancelled).length, demand};
+}
+
+/* ============================ RUN THE WEEKEND ============================ */
+function advanceWeek(){
+  if(state.over) return;
+  const plan = currentPlan();
+  const days = daysThisWeek();
+  const ev = plan.ev, def = plan.def;
+  const runDays = (days>0 && plan.sets.length) ? days : 0;
+
+  if(runDays && plan.volNeed > plan.volAvail){
+    openModal("Not Enough Volunteers", `<p>This timetable needs <b>${plan.volNeed}</b> volunteers a day but only <b>${plan.volAvail}</b> can turn out this week.</p>
+      <div class="event bad">Cut some trains, recruit more volunteers on the <b>Volunteers &amp; Upgrades</b> tab, or close for the week.</div>`);
+    return;
+  }
+  if(ev && !runDays){
+    if(!confirm(`The ${def.name} is booked this weekend but there are no trains in the timetable. Cancel it and lose the deposit?`)) return;
+  }
+
+  const report = {week:state.week, weather:state.weather, days:runDays, ev, def, dayRes:[], events:[], startCash:state.cash};
+  let repDelta = 0, weekNet = 0;
+  if(runDays){
+    for(let d=0; d<runDays; d++){
+      // roll failures for each set: per-trip probability from condition and reliability
+      const failTrip = plan.sets.map(s=>{
+        for(let i=0;i<s.deps.length;i++){
+          const p = Math.min(0.3, Math.max(0.006, 0.07*(1.05-s.condition)/s.reliability));
+          if(Math.random()<p) return i;
+        }
+        return -1;
+      });
+      const sim = simulateDay(plan.sets, failTrip);
+      const res = evaluateDay(plan, sim, 0.9+Math.random()*0.2);
+      res.sim = sim; res.failTrip = failTrip;
+      report.dayRes.push(res);
+      weekNet += res.net;
+      repDelta += res.rep;
+      // wear on the stock that ran
+      plan.sets.forEach(s=>{
+        const miles = sim.trips.filter(t=>t.set===s && !t.cancelled).length * LINE_MILES * 2;
+        if(!s.guest){
+          const lw = miles/2600 * s.lcat.wear * (s.kind==="steam"?1.25:1) * (1 + 0.3*Math.min(1,s.cars/s.maxHaul));
+          s.loco.condition = Math.max(0.03, s.loco.condition - lw - (sim.trips.some(t=>t.set===s && t.failed)?0.1:0));
+        }
+        if(s.rake) s.rake.condition = Math.max(0.05, s.rake.condition - miles/5200*(state.upgrades.cshed?0.5:1));
+      });
+      lastDaySim = sim;
+    }
+    repDelta = Math.round(repDelta/runDays);
+    const tot = report.dayRes.reduce((a,r)=>({pax:a.pax+r.pax, net:a.net+r.net, fails:a.fails+r.fails}),{pax:0,net:0,fails:0});
+    state.cash += weekNet;
+    logEntry(`${runDays} day${runDays>1?"s":""} of ${def?def.name:"normal service"}: ${tot.pax.toLocaleString("en-GB")} passengers${tot.fails?`, ${tot.fails} failure${tot.fails>1?"s":""}`:""}.`, weekNet);
+  }
+  // event settlement
+  if(ev){
+    const guestFees = ev.guests.reduce((a,k)=>a+catOf("guest",k).fee,0);
+    if(runDays){
+      const due = def.fixed + guestFees - ev.deposit;
+      state.cash -= due; weekNet -= due;
+      logEntry(`${def.name}: balance of costs${guestFees?" and guest-engine hire":""}.`, -due);
+      const met = !def.need || plan.kinds[def.need.kind] >= def.need.n;
+      const avgLf = report.dayRes.reduce((a,r)=>a+r.lf,0)/runDays;
+      if(met && avgLf>0.5){ repDelta += 7; report.events.push({cls:"good", text:`${def.icon} <b>${def.name} a success.</b> The enthusiast press and local paper are full of it.`}); }
+      else if(met){ repDelta += 3; report.events.push({cls:"", text:`${def.icon} The ${def.name} went off well, but the trains were half empty. More publicity next time?`}); }
+      else repDelta -= 6;
+      report.dayRes[0].notes.forEach(n=>report.events.push(n));
+    } else {
+      logEntry(`${def.name} cancelled: deposit lost.`, 0);
+      repDelta -= 4;
+    }
+    delete state.events[state.week];
+    state.tt = state.tt.filter(d=>typeof d.loco!=="string");   // guest engines go home
+  }
+  // fixed costs
+  const mk = MARKETING[state.marketing].spend;
+  const overhead = runDays ? WEEKLY_OVERHEAD : Math.round(WEEKLY_OVERHEAD*0.6);
+  state.cash -= overhead + mk; weekNet -= overhead + mk;
+  logEntry(`Weekly overheads (track, insurance, paid staff)${mk?` and marketing`:""}.`, -(overhead+mk));
+  // memories fade: without galas and full trains a railway slips out of the news
+  if(state.rep > 40 && seasonName()!=="Winter") repDelta -= 1;
+  state.rep = Math.max(0, Math.min(160, state.rep + repDelta));
+  report.repDelta = repDelta; report.weekNet = weekNet;
+
+  // volunteers
+  const v = state.vol;
+  if(runDays){
+    v.morale -= 0.015*runDays + (ev?0.05:0) + (plan.volNeed > plan.volAvail*0.9 ? 0.04 : 0);
+  } else v.morale += 0.07;
+  v.morale += 0.015;  // natural recovery
+  v.morale = Math.max(0.1, Math.min(1, v.morale));
+  const joined = (Math.random() < 0.2 + state.rep/250 ? 1 : 0) + (ev && runDays && Math.random()<0.5 ? 1 : 0);
+  const left = v.morale < 0.45 ? 1 + Math.floor(Math.random()*3) : (Math.random()<0.15?1:0);
+  v.count = Math.max(10, v.count + joined - left);
+  report.vol = {joined, left};
+
+  // next week
+  state.week++;
+  state.weather = rollWeather(state.week);
+  if(!eventThisWeek() && state.days===4 && !isSchoolHols()) state.days = 2;
+  if(state.cash < 0) state.overdrawnWeeks++; else state.overdrawnWeeks = 0;
+  render();
+  showWeekReport(report, plan);
+  checkFinish();
+}
+
+function checkFinish(){
+  if(state.overdrawnWeeks >= 2){
+    state.over = true; save();
+    openModal("The Railway Has Closed", `<p>Two weeks overdrawn, and the bank has called in the overdraft. The trustees have closed the Ravensgill &amp; Highmoor Railway.</p>
+      <p>You reached <b>week ${woy()}, year ${yearOf()}</b> with a reputation of <b>${state.rep}</b> (${repTier()}).</p>
+      <button class="act warnbtn" onclick="closeModal();newGame();">Start again</button>`, true);
+  } else if(state.overdrawnWeeks===1){
+    setTimeout(()=>alert("Warning: the railway is overdrawn. Finish next week overdrawn and the bank will close it. Sell stock or cut costs."), 50);
+  }
+}
+
+/* ============================ RENDER ============================ */
+function render(){
+  document.getElementById("s-cash").textContent = money(state.cash);
+  document.getElementById("s-cash").style.color = state.cash<0 ? "#ff9d9d" : "#ffe9a8";
+  document.getElementById("s-rep").innerHTML = state.rep + " <span style='font-size:.6rem;opacity:.8'>"+repTier()+"</span>";
+  document.getElementById("s-vol").textContent = state.vol.count + " · " + Math.round(state.vol.morale*100) + "%";
+  document.getElementById("s-week").textContent = "Wk "+woy()+" · Y"+yearOf();
+  document.getElementById("s-season").textContent = seasonName() + (isSchoolHols()?" hols":"") + (isFestive()?" 🎄":"");
+
+  const ev = eventThisWeek();
+  const days = daysThisWeek();
+  const w = WEATHER[state.weather];
+  document.getElementById("ab-info").innerHTML =
+    `<b>Weekend of ${dateLabel()}</b> · ${seasonName()}${isSchoolHols()?" (school holidays)":""} · ${w.icon} ${w.name} forecast · `
+    + (ev ? `${EVENTS[ev.type].icon} <b>${EVENTS[ev.type].name}</b>` : days ? `${days} operating day${days>1?"s":""}` : "railway closed this week");
+  document.getElementById("btn-advance").textContent = days ? "Run the Weekend ▸" : "Next Week ▸";
+
+  const wb = document.getElementById("winBanner");
+  if(netWorth() >= 500000 && state.rep>=110 && !state.won){ state.won = true; save();
+    setTimeout(()=>openModal("Heritage Railway of the Year!", `<p>🏆 Net worth ${money(netWorth())} and a reputation of ${state.rep}. The Ravensgill &amp; Highmoor has been named <b>Heritage Railway of the Year</b>.</p><p>Keep running: there are always more galas to plan.</p>`), 60); }
+  wb.innerHTML = state.won
+    ? `<div class="win-banner">🏆 Heritage Railway of the Year. Net worth ${money(netWorth())}.</div>`
+    : "";
+
+  renderTimetable();
+  renderEvents();
+  renderDepot();
+  renderMarket();
+  renderWorks();
+  renderRailway();
+  renderLedger();
+  refreshReplaySource();
+  save();
+}
+
+function stockOptions(d){
+  const ev = eventThisWeek();
+  let html = `<option value="">— choose —</option>`;
+  state.locos.forEach(l=>{
+    const note = isBusy(l) ? " (in works)" : l.condition<0.15 ? " (worn out)" : "";
+    html += `<option value="${l.id}" ${d.loco===l.id?"selected":""}>${l.number} · ${catOf("loco",l.cat).name}${note}</option>`;
+  });
+  if(ev) ev.guests.forEach(k=>{
+    const g = catOf("guest",k);
+    html += `<option value="${k}" ${d.loco===k?"selected":""}>★ ${g.number} · ${g.name} (guest)</option>`;
+  });
+  if(typeof d.loco==="string" && !(ev && ev.guests.includes(d.loco))){
+    const g = catOf("guest",d.loco);
+    html += `<option value="${d.loco}" selected>★ ${g?g.number:"guest"} (not on hire)</option>`;
+  }
+  return html;
+}
+function rakeOptions(d){
+  let html = `<option value="">— choose —</option>`;
+  state.rakes.forEach(r=>{
+    const c = catOf("rake",r.cat);
+    html += `<option value="${r.id}" ${d.rake===r.id?"selected":""}>${c.name} · ${c.capacity} seats${isBusy(r)?" (in works)":""}</option>`;
+  });
+  return html;
+}
+function diagKind(d){
+  if(typeof d.loco==="string"){ const g=catOf("guest",d.loco); return g?g.kind:"steam"; }
+  const l = state.locos.find(x=>x.id===d.loco); return l?l.kind:null;
+}
+
+let previewSim = null, previewPlan = null;
+function renderTimetable(){
+  const days = state.days, ev = eventThisWeek();
+  const hols = isSchoolHols();
+  const tb = document.getElementById("tt-toolbar");
+  const dayBtn = (n, lbl, dis) => `<button class="${(ev?2:days)===n?"on":""}" ${dis||ev?"disabled":""} onclick="setDays(${n})">${lbl}</button>`;
+  tb.innerHTML = `<label>Operating</label>
+    <span class="seg">${dayBtn(0,"Closed")}${dayBtn(1,"Sunday")}${dayBtn(2,"Weekend")}${dayBtn(4,"4 days", !hols)}</span>
+    <label>Marketing</label>
+    <select class="sel" onchange="setMarketing(this.value)">${MARKETING.map((m,i)=>`<option value="${i}" ${state.marketing===i?"selected":""}>${m.name}</option>`).join("")}</select>
+    <span class="chip">${WEATHER[state.weather].icon} Forecast: <b>${WEATHER[state.weather].name}</b></span>`;
+
+  const te = document.getElementById("tt-event");
+  if(ev){
+    const def = EVENTS[ev.type];
+    const guests = ev.guests.map(k=>catOf("guest",k).number+" "+catOf("guest",k).name).join(", ");
+    te.innerHTML = `<div class="event good">${def.icon} <b>${def.name} this weekend</b> (publicity ${Math.round(publicity(ev,state.week)*100)}%). ${def.blurb}
+      ${guests?`<br>Guest engines on hire: <b>${guests}</b>. Pick them from the locomotive list below (marked ★).`:""}
+      Needs ${def.staff} extra volunteers each day.</div>`;
+  } else te.innerHTML = "";
+
+  const plan = currentPlan();
+  const box = document.getElementById("tt-diagrams");
+  const sim = plan.sets.length ? simulateDay(plan.sets, null) : null;
+  previewSim = sim; previewPlan = plan;
+  const tripBy = {};
+  if(sim) sim.trips.forEach(t=>{ (tripBy[t.set.diag] = tripBy[t.set.diag] || {})[t.sched] = t; });
+
+  box.innerHTML = state.tt.map((d,i)=>{
+    const kind = diagKind(d);
+    const set = plan.sets.find(s=>s.diag===i);
+    const iss = plan.issues.filter(x=>x.i===i).map(x=>`<div class="issue">⚠️ ${x.msg}</div>`).join("");
+    const chips = [...d.deps].sort((a,b)=>a-b).map(m=>{
+      const tr = tripBy[i] && tripBy[i][m];
+      let cls = "", tip = "";
+      if(tr && tr.cancelled){ cls="cx"; tip=` title="Cancelled: ${tr.reason}"`; }
+      else if(tr && tr.delay>=5){ cls="late"; tip=` title="Leaves ${fmtT(tr.dep)}, ${Math.round(tr.delay)} min late overall"`; }
+      return `<span class="dep ${cls}"${tip}>${fmtT(m)}${tr && !tr.cancelled && tr.delay>=5?` <small>+${Math.round(tr.delay)}</small>`:""}<button onclick="removeDep(${i},${m})" title="Remove">×</button></span>`;
+    }).join("");
+    const round = set ? Math.round(idealRound(set)) : null;
+    return `<div class="card diag" style="border-left-color:${SET_COLOURS[i%SET_COLOURS.length]}">
+      <h3>Diagram ${String.fromCharCode(65+i)} ${kind?kindBadge(kind):""} ${typeof d.loco==="string"?`<span class="badge b-guest">guest</span>`:""}
+        <button class="act small warnbtn" style="margin-left:auto" onclick="removeDiagram(${i})">Delete</button></h3>
+      <div class="row"><span>Loco</span><select class="sel" style="flex:1" onchange="setDiagLoco(${i}, this.value)">${stockOptions(d)}</select></div>
+      ${kind==="dmu" ? `<div class="row"><span>Stock</span><i class="sub" style="margin:0">Self-propelled: no carriages needed</i></div>`
+        : `<div class="row"><span>Coaches</span><select class="sel" style="flex:1" onchange="setDiagRake(${i}, this.value)">${rakeOptions(d)}</select></div>`}
+      <div class="deps">${chips || `<span class="sub" style="margin:0">No departures: this diagram won't run.</span>`}</div>
+      <div class="row"><span>Add</span><select class="sel" id="add-${i}">${DEP_TIMES.map(m=>`<option value="${m}">${fmtT(m)}</option>`).join("")}</select>
+        <button class="act small" onclick="addDep(${i})">+ Departure</button></div>
+      ${round?`<div class="sub" style="margin:4px 0 0">Round trip about ${Math.floor(round/60)} h ${String(Math.round(round%60)).padStart(2,"0")} min, then ${turnHome(set)} min at Ravensgill · ${set.cap} seats · ${set.crew} crew</div>`:""}
+      ${iss}
+    </div>`;
+  }).join("") + `<div class="card" style="display:flex;align-items:center;justify-content:center;min-height:120px">
+      <button class="act greenbtn" style="width:auto" onclick="addDiagram()">+ Add a train diagram</button></div>`;
+
+  // projection
+  const pj = document.getElementById("tt-projection");
+  const nDays = daysThisWeek();
+  if(!sim || !nDays){
+    pj.innerHTML = `<div class="projection"><p class="sub">${nDays?"Add a loco, carriages and departures to see the projection.":"The railway is closed this week: volunteers rest (morale recovers) and only reduced overheads are paid."}</p></div>`;
+  } else {
+    const res = evaluateDay(plan, sim, 1);
+    const volOk = plan.volNeed <= plan.volAvail;
+    const ran = sim.trips.filter(t=>!t.cancelled).length;
+    const evCost = ev ? EVENTS[ev.type].fixed + ev.guests.reduce((a,k)=>a+catOf("guest",k).fee,0) : 0;
+    const weekNet = res.net*nDays - evCost - WEEKLY_OVERHEAD - MARKETING[state.marketing].spend;
+    pj.innerHTML = `<div class="projection">
+      <h3 style="margin-top:0">Projection: ${nDays} day${nDays>1?"s":""} ${ev?`of the ${EVENTS[ev.type].name}`:"of normal service"}</h3>
+      ${!volOk?`<div class="event bad">⚠️ <b>Volunteer shortfall:</b> each day needs ${plan.volNeed} but only ${plan.volAvail} are available. You can't run this.</div>`:""}
+      ${sim.deadlock?`<div class="event bad">🔒 <b>Lock-up at ${sim.deadlock.at} at ${fmtT(sim.deadlock.t)}.</b> Every loop is full and no train can move. The rest of the day is cancelled. Thin out the trains or build another loop.</div>`:""}
+      ${sim.holds?`<div class="event">🚦 Trains are held at loops ${sim.holds} time${sim.holds>1?"s":""} (${Math.round(sim.holdMins)} min in all) waiting for the single line.</div>`:""}
+      ${res.turned>40?`<div class="event bad">🚶 About ${res.turned} people a day are turned away from full trains. Add trains or longer sets.</div>`:""}
+      ${res.notes.map(n=>`<div class="event ${n.cls}">${n.text}</div>`).join("")}
+      <div class="proj-grid">
+        <div class="proj-cell"><b>${ran}</b><span>Round trips / day</span></div>
+        <div class="proj-cell"><b>${res.pax}/${res.seats}</b><span>Passengers (${Math.round(res.lf*100)}%)</span></div>
+        <div class="proj-cell"><b>${money(res.revenue)}</b><span>Takings / day</span></div>
+        <div class="proj-cell"><b>${money(res.cost)}</b><span>Running cost / day</span></div>
+        <div class="proj-cell"><b class="${weekNet>=0?"pos":"neg"}">${weekNet>=0?"+":""}${money(weekNet)}</b><span>Est. week net</span></div>
+        <div class="proj-cell"><b class="${volOk?"":"neg"}">${plan.volNeed}/${plan.volAvail}</b><span>Volunteers</span></div>
+        <div class="proj-cell"><b class="${res.avgDelay>10?"neg":res.avgDelay>4?"":"pos"}">${Math.round(res.avgDelay)} min</b><span>Avg delay</span></div>
+      </div>
+      <p class="sub">Fares ${money(res.fares)} + shop &amp; café ${money(res.spend)} a day. Costs: coal/fuel ${money(res.fuel)} · carriage upkeep ${money(res.upkeep)} · volunteer expenses ${money(res.volCost)}${res.gifts?` · presents ${money(res.gifts)}`:""}. Week: overheads ${money(WEEKLY_OVERHEAD)}${MARKETING[state.marketing].spend?` · marketing ${money(MARKETING[state.marketing].spend)}`:""}${evCost?` · event ${money(evCost)} (deposit already paid ${money(ev.deposit)})`:""}. A projection on the forecast weather, assuming nothing breaks.</p>
+    </div>`;
+  }
+  document.getElementById("tt-graph").innerHTML = sim ? trainGraph(sim, plan, null) : `<p class="sub" style="padding:10px">No trains planned.</p>`;
+}
+
+// Time–distance diagram, the timetabler's classic tool.
+function trainGraph(sim, plan, cursor){
+  const W=960, H=330, ml=128, mr=GRAPH_MR, mt=14, mb=28, t0=8*60, t1=22*60;
+  const X = t => ml + (t-t0)/(t1-t0)*(W-ml-mr);
+  const Y = m => mt + (1 - m/LINE_MILES)*(H-mt-mb);
+  const loops = loopSet();
+  let s = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI,Tahoma,sans-serif">`;
+  s += `<rect x="${ml}" y="${mt}" width="${W-ml-mr}" height="${H-mt-mb}" fill="#fbf7ee" stroke="#d7cdb8"/>`;
+  for(let h=8; h<=22; h++){
+    const x = X(h*60);
+    s += `<line x1="${x}" y1="${mt}" x2="${x}" y2="${H-mb}" stroke="#e4dcc8"/>`;
+    s += `<text x="${x}" y="${H-mb+16}" font-size="11" text-anchor="middle" fill="#6a7480">${String(h).padStart(2,"0")}:00</text>`;
+  }
+  STATIONS.forEach((st,i)=>{
+    const y = Y(st.mile), lp = loops.has(i);
+    if(lp) s += `<rect x="${ml}" y="${y-3}" width="${W-ml-mr}" height="6" fill="#e3efe6"/>`;
+    s += `<line x1="${ml}" y1="${y}" x2="${W-mr}" y2="${y}" stroke="${lp?"#0f5132":"#cfc5ae"}" stroke-width="${lp?1.2:0.8}" ${lp?"":`stroke-dasharray="4 4"`}/>`;
+    s += `<text x="${ml-6}" y="${y+4}" font-size="11" text-anchor="end" fill="${lp?"#0f5132":"#6a7480"}" font-weight="${lp?700:400}">${st.name}${lp&&i>0&&i<STATIONS.length-1?" ⇄":""}</text>`;
+  });
+  sim.agents.forEach(a=>{
+    if(!a.path.length) return;
+    const pts = a.path.map(p=>`${X(p.t).toFixed(1)},${Y(p.m).toFixed(1)}`).join(" ");
+    s += `<polyline points="${pts}" fill="none" stroke="${a.colour}" stroke-width="2.4" stroke-linejoin="round"/>`;
+  });
+  sim.trips.forEach(tr=>{
+    const x = X(tr.sched), y = Y(0);
+    const col = tr.set.colour;
+    s += `<path d="M${x-4},${y+9} L${x+4},${y+9} L${x},${y+2} Z" fill="${tr.cancelled?"#a83232":col}"><title>${tr.set.label} booked ${fmtT(tr.sched)}${tr.cancelled?" — cancelled":""}</title></path>`;
+    if(tr.failed && tr.arrHome!=null){ const xm = X(tr.arrHome-1); s += `<text x="${xm}" y="${Y(0)-6}" font-size="13" text-anchor="middle" fill="#a83232">✕</text>`; }
+  });
+  if(sim.deadlock) s += `<text x="${X(sim.deadlock.t)}" y="${mt+14}" font-size="12" fill="#a83232" font-weight="700">🔒 lock-up</text>`;
+  if(cursor!=null) s += `<line id="gcursor" x1="${X(cursor)}" y1="${mt}" x2="${X(cursor)}" y2="${H-mb}" stroke="#e0a800" stroke-width="2"/>`;
+  return s + `</svg>`;
+}
+
+function renderEvents(){
+  const rows = [];
+  for(let w=state.week; w<state.week+26; w++){
+    const ev = state.events[w];
+    const s = seasonName(w);
+    let cell;
+    if(ev){
+      const def = EVENTS[ev.type];
+      const guests = ev.guests.map(k=>catOf("guest",k).number).join(", ");
+      cell = `<span class="ev">${def.icon} ${def.name}</span> <small>${guests?`guests: ${guests} · `:""}publicity ${Math.round(publicity(ev,w)*100)}%</small>
+        <button class="act small warnbtn" style="margin-left:6px" onclick="cancelEvent(${w})">Cancel</button>`;
+    } else if(w===state.week){
+      cell = `<span class="sub" style="margin:0">Too late to book this weekend</span>`;
+    } else {
+      cell = `<button class="act small" onclick="openBooking(${w})">Book an event…</button>`;
+    }
+    rows.push(`<tr class="${w===state.week?"now":""}"><td><b>Wk ${woy(w)}</b>${yearOf(w)!==yearOf()?` <small>Y${yearOf(w)}</small>`:""}</td><td>${dateLabel(w)}</td>
+      <td>${s}${isSchoolHols(w)?" · hols":""}${isFestive(w)?" 🎄":""}</td><td>${cell}</td></tr>`);
+  }
+  document.getElementById("cal").innerHTML = `<tr><th>Week</th><th>Saturday</th><th>Season</th><th>Event</th></tr>` + rows.join("");
+}
+
+function renderDepot(){
+  const L = document.getElementById("depot-locos");
+  L.innerHTML = state.locos.length ? state.locos.map(l=>{
+    const c = catOf("loco",l.cat);
+    const busy = isBusy(l);
+    return `<div class="card">
+      <h3>${kindBadge(l.kind)}${l.number}</h3>
+      <p class="sub">${c.name}</p>
+      ${busy?`<div class="busy-tag">🔧 In the works until week ${woy(l.busyUntil)}</div>`:""}
+      <div class="cond-lbl"><span>Condition</span><span>${Math.round(l.condition*100)}%</span></div>
+      <div class="bar"><i style="width:${l.condition*100}%;background:${condColour(l.condition)}"></i></div>
+      <ul class="specs">
+        <li><span>Public draw</span><span>${c.draw.toFixed(2)}×</span></li>
+        <li><span>Reliability</span><span>${Math.round(c.reliability*100)}%</span></li>
+        <li><span>${l.kind==="dmu"?"Seats":"Max load on the bank"}</span><span>${l.kind==="dmu"?c.seats:c.maxHaul+" coaches"}</span></li>
+        <li><span>Coal / fuel</span><span>${money(c.runPerMile)}/mi</span></li>
+      </ul>
+      <button class="act small warnbtn" ${busy?"disabled":""} onclick="sellItem('loco',${l.id})">${busy?"In the works":`Sell · ${money(sellValue("loco",l))}`}</button>
+    </div>`;
+  }).join("") : `<div class="empty">No locomotives. Visit the Motive Power market.</div>`;
+
+  const R = document.getElementById("depot-rakes");
+  R.innerHTML = state.rakes.length ? state.rakes.map(r=>{
+    const c = catOf("rake",r.cat);
+    const busy = isBusy(r);
+    return `<div class="card">
+      <h3><span class="badge b-rake">coaches</span>${c.name}</h3>
+      <p class="sub">${c.blurb}</p>
+      ${busy?`<div class="busy-tag">🔧 In the works until week ${woy(r.busyUntil)}</div>`:""}
+      <div class="cond-lbl"><span>Condition</span><span>${Math.round(r.condition*100)}%</span></div>
+      <div class="bar"><i style="width:${r.condition*100}%;background:${condColour(r.condition)}"></i></div>
+      <ul class="specs">
+        <li><span>Seats</span><span>${c.capacity}</span></li>
+        <li><span>Coaches</span><span>${c.cars}</span></li>
+        <li><span>Comfort</span><span>${c.comfort.toFixed(2)}×</span></li>
+      </ul>
+      <button class="act small warnbtn" ${busy?"disabled":""} onclick="sellItem('rake',${r.id})">${busy?"In the works":`Sell · ${money(sellValue("rake",r))}`}</button>
+    </div>`;
+  }).join("") : `<div class="empty">No carriage sets. Visit the Carriages market.</div>`;
+}
+
+function locoCard(c, kind){
+  return `<div class="card">
+    <h3>${kindBadge(kind)}${c.name}</h3>
+    <p class="sub">${c.number} — ${c.blurb}</p>
+    <ul class="specs">
+      <li><span>Public draw</span><span>${c.draw.toFixed(2)}×</span></li>
+      <li><span>Reliability</span><span>${Math.round(c.reliability*100)}%</span></li>
+      <li><span>${kind==="dmu"?"Seats":"Max load on the bank"}</span><span>${kind==="dmu"?c.seats:c.maxHaul+" coaches"}</span></li>
+      <li><span>Coal / fuel</span><span>${money(c.runPerMile)}/mi</span></li>
+      <li><span>Crew</span><span>${kind==="steam"?3:2}</span></li>
+    </ul>
+    <div class="price">${money(c.cost)}</div>
+    <button class="act" ${state.cash<c.cost?"disabled":""} onclick="buyLoco('${c.key}')">${state.cash<c.cost?"Insufficient funds":"Purchase"}</button>
+  </div>`;
+}
+function renderMarket(){
+  document.getElementById("market-locos").innerHTML =
+    CATALOG_STEAM.map(c=>locoCard(c,"steam")).join("") +
+    CATALOG_DIESEL.map(c=>locoCard(c,"diesel")).join("") +
+    CATALOG_DMU.map(c=>locoCard(c,"dmu")).join("");
+  document.getElementById("market-rakes").innerHTML = CATALOG_RAKE.map(c=>`
+    <div class="card">
+      <h3><span class="badge b-rake">coaches</span>${c.name}</h3>
+      <p class="sub">${c.blurb}</p>
+      <ul class="specs">
+        <li><span>Seats</span><span>${c.capacity}</span></li>
+        <li><span>Coaches</span><span>${c.cars}</span></li>
+        <li><span>Comfort (fare)</span><span>${c.comfort.toFixed(2)}×</span></li>
+        <li><span>Upkeep / day</span><span>${money(c.upkeep)}</span></li>
+      </ul>
+      <div class="price">${money(c.cost)}</div>
+      <button class="act" ${state.cash<c.cost?"disabled":""} onclick="buyRake('${c.key}')">${state.cash<c.cost?"Insufficient funds":"Purchase"}</button>
+    </div>`).join("");
+}
+
+function worksCosts(kind, item){
+  const cat = catOf(kind, item.cat);
+  const shop = state.upgrades.workshop ? 0.7 : 1;
+  if(kind==="rake") return {repair:Math.round(cat.cost*0.04+200), heavy:Math.round(cat.cost*0.2*shop), weeks:2};
+  const heavyF = item.kind==="steam" ? 0.3 : 0.2;
+  const weeks = (item.kind==="steam" ? 6 : 3) - (state.upgrades.workshop?1:0);
+  return {repair:Math.round(cat.cost*0.05*shop+300), heavy:Math.round(cat.cost*heavyF*shop), weeks};
+}
+function renderWorks(){
+  const box = document.getElementById("works-list");
+  const items = [];
+  const card = (kind, it, title, badge) => {
+    const busy = isBusy(it), w = worksCosts(kind, it);
+    return `<div class="card">
+      <h3>${badge}${title}</h3>
+      ${busy?`<div class="busy-tag">🔧 In the works until week ${woy(it.busyUntil)}</div>`:""}
+      <div class="cond-lbl"><span>Condition</span><span>${Math.round(it.condition*100)}%</span></div>
+      <div class="bar"><i style="width:${it.condition*100}%;background:${condColour(it.condition)}"></i></div>
+      <button class="act small" ${busy||it.condition>=0.95||state.cash<w.repair?"disabled":""} onclick="works('${kind}',${it.id},'repair')">Running repair (+25%, 1 week) · ${money(w.repair)}</button>
+      <button class="act small warnbtn" style="margin-top:6px" ${busy||it.condition>=0.99||state.cash<w.heavy?"disabled":""} onclick="works('${kind}',${it.id},'heavy')">${kind==="rake"?"Refurbish":"Heavy overhaul"} to as-new (${w.weeks} weeks) · ${money(w.heavy)}</button>
+    </div>`;
+  };
+  state.locos.forEach(l=>items.push(card("loco", l, l.number+" <small style='font-weight:400'>"+catOf("loco",l.cat).name+"</small>", kindBadge(l.kind))));
+  state.rakes.forEach(r=>items.push(card("rake", r, catOf("rake",r.cat).name, `<span class="badge b-rake">coaches</span>`)));
+  box.innerHTML = items.length?items.join(""):`<div class="empty">Nothing in the fleet yet.</div>`;
+}
+
+function renderRailway(){
+  const v = state.vol;
+  const plan = currentPlan();
+  document.getElementById("vol-cards").innerHTML = `
+    <div class="card">
+      <h3>👷 Volunteer roster</h3>
+      <ul class="specs">
+        <li><span>On the books</span><span>${v.count}</span></li>
+        <li><span>Turn out on a day</span><span>${plan.volAvail}</span></li>
+        <li><span>Needed by this week's plan</span><span class="${plan.volNeed>plan.volAvail?"neg":""}">${plan.volNeed}</span></li>
+      </ul>
+      <div class="cond-lbl"><span>Morale</span><span>${Math.round(v.morale*100)}%</span></div>
+      <div class="bar"><i style="width:${v.morale*100}%;background:${condColour(v.morale)}"></i></div>
+      <p class="sub">Reputation brings in new volunteers. Low morale (under 45%) makes them drift away.</p>
+    </div>
+    <div class="card">
+      <h3>📣 Recruitment drive</h3>
+      <p class="sub">Stands at the local show and adverts in the parish magazines. Brings in 5–9 new volunteers.</p>
+      <div class="price">${money(1200)}</div>
+      <button class="act" ${state.cash<1200?"disabled":""} onclick="recruit()">Run a recruitment drive</button>
+    </div>
+    <div class="card">
+      <h3>🍖 Volunteers' social</h3>
+      <p class="sub">A barbecue in the goods yard and a footplate-ride raffle. Morale +12%. Once a week.</p>
+      <div class="price">${money(600)}</div>
+      <button class="act" ${state.cash<600||v.socialWeek===state.week?"disabled":""} onclick="social()">${v.socialWeek===state.week?"Already held this week":"Hold a social"}</button>
+    </div>`;
+  document.getElementById("upgrade-cards").innerHTML = UPGRADES.map(u=>{
+    const have = !!state.upgrades[u.key];
+    return `<div class="card">
+      <h3>${u.icon} ${u.name}</h3>
+      <p class="sub">${u.blurb}</p>
+      ${have?`<div class="event good" style="margin:6px 0">✓ Built</div>`:`<div class="price">${money(u.cost)}</div>
+      <button class="act" ${state.cash<u.cost?"disabled":""} onclick="buildUpgrade('${u.key}')">${state.cash<u.cost?"Insufficient funds":"Build"}</button>`}
+    </div>`;
+  }).join("");
+}
+
+function renderLedger(){
+  document.getElementById("ledger-body").innerHTML = state.ledger.map(e=>`
+    <tr><td>Wk ${woy(e.week)} Y${yearOf(e.week)} — ${e.text}</td>
+    <td class="${e.delta>0?"pos":e.delta<0?"neg":""}">${e.delta?((e.delta>0?"+":"")+money(e.delta)):""}</td></tr>`).join("");
+}
+
+/* ============================ ACTIONS ============================ */
+function setDays(n){ state.days = n; render(); }
+function setMarketing(i){ state.marketing = parseInt(i,10); render(); }
+function addDiagram(){ state.tt.push({loco:null, rake:null, deps:[]}); render(); }
+function removeDiagram(i){ state.tt.splice(i,1); render(); }
+function setDiagLoco(i, v){
+  const d = state.tt[i];
+  d.loco = v==="" ? null : (/^\d+$/.test(v) ? parseInt(v,10) : v);
+  if(diagKind(d)==="dmu") d.rake = null;
+  render();
+}
+function setDiagRake(i, v){ state.tt[i].rake = v==="" ? null : parseInt(v,10); render(); }
+function addDep(i){
+  const m = parseInt(document.getElementById("add-"+i).value,10);
+  const d = state.tt[i];
+  if(!d.deps.includes(m)){ d.deps.push(m); d.deps.sort((a,b)=>a-b); }
+  render();
+}
+function removeDep(i, m){ const d = state.tt[i]; d.deps = d.deps.filter(x=>x!==m); render(); }
+function clearTimetable(){ state.tt.forEach(d=>d.deps=[]); render(); }
+
+// Fill the timetable with an even interval service using the best available stock.
+function applyPreset(n){
+  const ev = eventThisWeek();
+  const freeRakes = state.rakes.filter(r=>!isBusy(r)).sort((a,b)=>catOf("rake",b.cat).capacity-catOf("rake",a.cat).capacity);
+  const pool = [];
+  if(ev) ev.guests.forEach(k=>pool.push({loco:k, draw:catOf("guest",k).draw+1, kind:catOf("guest",k).kind, maxHaul:catOf("guest",k).maxHaul}));
+  state.locos.filter(l=>!isBusy(l) && l.condition>=0.15).forEach(l=>{
+    const c = catOf("loco",l.cat);
+    pool.push({loco:l.id, draw:c.draw, kind:l.kind, maxHaul:c.maxHaul||99});
+  });
+  // a gala wants its own kind of engine first
+  const want = ev && EVENTS[ev.type].need ? EVENTS[ev.type].need.kind : null;
+  pool.sort((a,b)=>((b.kind===want)-(a.kind===want)) || b.draw-a.draw);
+  const chosen = [];
+  const usedRakes = new Set();
+  for(const p of pool){
+    if(chosen.length>=n) break;
+    if(p.kind==="dmu"){ chosen.push({loco:p.loco, rake:null}); continue; }
+    const r = freeRakes.find(r=>!usedRakes.has(r.id) && catOf("rake",r.cat).cars<=p.maxHaul);
+    if(!r) continue;
+    usedRakes.add(r.id); chosen.push({loco:p.loco, rake:r.id});
+  }
+  if(!chosen.length){ alert("No locomotive and carriage set are available to run."); return; }
+  // An intensive service tries every number of sets (no fewer than a gala needs) and keeps the
+  // one that gets the most trains round on time: the single line, not the fleet, is the limit.
+  const minSets = n>=9 ? Math.min(chosen.length, want ? EVENTS[ev.type].need.n : 1) : chosen.length;
+  let best = null;
+  for(let k=chosen.length; k>=minSets; k--){
+    const r = presetFor(chosen.slice(0,k), ev);
+    r.score -= 3*k;                              // on a tie, fewer crews and less coal
+    if(!best || r.score > best.score) best = r;
+  }
+  state.tt = best.diagrams;
+  render();
+}
+// Try ever wider intervals: set k leaves at start + k*headway, and each set comes round
+// every n*headway (at least its own cycle). Returns the interval with the best score.
+function presetFor(chosen, ev){
+  const old = state.tt;
+  state.tt = chosen.map(c=>({loco:c.loco, rake:c.rake, deps:[600]}));
+  const sets = currentPlan().sets;
+  state.tt = old;
+  const cyc = Math.max(...sets.map(s=>idealRound(s)+turnHome(s)), 120);
+  const late = ev && ev.type==="beerfest" ? 20*60 : ev && ev.type==="santa" ? 15*60+30 : 17*60+30;
+  const build = h => { const step = Math.max(Math.ceil((cyc+5)/5)*5, h*chosen.length);
+    return chosen.map((c,k)=>{ const deps=[]; for(let m=9*60+45+k*h; m<=late; m+=step) deps.push(m); return deps; }); };
+  let best = null, bestScore = -1;
+  for(let h=Math.max(20, Math.floor(cyc/chosen.length/5)*5); h<=240; h+=5){
+    const depsets = build(h);
+    sets.forEach((s,k)=>s.deps = depsets[k]);
+    const sim = simulateDay(sets.filter(s=>s.deps.length), null);
+    const ran = sim.trips.filter(t=>!t.cancelled);
+    const avg = ran.reduce((a,t)=>a+t.delay,0)/(ran.length||1);
+    const score = (avg<=4 && ran.length===sim.trips.length ? 1000 : 0) + ran.length*10 - avg;
+    if(score > bestScore){ bestScore = score; best = depsets; }
+  }
+  return {score:bestScore, diagrams: chosen.map((c,k)=>({loco:c.loco, rake:c.rake, deps:best[k]}))};
+}
+
+function buyLoco(key){
+  const c = catOf("loco",key); if(state.cash<c.cost) return;
+  state.cash -= c.cost;
+  const l = mkLoco(c, 1.0); state.locos.push(l);
+  logEntry(`Bought ${c.name} (${c.number}).`, -c.cost);
+  render();
+}
+function buyRake(key){
+  const c = catOf("rake",key); if(state.cash<c.cost) return;
+  state.cash -= c.cost;
+  state.rakes.push(mkRake(c, 1.0));
+  logEntry(`Bought ${c.name}.`, -c.cost);
+  render();
+}
+function sellItem(kind,id){
+  const arr = kind==="loco"?state.locos:state.rakes;
+  const i = arr.findIndex(x=>x.id===id); if(i<0) return;
+  const item = arr[i]; const v = sellValue(kind,item);
+  if(!confirm(`Sell ${item.number||catOf(kind,item.cat).name} for ${money(v)}?`)) return;
+  state.cash += v; arr.splice(i,1);
+  state.tt.forEach(d=>{ if(kind==="loco" && d.loco===id) d.loco=null; if(kind==="rake" && d.rake===id) d.rake=null; });
+  logEntry(`Sold ${item.number||catOf(kind,item.cat).name}.`, v);
+  render();
+}
+function works(kind, id, what){
+  const item = (kind==="loco"?state.locos:state.rakes).find(x=>x.id===id); if(!item || isBusy(item)) return;
+  const w = worksCosts(kind, item);
+  const cost = what==="repair" ? w.repair : w.heavy;
+  if(state.cash<cost) return;
+  state.cash -= cost;
+  const label = item.number||catOf(kind,item.cat).name;
+  if(what==="repair"){ item.condition = Math.min(1, item.condition+0.25); item.busyUntil = state.week+1; }
+  else { item.condition = 1; item.busyUntil = state.week + w.weeks; }
+  logEntry(`${label} into the works for a ${what==="repair"?"running repair":"heavy overhaul"}; back in traffic week ${woy(item.busyUntil)}.`, -cost);
+  render();
+}
+function recruit(){
+  if(state.cash<1200) return;
+  const n = 5 + Math.floor(Math.random()*5);
+  state.cash -= 1200; state.vol.count += n;
+  logEntry(`Recruitment drive: ${n} new volunteers signed up.`, -1200);
+  render();
+}
+function social(){
+  if(state.cash<600 || state.vol.socialWeek===state.week) return;
+  state.cash -= 600; state.vol.morale = Math.min(1, state.vol.morale+0.12); state.vol.socialWeek = state.week;
+  logEntry("Volunteers' social in the goods yard.", -600);
+  render();
+}
+function buildUpgrade(key){
+  const u = UPGRADES.find(x=>x.key===key);
+  if(!u || state.upgrades[key] || state.cash<u.cost) return;
+  if(!confirm(`Build the ${u.name} for ${money(u.cost)}?`)) return;
+  state.cash -= u.cost; state.upgrades[key] = state.week;
+  logEntry(`Built: ${u.name}.`, -u.cost);
+  render();
+  if(key==="brkLoop" || key==="hsmLoop") buildMap();
+}
+
+/* ============================ EVENT BOOKING ============================ */
+let booking = null;
+function openBooking(w){
+  booking = {w, type:null, guests:[]};
+  drawBooking();
+}
+function eventAllowed(type, w){
+  const def = EVENTS[type];
+  if(def.festiveOnly) return isFestive(w);
+  return def.seasons.includes(seasonName(w));
+}
+function drawBooking(){
+  const w = booking.w;
+  const pub = Math.min(1, Math.max(0.15, (w-state.week)/4));
+  let html = `<p>Weekend of <b>${dateLabel(w)}</b> (week ${woy(w)}, ${seasonName(w)}${isSchoolHols(w)?", school holidays":""}). Booking now gives <b>${Math.round(pub*100)}% publicity</b>${pub<1?" — book four weeks ahead for full publicity":""}.</p>`;
+  html += Object.entries(EVENTS).map(([k,def])=>{
+    const ok = eventAllowed(k, w);
+    return `<div class="evopt ${booking.type===k?"sel":""} ${ok?"":"disabled"}" ${ok?`onclick="pickEvent('${k}')"`:""}>
+      <b>${def.icon} ${def.name}</b> · ${money(def.fixed)}${def.perHead?` + ${money(def.perHead)} a head`:""} · ${def.staff} extra volunteers/day
+      <div class="sub" style="margin:2px 0 0">${ok?def.blurb:(def.festiveOnly?"December weekends only.":"Not in winter.")}</div></div>`;
+  }).join("");
+  if(booking.type && EVENTS[booking.type].guests){
+    const kind = EVENTS[booking.type].guests;
+    const taken = new Set(); Object.values(state.events).forEach(e=>e.guests.forEach(g=>taken.add(g)));
+    html += `<h4 style="margin:12px 0 4px;color:var(--br-blue)">Hire guest engines (up to 3)</h4>`;
+    html += GUESTS.filter(g=>g.kind===kind).map(g=>`<label class="chk"><input type="checkbox" ${booking.guests.includes(g.key)?"checked":""} onchange="toggleGuest('${g.key}')">
+      <span><b>${g.number} ${g.name}</b> — hire ${money(g.fee)} · draw ${g.draw.toFixed(2)}× · gala crowd +${Math.round(g.boost*100)}% · ${g.maxHaul} coaches</span></label>`).join("");
+  }
+  if(booking.type){
+    const def = EVENTS[booking.type];
+    const total = def.fixed + booking.guests.reduce((a,k)=>a+catOf("guest",k).fee,0);
+    const dep = Math.round(total*0.25);
+    html += `<div class="event">Total ${money(total)}${def.perHead?` plus ${money(def.perHead)} a passenger`:""}. Deposit now: <b>${money(dep)}</b> (lost if you cancel); the rest is paid on the weekend.</div>
+      <button class="act greenbtn" ${state.cash<dep?"disabled":""} onclick="confirmBooking()">Book the ${def.name}</button>`;
+  }
+  openModal(`Book an Event — Week ${woy(w)}`, html);
+}
+function pickEvent(k){ booking.type = k; booking.guests = []; drawBooking(); }
+function toggleGuest(k){
+  const i = booking.guests.indexOf(k);
+  if(i>=0) booking.guests.splice(i,1); else if(booking.guests.length<3) booking.guests.push(k);
+  drawBooking();
+}
+function confirmBooking(){
+  const def = EVENTS[booking.type];
+  const total = def.fixed + booking.guests.reduce((a,k)=>a+catOf("guest",k).fee,0);
+  const dep = Math.round(total*0.25);
+  if(state.cash<dep) return;
+  state.cash -= dep;
+  state.events[booking.w] = {type:booking.type, bookedWeek:state.week, guests:[...booking.guests], deposit:dep};
+  logEntry(`Booked the ${def.name} for the weekend of ${dateLabel(booking.w)} (week ${woy(booking.w)}). Deposit paid.`, -dep);
+  closeModal(); booking = null;
+  render();
+}
+function cancelEvent(w){
+  const ev = state.events[w]; if(!ev) return;
+  if(!confirm(`Cancel the ${EVENTS[ev.type].name}? The ${money(ev.deposit)} deposit is lost.`)) return;
+  delete state.events[w];
+  state.tt.forEach(d=>{ if(typeof d.loco==="string" && w===state.week) d.loco = null; });
+  logEntry(`Cancelled the ${EVENTS[ev.type].name} (week ${woy(w)}).`, 0);
+  render();
+}
+
+/* ============================ WEEK REPORT ============================ */
+function showWeekReport(r, plan){
+  if(!r.days){
+    openModal(`Week ${woy(r.week)} — Closed`, `<p>The railway was closed for the weekend of ${dateLabel(r.week)}. The volunteers had a rest.</p>
+      ${r.events.map(e=>`<div class="event ${e.cls}">${e.text}</div>`).join("")}
+      <p class="sub">Overheads paid. Balance ${money(state.cash)} · reputation ${state.rep} (${repTier()}) · ${r.vol.joined} volunteer${r.vol.joined===1?"":"s"} joined${r.vol.left?`, ${r.vol.left} left`:""}.</p>`);
+    return;
+  }
+  const d = r.dayRes[r.dayRes.length-1];
+  const tot = r.dayRes.reduce((a,x)=>({pax:a.pax+x.pax, rev:a.rev+x.revenue, cost:a.cost+x.cost, turned:a.turned+x.turned, cx:a.cx+x.cancelled}),{pax:0,rev:0,cost:0,turned:0,cx:0});
+  const evs = [...r.events];
+  r.dayRes.forEach((x,di)=>{
+    x.sim.trips.filter(t=>t.failed).forEach(t=>evs.push({cls:"bad", text:`💥 <b>${t.set.label} failed at Moorend</b> on day ${di+1} (the ${fmtT(t.sched)}). A rescue engine dragged it home; the rest of its trains were cancelled and half the fares refunded.`}));
+    if(x.sim.deadlock) evs.push({cls:"bad", text:`🔒 <b>Lock-up at ${x.sim.deadlock.at}</b> on day ${di+1}: every loop full, nothing could move. The rest of the day was cancelled.`});
+  });
+  if(tot.turned>60) evs.push({cls:"", text:`🚶 About ${tot.turned} people were turned away from full trains.`});
+  if(d.avgDelay>10) evs.push({cls:"bad", text:`⏱️ Trains ran on average ${Math.round(d.avgDelay)} minutes late. Passengers noticed.`});
+  if(!evs.length) evs.push({cls:"good", text:"✓ A smooth weekend. Everything ran to time."});
+  const rows = d.sim.trips.map(t=>`<tr><td><span class="swatch" style="background:${t.set.colour}"></span>${t.set.label}</td><td>${fmtT(t.sched)}</td>
+      <td>${t.cancelled?`<span class="neg">cancelled</span>`:fmtT(t.dep)+(t.delay>=5?` <span class="neg">+${Math.round(t.delay)}</span>`:"")}</td>
+      <td>${t.cancelled?"—":t.pax+"/"+t.set.cap}</td></tr>`).join("");
+  openModal(`Week ${woy(r.week)} — ${r.def?r.def.name:"Normal Service"}`, `
+    <p>${r.days} day${r.days>1?"s":""} running · ${r.def?r.def.icon+" "+r.def.name:"normal service"} · ${WEATHER[r.weather].icon} ${WEATHER[r.weather].name}</p>
+    ${evs.map(e=>`<div class="event ${e.cls}">${e.text}</div>`).join("")}
+    <div class="proj-grid">
+      <div class="proj-cell"><b>${tot.pax.toLocaleString("en-GB")}</b><span>Passengers</span></div>
+      <div class="proj-cell"><b>${money(tot.rev)}</b><span>Takings</span></div>
+      <div class="proj-cell"><b>${money(tot.cost)}</b><span>Running costs</span></div>
+      <div class="proj-cell"><b class="${r.weekNet>=0?"pos":"neg"}">${r.weekNet>=0?"+":""}${money(r.weekNet)}</b><span>Week net</span></div>
+      <div class="proj-cell"><b class="${r.repDelta>=0?"pos":"neg"}">${r.repDelta>=0?"+":""}${r.repDelta}</b><span>Reputation</span></div>
+    </div>
+    <p class="sub" style="font-style:normal"><b>Last day's trains</b></p>
+    <table class="trips"><tr><th>Train</th><th>Booked</th><th>Left</th><th>Pass.</th></tr>${rows}</table>
+    <p class="sub">Week net includes overheads and event costs. Volunteers: ${r.vol.joined} joined${r.vol.left?`, ${r.vol.left} left`:""}; morale ${Math.round(state.vol.morale*100)}%.</p>
+    <button class="act greenbtn" onclick="closeModal();watchLastDay()">▶ Watch the day on the line map</button>`);
+}
+
+/* ============================ LINE MAP ============================ */
+// Track alignment: [x, y, station index or null]. Miles between stations are spread by length.
+const LINE_PTS = [
+  [140,520,0],[192,503,null],[250,478,1],[305,455,null],[370,440,2],[428,426,null],[470,411,null],[505,398,null],
+  [548,384,3],[592,362,null],[640,335,4],[676,304,null],[705,272,null],[745,240,null],[790,214,5],[842,190,null],[905,150,6]
+];
+const VIADUCT = [6,7], TUNNEL = [12,13];   // indices in LINE_PTS
+let LINE_GEOM = null;
+function lineGeom(){
+  if(LINE_GEOM) return LINE_GEOM;
+  const cum = [0];
+  for(let i=1;i<LINE_PTS.length;i++) cum.push(cum[i-1] + Math.hypot(LINE_PTS[i][0]-LINE_PTS[i-1][0], LINE_PTS[i][1]-LINE_PTS[i-1][1]));
+  const miles = new Array(LINE_PTS.length);
+  let lastI = 0;
+  for(let i=1;i<LINE_PTS.length;i++){
+    if(LINE_PTS[i][2]!=null){
+      const a = STATIONS[LINE_PTS[lastI][2]].mile, b = STATIONS[LINE_PTS[i][2]].mile;
+      for(let j=lastI;j<=i;j++) miles[j] = a + (b-a)*(cum[j]-cum[lastI])/(cum[i]-cum[lastI]);
+      lastI = i;
+    }
+  }
+  return LINE_GEOM = {miles};
+}
+function pointAtMile(m){
+  const {miles} = lineGeom();
+  m = Math.max(0, Math.min(LINE_MILES, m));
+  for(let i=1;i<LINE_PTS.length;i++){
+    if(m<=miles[i]+1e-9){
+      const f = (m-miles[i-1])/((miles[i]-miles[i-1])||1);
+      const p = LINE_PTS[i-1], q = LINE_PTS[i];
+      return [p[0]+(q[0]-p[0])*f, p[1]+(q[1]-p[1])*f, Math.atan2(q[1]-p[1], q[0]-p[0])];
+    }
+  }
+  const L = LINE_PTS[LINE_PTS.length-1]; return [L[0], L[1], 0];
+}
+const LABEL_OFF = [[-6,26,"middle"],[0,-14,"middle"],[0,26,"middle"],[10,24,"start"],[-14,-6,"end"],[14,22,"start"],[0,-16,"middle"]];
+
+function buildMap(){
+  const loops = loopSet();
+  const P = LINE_PTS.map(p=>p[0]+","+p[1]);
+  const seg = (a,b) => LINE_PTS.slice(a,b+1).map(p=>p[0]+","+p[1]).join(" ");
+  let s = `<svg viewBox="0 0 1000 620" xmlns="http://www.w3.org/2000/svg" font-family="Georgia,'Times New Roman',serif">
+  <defs>
+    <pattern id="heather" width="14" height="14" patternUnits="userSpaceOnUse"><rect width="14" height="14" fill="#d8c6cf"/><circle cx="3" cy="4" r="1.1" fill="#b596a8"/><circle cx="10" cy="10" r="1" fill="#a9889c"/></pattern>
+    <pattern id="fields" width="60" height="44" patternUnits="userSpaceOnUse"><rect width="60" height="44" fill="#e3ead0"/><path d="M0 0 H60 M0 0 V44" stroke="#c9d3ae" stroke-width="1.2"/></pattern>
+    <radialGradient id="res" cx="50%" cy="40%"><stop offset="0" stop-color="#9cc4dc"/><stop offset="1" stop-color="#6e9fbf"/></radialGradient>
+  </defs>
+  <rect width="1000" height="620" fill="url(#fields)"/>
+  <path d="M0,0 H600 C560,80 470,150 360,215 C250,280 120,320 0,345 Z" fill="url(#heather)" opacity=".9"/>
+  <path d="M660,0 H1000 V330 C960,300 940,250 900,232 C860,214 830,250 800,262 C770,275 760,215 740,190 C720,160 690,100 660,0 Z" fill="url(#heather)" opacity=".9"/>
+  <g fill="none" stroke="#a88e9c" stroke-width="1">
+    <ellipse cx="230" cy="120" rx="130" ry="58"/><ellipse cx="230" cy="118" rx="90" ry="38"/><ellipse cx="232" cy="116" rx="48" ry="19"/>
+    <ellipse cx="930" cy="250" rx="60" ry="34"/><ellipse cx="932" cy="250" rx="30" ry="16"/>
+  </g>
+  <text x="232" y="121" font-size="13" fill="#6b4f60" text-anchor="middle" font-style="italic">Highmoor Fell</text>
+  <text x="232" y="136" font-size="10" fill="#6b4f60" text-anchor="middle">612 m ▲</text>
+  <text x="930" y="254" font-size="11" fill="#6b4f60" text-anchor="middle" font-style="italic">Raven Pike 488 m</text>
+  <text x="420" y="60" font-size="15" fill="#7d6270" letter-spacing="6" font-style="italic">R A V E N S G I L L   M O O R</text>
+  <ellipse cx="880" cy="70" rx="70" ry="30" fill="url(#res)" stroke="#5a88a8"/>
+  <text x="880" y="74" font-size="11" fill="#244a63" text-anchor="middle" font-style="italic">Highmoor Reservoir</text>
+  <path d="M845,94 C820,130 785,160 750,192 S665,262 612,298 S522,368 487,404 S420,455 360,478 S240,522 190,560 S110,600 70,620" fill="none" stroke="#6e9fbf" stroke-width="5" stroke-linecap="round"/>
+  <text x="300" y="512" font-size="12" fill="#3f6f8f" font-style="italic" transform="rotate(-20 300 512)">River Raven</text>
+  <text x="762" y="186" font-size="10" fill="#3f6f8f" font-style="italic">Raven Force ≋</text>
+  <path d="M0,492 C120,470 240,505 360,462 S520,430 600,385 S700,300 760,262 S860,190 960,120" fill="none" stroke="#f0d79a" stroke-width="5"/>
+  <path d="M0,492 C120,470 240,505 360,462 S520,430 600,385 S700,300 760,262 S860,190 960,120" fill="none" stroke="#c9a54a" stroke-width="1" stroke-dasharray="1 0"/>
+  <text x="610" y="402" font-size="10" fill="#8a6d1f" transform="rotate(-30 610 402)">B6481</text>
+  <g fill="#5d8a4a" opacity=".85">
+    ${[[300,500],[312,492],[322,503],[560,430],[574,422],[585,433],[420,385],[432,378],[408,392],[660,370],[672,362],[150,470],[162,462],[700,330]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="8"/>`).join("")}
+  </g>
+  <path d="M0,560 C200,548 330,566 500,578 S800,596 1000,588" fill="none" stroke="#1b2430" stroke-width="6"/>
+  <path d="M0,560 C200,548 330,566 500,578 S800,596 1000,588" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="10 10"/>
+  <text x="14" y="582" font-size="12" fill="#1b2430">◂ to Leeds</text>
+  <text x="986" y="612" font-size="12" fill="#1b2430" text-anchor="end">to York ▸</text>
+  <text x="560" y="604" font-size="10" fill="#4a545f" font-style="italic">Network Rail main line</text>
+  <path d="M140,520 C150,535 156,545 170,553" fill="none" stroke="#7a2026" stroke-width="3"/>
+  ${villages()}
+  <polyline points="${seg(0,VIADUCT[0])}" fill="none" stroke="#7a2026" stroke-width="5" stroke-linejoin="round"/>
+  <polyline points="${seg(VIADUCT[0],VIADUCT[1])}" fill="none" stroke="#5a3a2a" stroke-width="11"/>
+  <polyline points="${seg(VIADUCT[0],VIADUCT[1])}" fill="none" stroke="#7a2026" stroke-width="5"/>
+  <polyline points="${seg(VIADUCT[1],TUNNEL[0])}" fill="none" stroke="#7a2026" stroke-width="5" stroke-linejoin="round"/>
+  <polyline points="${seg(TUNNEL[0],TUNNEL[1])}" fill="none" stroke="#7a2026" stroke-width="4" stroke-dasharray="6 5"/>
+  <polyline points="${seg(TUNNEL[1],LINE_PTS.length-1)}" fill="none" stroke="#7a2026" stroke-width="5" stroke-linejoin="round"/>
+  <text x="455" y="440" font-size="10" fill="#5a3a2a" font-style="italic">Brackenby Viaduct</text>
+  <text x="742" y="268" font-size="10" fill="#5a3a2a" font-style="italic">Highmoor Tunnel</text>
+  <text x="742" y="281" font-size="9" fill="#5a3a2a">(1 in 60)</text>
+  ${[TUNNEL[0],TUNNEL[1]].map(i=>`<rect x="${LINE_PTS[i][0]-5}" y="${LINE_PTS[i][1]-5}" width="10" height="10" fill="#5a3a2a" transform="rotate(-38 ${LINE_PTS[i][0]} ${LINE_PTS[i][1]})"/>`).join("")}`;
+  STATIONS.forEach((st,i)=>{
+    const p = LINE_PTS.find(q=>q[2]===i), lp = loops.has(i);
+    const [dx,dy,anc] = LABEL_OFF[i];
+    s += `<g class="stn" onclick="stationInfo(${i})">
+      ${lp ? `<rect x="${p[0]-13}" y="${p[1]-7}" width="26" height="14" rx="7" fill="#fff" stroke="#1b2430" stroke-width="2.5"/>`
+           : `<circle cx="${p[0]}" cy="${p[1]}" r="6" fill="#fff" stroke="#1b2430" stroke-width="2.5"/>`}
+      <text x="${p[0]+dx}" y="${p[1]+dy}" font-size="${i===0||i===6?15:13}" font-weight="700" fill="#1b2430" text-anchor="${anc}" paint-order="stroke" stroke="#fbf7ee" stroke-width="4">${st.name}</text>
+    </g>`;
+  });
+  s += `<g id="trainLayer"></g>
+  <g transform="translate(40,410)"><path d="M0,-26 L8,0 L0,-6 L-8,0 Z" fill="#1b2430"/><text x="0" y="14" font-size="12" text-anchor="middle" fill="#1b2430">N</text></g>
+  <g transform="translate(40,600)"><rect width="60" height="5" fill="#1b2430"/><rect x="60" width="60" height="5" fill="#fff" stroke="#1b2430"/><text x="0" y="-4" font-size="10">0</text><text x="120" y="-4" font-size="10" text-anchor="middle">2 miles</text></g>
+  <g transform="translate(626,440)">
+    <rect width="340" height="104" fill="#fbf7ee" stroke="#6e1f24" stroke-width="2" rx="4"/>
+    <text x="170" y="26" font-size="17" text-anchor="middle" fill="#6e1f24" font-weight="700">Ravensgill &amp; Highmoor Railway</text>
+    <text x="170" y="44" font-size="11" text-anchor="middle" fill="#4a545f" font-style="italic">Ravensgill Junction – Moorend · 14 miles · single line</text>
+    <rect x="22" y="60" width="22" height="11" rx="5" fill="#fff" stroke="#1b2430" stroke-width="2"/><text x="52" y="70" font-size="11" fill="#1b2430">Station with passing loop</text>
+    <circle cx="210" cy="65" r="5" fill="#fff" stroke="#1b2430" stroke-width="2"/><text x="222" y="70" font-size="11" fill="#1b2430">Halt</text>
+    <line x1="22" y1="88" x2="44" y2="88" stroke="#7a2026" stroke-width="4" stroke-dasharray="6 5"/><text x="52" y="92" font-size="11" fill="#1b2430">Tunnel</text>
+    <circle cx="210" cy="88" r="6" fill="#6e1f24" stroke="#fff" stroke-width="2"/><text x="222" y="92" font-size="11" fill="#1b2430">Train</text>
+  </g>
+  </svg>`;
+  document.getElementById("map").innerHTML = s;
+  replayDraw();
+}
+function villages(){
+  const V = [[118,500,9,"Ravensgill"],[268,492,4,null],[386,458,4,null],[566,404,3,null],[652,352,3,null],[920,168,4,null],[200,535,5,null]];
+  let s = "";
+  V.forEach(([x,y,n])=>{
+    for(let k=0;k<n;k++){ const dx=(k%3)*10-10, dy=Math.floor(k/3)*9; s += `<rect x="${x+dx}" y="${y+dy}" width="7" height="6" fill="#9b7b6a" stroke="#6b4f40" stroke-width=".6"/>`; }
+  });
+  return s;
+}
+function stationInfo(i){
+  const st = STATIONS[i], lp = loopSet().has(i);
+  const next = STATIONS[i+1], prev = STATIONS[i-1];
+  document.getElementById("stnInfo").innerHTML = `<h3>${st.name} ${lp?`<span class="badge b-rake">loop</span>`:`<span class="badge" style="background:#6a7480">halt</span>`}</h3>
+    <p class="sub">Mile ${st.mile.toFixed(1)} from Ravensgill Junction</p><p style="font-size:.86rem;margin:4px 0">${st.blurb}</p>
+    <ul class="specs">${prev?`<li><span>Down to ${prev.name}</span><span>${(st.mile-prev.mile).toFixed(1)} mi</span></li>`:""}
+      ${next?`<li><span>Up to ${next.name}</span><span>${(next.mile-st.mile).toFixed(1)} mi${GRADE[i]>0.5?" · steep":""}</span></li>`:""}
+      <li><span>Trains can pass here</span><span>${lp?(i===0?"Yes (3 platforms)":i===STATIONS.length-1?"Yes (2 trains)":"Yes (one each way)"):"No"}</span></li></ul>`;
+}
+
+/* ============================ REPLAY ============================ */
+const replay = {t:9*60, playing:false, speed:4, source:"plan", last:0};
+function replaySim(){ return replay.source==="last" && lastDaySim ? lastDaySim : previewSim; }
+function refreshReplaySource(){
+  const sel = document.getElementById("rp-source");
+  sel.options[1].disabled = !lastDaySim;
+  if(!lastDaySim && replay.source==="last"){ replay.source = "plan"; sel.value = "plan"; }
+  replayDraw(true);
+}
+function mileAt(path, t){
+  if(!path.length || t < path[0].t - 25) return null;
+  if(t <= path[0].t) return path[0].m;
+  for(let i=1;i<path.length;i++){
+    if(t <= path[i].t){ const a=path[i-1], b=path[i]; return a.m + (b.m-a.m)*((t-a.t)/((b.t-a.t)||1)); }
+  }
+  return t - path[path.length-1].t < 40 ? path[path.length-1].m : null;
+}
+function replayDraw(full){
+  const layer = document.getElementById("trainLayer");
+  if(!layer) return;
+  const sim = replaySim();
+  document.getElementById("rp-clock").textContent = fmtT(replay.t);
+  document.getElementById("rp-slider").value = Math.round(replay.t);
+  let s = "", list = [];
+  if(sim){
+    sim.agents.forEach((a,k)=>{
+      const m = mileAt(a.path, replay.t);
+      if(m==null) return;
+      const [x,y] = pointAtMile(m);
+      const oy = (k%2? -1:1) * (m<0.05 || m>LINE_MILES-0.05 ? 9*Math.ceil(k/2) : 0);
+      s += `<g transform="translate(${x.toFixed(1)},${(y+oy).toFixed(1)})"><circle r="9" fill="${a.colour}" stroke="#fff" stroke-width="2.5"/>
+        <text y="-13" font-size="11" font-weight="700" text-anchor="middle" fill="${a.colour}" paint-order="stroke" stroke="#fff" stroke-width="3" font-family="Segoe UI,sans-serif">${a.label}</text></g>`;
+      const near = STATIONS.reduce((b,st)=>Math.abs(st.mile-m)<Math.abs(b.mile-m)?st:b);
+      list.push(`<li><span><span class="swatch" style="background:${a.colour}"></span>${a.label}</span><span>${Math.abs(near.mile-m)<0.05?"at "+near.name:"near "+near.name} · mile ${m.toFixed(1)}</span></li>`);
+    });
+  }
+  layer.innerHTML = s;
+  document.getElementById("mapTrains").innerHTML = `<h3>On the line at ${fmtT(replay.t)}</h3>${list.length?`<ul class="specs">${list.join("")}</ul>`:`<p class="sub">No trains out.</p>`}`;
+  if(full) document.getElementById("map-graph").innerHTML = sim ? trainGraph(sim, null, replay.t) : `<p class="sub" style="padding:10px">No trains planned.</p>`;
+  else { const c = document.getElementById("gcursor"); if(c){ const W=960, ml=128, mr=GRAPH_MR, x = ml + (replay.t-480)/(840)*(W-ml-mr); c.setAttribute("x1",x); c.setAttribute("x2",x); } }
+}
+function replayTick(ts){
+  if(!replay.playing) return;
+  const dt = replay.last ? (ts-replay.last)/1000 : 0;
+  replay.last = ts;
+  replay.t += dt*replay.speed;
+  if(replay.t >= 23*60){ replay.t = 23*60; setPlaying(false); }
+  replayDraw(false);
+  if(replay.playing) requestAnimationFrame(replayTick);
+}
+function setPlaying(on){
+  replay.playing = on; replay.last = 0;
+  document.getElementById("rp-play").textContent = on ? "❚❚ Pause" : "▶ Play";
+  if(on) requestAnimationFrame(replayTick);
+}
+function watchLastDay(){
+  replay.source = "last"; document.getElementById("rp-source").value = "last";
+  const sim = replaySim();
+  const first = sim ? Math.min(...sim.agents.filter(a=>a.path.length).map(a=>a.path[0].t)) : 540;
+  replay.t = isFinite(first) ? first-10 : 540;
+  showTab("map"); replayDraw(true); setPlaying(true);
+}
+
+/* ============================ MODAL / TABS / BOOT ============================ */
+function openModal(head, body, noClose){
+  document.getElementById("modalHead").textContent = head;
+  document.getElementById("modalBody").innerHTML = body;
+  document.getElementById("modalClose").style.display = noClose?"none":"block";
+  document.getElementById("modalBg").classList.add("show");
+}
+function closeModal(){ document.getElementById("modalBg").classList.remove("show"); }
+function showTab(name){
+  document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("active", x.dataset.tab===name));
+  document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active", x.id==="v-"+name));
+  if(name==="map") replayDraw(true);
+}
+
+document.getElementById("modalClose").onclick = closeModal;
+document.getElementById("modalBg").addEventListener("click", e=>{ if(e.target.id==="modalBg" && !state.over) closeModal(); });
+document.getElementById("btn-advance").onclick = advanceWeek;
+document.querySelectorAll(".tabs button").forEach(b=>{ b.onclick = ()=>showTab(b.dataset.tab); });
+document.getElementById("btn-newgame").onclick = ()=>{
+  if(confirm("Abandon this railway and start again?")){ newGame(); buildMap(); }
+};
+document.getElementById("rp-play").onclick = ()=>setPlaying(!replay.playing);
+document.getElementById("rp-slider").oninput = e=>{ replay.t = +e.target.value; replayDraw(false); };
+document.getElementById("rp-speed").onchange = e=>{ replay.speed = +e.target.value; };
+document.getElementById("rp-source").onchange = e=>{ replay.source = e.target.value; replayDraw(true); };
+
+if(!load()){ newGame(); } else { render(); }
+buildMap();
+replayDraw(true);
+</script>
+</body>
+</html>
