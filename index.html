@@ -150,6 +150,9 @@
   }
   .actionbar #ab-info{font-size:.85rem;color:var(--ink)}
   .actionbar #ab-info b{color:var(--gwr-green)}
+  #ab-live{margin-top:3px}
+  .liveprog{display:inline-block;vertical-align:middle;width:120px;height:7px;border-radius:4px;background:var(--line);overflow:hidden;margin-left:6px}
+  .liveprog i{display:block;height:100%;background:var(--gwr-green)}
   .actionbar button{margin-left:auto;width:auto;background:var(--gwr-green)}
   .actionbar button:hover{background:#0b3d26}
   /* timetable */
@@ -263,10 +266,12 @@
           <option value="4" selected>4 min/s</option>
           <option value="10">10 min/s</option>
           <option value="30">30 min/s</option>
+          <option value="60">60 min/s</option>
         </select>
         <select class="sel" id="rp-source">
           <option value="plan">This week's plan</option>
           <option value="last">Last day run</option>
+          <option value="live" disabled>This weekend (live)</option>
         </select>
       </div>
     </div>
@@ -337,7 +342,7 @@
     <div class="card" style="max-width:800px">
       <p>You are general manager of the <b>Ravensgill &amp; Highmoor Railway</b>, a preserved branch line in the Pennine dales of the north of England. Run normal services, organise steam and diesel galas, beer and music festivals, 1940s weekends and Santa specials, and grow the line until it's named <i>Heritage Railway of the Year</i>.</p>
       <ul style="font-size:.9rem">
-        <li><b>Each turn is one week.</b> Plan the weekend on the <b>Timetable</b> tab, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week.</li>
+        <li><b>Each turn is one week.</b> Plan the weekend on the <b>Timetable</b> tab, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week. The weekend then plays out live on the <b>Line Map</b> (change the speed there, or pause it). You can't start the next week until the last train is home, but you can carry on booking events, buying stock and recruiting while it runs. The takings arrive when the weekend ends.</li>
         <li><b>Timetabling:</b> every train is a round trip from Ravensgill Junction to Moorend and back, about two hours with turn-rounds. Give each loco a set of departure times. If a train isn't back in time, its next trip leaves late.</li>
         <li><b>Single line:</b> trains can only pass at the loops (Lowerdale and Fellside, plus Brackenby and Highmoor Summit once built), and only one train may be on each single-line section. The train graph shows where trains are held. Each loop has one road for each direction (Moorend holds two trains), so too many trains with too few loops means trains are held and run late.</li>
         <li><b>Passengers</b> arrive through the day (mostly late morning and lunchtime) and take the next train. A gap of more than two hours loses them; a full train turns them away. Steam draws more people than diesel, and both draw more than a DMU.</li>
@@ -595,6 +600,7 @@ let uid = 1;
 let lastDaySim = null;   // most recent operating day, for the map replay
 
 function newGame(){
+  if(typeof abandonLive==="function") abandonLive();
   uid = 1;
   const ivatt = mkLoco(catOf("loco","ivatt"), 0.78);
   const rat   = mkLoco(catOf("loco","c25"), 0.8);
@@ -978,8 +984,13 @@ function evaluateDay(plan, sim, noise){
 }
 
 /* ============================ RUN THE WEEKEND ============================ */
+// The weekend is worked out when it starts, then played out on the line map in
+// (speeded-up) real time. The books are settled only when the last train is home,
+// so the player can carry on booking events and buying stock while it runs.
+let live = null;   // the weekend in progress: {plan, report, mk, day, t0, endT}
+function onLine(item){ return !!live && live.plan.sets.some(s=>s.loco===item || s.rake===item); }
 function advanceWeek(){
-  if(state.over) return;
+  if(state.over || live) return;
   const plan = currentPlan();
   const days = daysThisWeek();
   const ev = plan.ev, def = plan.def;
@@ -995,21 +1006,64 @@ function advanceWeek(){
   }
 
   const report = {week:state.week, weather:state.weather, days:runDays, ev, def, dayRes:[], events:[], startCash:state.cash};
+  for(let d=0; d<runDays; d++){
+    // roll failures for each set: per-trip probability from condition and reliability
+    const failTrip = plan.sets.map(s=>{
+      for(let i=0;i<s.deps.length;i++){
+        const p = Math.min(0.3, Math.max(0.006, 0.07*(1.05-s.condition)/s.reliability));
+        if(Math.random()<p) return i;
+      }
+      return -1;
+    });
+    const sim = simulateDay(plan.sets, failTrip);
+    const res = evaluateDay(plan, sim, 0.9+Math.random()*0.2);
+    res.sim = sim; res.failTrip = failTrip;
+    report.dayRes.push(res);
+  }
+  if(!runDays){ settleWeek(plan, report, state.marketing); return; }   // closed: nothing to watch
+  live = {plan, report, mk:state.marketing, day:0};
+  render();
+  startLiveDay();
+}
+function startLiveDay(){
+  const sim = live.report.dayRes[live.day].sim;
+  const paths = sim.agents.filter(a=>a.path.length);
+  const first = Math.min(...paths.map(a=>a.path[0].t)), last = Math.max(...paths.map(a=>a.path[a.path.length-1].t));
+  live.t0 = isFinite(first) ? first-10 : 540;
+  live.endT = isFinite(last) ? last+10 : 1080;
+  replay.source = "live"; replay.t = live.t0;
+  replayControls();
+  replayDraw(true); setPlaying(true);
+}
+function liveTick(){
+  if(replay.t < live.endT) return;
+  if(live.day+1 < live.report.days){ live.day++; startLiveDay(); return; }
+  const {plan, report, mk} = live;
+  live = null;
+  setPlaying(false);
+  lastDaySim = report.dayRes[report.dayRes.length-1].sim;
+  replay.source = "last";
+  replayControls();
+  settleWeek(plan, report, mk);
+}
+function liveStatus(){
+  const r = live.report, sim = r.dayRes[live.day].sim;
+  const pax = r.dayRes.slice(0, live.day).reduce((a,x)=>a+x.pax, 0)
+    + sim.trips.filter(t=>!t.cancelled && t.dep<=replay.t).reduce((a,t)=>a+t.pax, 0);
+  const pct = Math.max(0, Math.min(100, (live.day + (replay.t-live.t0)/(live.endT-live.t0)) / r.days * 100));
+  return `🚂 <b>Running: day ${live.day+1} of ${r.days}</b> · ${fmtT(replay.t)} · ${pax.toLocaleString("en-GB")} passengers so far${replay.playing?"":" · <b>paused</b>"}
+    <span class="liveprog"><i style="width:${pct.toFixed(1)}%"></i></span>`;
+}
+function liveBar(){ const el = document.getElementById("ab-live"); if(el && live) el.innerHTML = liveStatus(); }
+function abandonLive(){ if(!live) return; live = null; setPlaying(false); replay.source = "plan"; replayControls(); }
+
+let pendingReport = null;
+function settleWeek(plan, report, mk){
+  const runDays = report.days, ev = report.ev, def = report.def;
   let repDelta = 0, weekNet = 0;
   if(runDays){
-    for(let d=0; d<runDays; d++){
-      // roll failures for each set: per-trip probability from condition and reliability
-      const failTrip = plan.sets.map(s=>{
-        for(let i=0;i<s.deps.length;i++){
-          const p = Math.min(0.3, Math.max(0.006, 0.07*(1.05-s.condition)/s.reliability));
-          if(Math.random()<p) return i;
-        }
-        return -1;
-      });
-      const sim = simulateDay(plan.sets, failTrip);
-      const res = evaluateDay(plan, sim, 0.9+Math.random()*0.2);
-      res.sim = sim; res.failTrip = failTrip;
-      report.dayRes.push(res);
+    for(const res of report.dayRes){
+      const sim = res.sim;
       weekNet += res.net;
       repDelta += res.rep;
       // wear on the stock that ran
@@ -1021,7 +1075,6 @@ function advanceWeek(){
         }
         if(s.rake) s.rake.condition = Math.max(0.05, s.rake.condition - miles/5200*(state.upgrades.cshed?0.5:1));
       });
-      lastDaySim = sim;
     }
     repDelta = Math.round(repDelta/runDays);
     const tot = report.dayRes.reduce((a,r)=>({pax:a.pax+r.pax, net:a.net+r.net, fails:a.fails+r.fails}),{pax:0,net:0,fails:0});
@@ -1050,7 +1103,7 @@ function advanceWeek(){
     state.tt.forEach(d=>{ if(typeof d.rake==="string") d.rake = null; });
   }
   // fixed costs
-  const mk = MARKETING[state.marketing].spend;
+  mk = MARKETING[mk].spend;
   const overhead = runDays ? WEEKLY_OVERHEAD : Math.round(WEEKLY_OVERHEAD*0.6);
   state.cash -= overhead + mk; weekNet -= overhead + mk;
   logEntry(`Weekly overheads (track, insurance, paid staff)${mk?` and marketing`:""}.`, -(overhead+mk));
@@ -1077,9 +1130,12 @@ function advanceWeek(){
   if(!eventThisWeek() && state.days===4 && !isSchoolHols()) state.days = 2;
   if(state.cash < 0) state.overdrawnWeeks++; else state.overdrawnWeeks = 0;
   render();
-  showWeekReport(report, plan);
+  // don't snatch a booking form out of the player's hands: offer the report instead
+  if(document.getElementById("modalBg").classList.contains("show")){ pendingReport = report; render(); }
+  else showWeekReport(report);
   checkFinish();
 }
+function openPendingReport(){ const r = pendingReport; pendingReport = null; render(); if(r) showWeekReport(r); }
 
 function checkFinish(){
   if(state.overdrawnWeeks >= 2){
@@ -1106,8 +1162,12 @@ function render(){
   const w = WEATHER[state.weather];
   document.getElementById("ab-info").innerHTML =
     `<b>Weekend of ${dateLabel()}</b> · ${seasonName()}${isSchoolHols()?" (school holidays)":""} · ${w.icon} ${w.name} forecast · `
-    + (ev ? `${EVENTS[ev.type].icon} <b>${EVENTS[ev.type].name}</b>` : days ? `${days} operating day${days>1?"s":""}` : "railway closed this week");
-  document.getElementById("btn-advance").textContent = days ? "Run the Weekend ▸" : "Next Week ▸";
+    + (ev ? `${EVENTS[ev.type].icon} <b>${EVENTS[ev.type].name}</b>` : days ? `${days} operating day${days>1?"s":""}` : "railway closed this week")
+    + (live ? `<div id="ab-live">${liveStatus()}</div>` : "")
+    + (pendingReport ? ` <button class="act small" style="margin-left:6px" onclick="openPendingReport()">📋 Weekend report</button>` : "");
+  const adv = document.getElementById("btn-advance");
+  adv.disabled = !!live;
+  adv.textContent = live ? "⏳ Weekend running…" : days ? "Run the Weekend ▸" : "Next Week ▸";
 
   const wb = document.getElementById("winBanner");
   if(netWorth() >= 500000 && state.rep>=110 && !state.won){ state.won = true; save();
@@ -1299,9 +1359,9 @@ function renderEvents(){
       const def = EVENTS[ev.type];
       const guests = [...ev.guests.map(k=>catOf("guest",k).number), ...evRakes(ev).map(k=>catOf("vrake",k).name.replace("Visiting ",""))].join(", ");
       cell = `<span class="ev">${def.icon} ${def.name}</span> <small>${guests?`guests: ${guests} · `:""}publicity ${Math.round(publicity(ev,w)*100)}%</small>
-        <button class="act small warnbtn" style="margin-left:6px" onclick="cancelEvent(${w})">Cancel</button>`;
+        ${live && w===state.week ? `<small><b>· on now</b></small>` : `<button class="act small warnbtn" style="margin-left:6px" onclick="cancelEvent(${w})">Cancel</button>`}`;
     } else if(w===state.week){
-      cell = `<span class="sub" style="margin:0">Too late to book this weekend</span>`;
+      cell = `<span class="sub" style="margin:0">${live?"Running now":"Too late to book this weekend"}</span>`;
     } else {
       cell = `<button class="act small" onclick="openBooking(${w})">Book an event…</button>`;
     }
@@ -1328,7 +1388,7 @@ function renderDepot(){
         <li><span>${l.kind==="dmu"?"Seats":"Max load on the bank"}</span><span>${l.kind==="dmu"?c.seats:c.maxHaul+" coaches"}</span></li>
         <li><span>Coal / fuel</span><span>${money(c.runPerMile)}/mi</span></li>
       </ul>
-      <button class="act small warnbtn" ${busy?"disabled":""} onclick="sellItem('loco',${l.id})">${busy?"In the works":`Sell · ${money(sellValue("loco",l))}`}</button>
+      <button class="act small warnbtn" ${busy||onLine(l)?"disabled":""} onclick="sellItem('loco',${l.id})">${busy?"In the works":onLine(l)?"Out on the line":`Sell · ${money(sellValue("loco",l))}`}</button>
     </div>`;
   }).join("") : `<div class="empty">No locomotives. Visit the Motive Power market.</div>`;
 
@@ -1347,7 +1407,7 @@ function renderDepot(){
         <li><span>Coaches</span><span>${c.cars}</span></li>
         <li><span>Comfort</span><span>${c.comfort.toFixed(2)}×</span></li>
       </ul>
-      <button class="act small warnbtn" ${busy?"disabled":""} onclick="sellItem('rake',${r.id})">${busy?"In the works":`Sell · ${money(sellValue("rake",r))}`}</button>
+      <button class="act small warnbtn" ${busy||onLine(r)?"disabled":""} onclick="sellItem('rake',${r.id})">${busy?"In the works":onLine(r)?"Out on the line":`Sell · ${money(sellValue("rake",r))}`}</button>
     </div>`;
   }).join("") : `<div class="empty">No carriage sets. Visit the Carriages market.</div>`;
 }
@@ -1399,10 +1459,10 @@ function renderWorks(){
   const box = document.getElementById("works-list");
   const items = [];
   const card = (kind, it, title, badge) => {
-    const busy = isBusy(it), w = worksCosts(kind, it);
+    const busy = isBusy(it) || onLine(it), w = worksCosts(kind, it);
     return `<div class="card">
       <h3>${badge}${title}</h3>
-      ${busy?`<div class="busy-tag">🔧 In the works until week ${woy(it.busyUntil)}</div>`:""}
+      ${isBusy(it)?`<div class="busy-tag">🔧 In the works until week ${woy(it.busyUntil)}</div>`:onLine(it)?`<div class="busy-tag">🚂 Out on the line this weekend</div>`:""}
       <div class="cond-lbl"><span>Condition</span><span>${Math.round(it.condition*100)}%</span></div>
       <div class="bar"><i style="width:${it.condition*100}%;background:${condColour(it.condition)}"></i></div>
       <button class="act small" ${busy||it.condition>=0.95||state.cash<w.repair?"disabled":""} onclick="works('${kind}',${it.id},'repair')">Running repair (+25%, 1 week) · ${money(w.repair)}</button>
@@ -1557,7 +1617,7 @@ function buyRake(key){
 }
 function sellItem(kind,id){
   const arr = kind==="loco"?state.locos:state.rakes;
-  const i = arr.findIndex(x=>x.id===id); if(i<0) return;
+  const i = arr.findIndex(x=>x.id===id); if(i<0 || onLine(arr[i])) return;
   const item = arr[i]; const v = sellValue(kind,item);
   if(!confirm(`Sell ${item.number||catOf(kind,item.cat).name} for ${money(v)}?`)) return;
   state.cash += v; arr.splice(i,1);
@@ -1566,7 +1626,7 @@ function sellItem(kind,id){
   render();
 }
 function works(kind, id, what){
-  const item = (kind==="loco"?state.locos:state.rakes).find(x=>x.id===id); if(!item || isBusy(item)) return;
+  const item = (kind==="loco"?state.locos:state.rakes).find(x=>x.id===id); if(!item || isBusy(item) || onLine(item)) return;
   const w = worksCosts(kind, item);
   const cost = what==="repair" ? w.repair : w.heavy;
   if(state.cash<cost) return;
@@ -1663,7 +1723,7 @@ function confirmBooking(){
   render();
 }
 function cancelEvent(w){
-  const ev = state.events[w]; if(!ev) return;
+  const ev = state.events[w]; if(!ev || (live && w===state.week)) return;
   if(!confirm(`Cancel the ${EVENTS[ev.type].name}? The ${money(ev.deposit)} deposit is lost.`)) return;
   delete state.events[w];
   state.tt.forEach(d=>{ if(w===state.week){ if(typeof d.loco==="string") d.loco = null; if(typeof d.rake==="string") d.rake = null; } });
@@ -1672,7 +1732,8 @@ function cancelEvent(w){
 }
 
 /* ============================ WEEK REPORT ============================ */
-function showWeekReport(r, plan){
+function showWeekReport(r){
+  pendingReport = null;
   if(!r.days){
     openModal(`Week ${woy(r.week)} — Closed`, `<p>The railway was closed for the weekend of ${dateLabel(r.week)}. The volunteers had a rest.</p>
       ${r.events.map(e=>`<div class="event ${e.cls}">${e.text}</div>`).join("")}
@@ -1839,11 +1900,21 @@ function stationInfo(i){
 
 /* ============================ REPLAY ============================ */
 const replay = {t:9*60, playing:false, speed:4, source:"plan", last:0};
-function replaySim(){ return replay.source==="last" && lastDaySim ? lastDaySim : previewSim; }
+function replaySim(){
+  if(replay.source==="live" && live) return live.report.dayRes[live.day].sim;
+  return replay.source==="last" && lastDaySim ? lastDaySim : previewSim;
+}
+function replayControls(){
+  const sel = document.getElementById("rp-source");
+  sel.options[2].disabled = !live;
+  sel.disabled = !!live; document.getElementById("rp-slider").disabled = !!live;
+  sel.value = replay.source;
+}
 function refreshReplaySource(){
   const sel = document.getElementById("rp-source");
   sel.options[1].disabled = !lastDaySim;
   if(!lastDaySim && replay.source==="last"){ replay.source = "plan"; sel.value = "plan"; }
+  if(live) return;   // the live run redraws itself every frame
   replayDraw(true);
 }
 function mileAt(path, t){
@@ -1883,16 +1954,23 @@ function replayTick(ts){
   const dt = replay.last ? (ts-replay.last)/1000 : 0;
   replay.last = ts;
   replay.t += dt*replay.speed;
-  if(replay.t >= 23*60){ replay.t = 23*60; setPlaying(false); }
-  replayDraw(false);
+  if(live && replay.source==="live"){
+    if(replay.t >= live.endT) replay.t = live.endT;
+    replayDraw(false); liveBar(); liveTick();
+  } else {
+    if(replay.t >= 23*60){ replay.t = 23*60; setPlaying(false); }
+    replayDraw(false);
+  }
   if(replay.playing) requestAnimationFrame(replayTick);
 }
 function setPlaying(on){
   replay.playing = on; replay.last = 0;
   document.getElementById("rp-play").textContent = on ? "❚❚ Pause" : "▶ Play";
   if(on) requestAnimationFrame(replayTick);
+  liveBar();
 }
 function watchLastDay(){
+  if(live){ showTab("map"); return; }
   replay.source = "last"; document.getElementById("rp-source").value = "last";
   const sim = replaySim();
   const first = sim ? Math.min(...sim.agents.filter(a=>a.path.length).map(a=>a.path[0].t)) : 540;
@@ -1927,6 +2005,7 @@ async function decodeSave(code){
   return d;
 }
 function adoptSave(d){
+  abandonLive();
   state = d.state; uid = d.uid || 1; lastDaySim = null;
   logEntry("Railway restored from a saved link.", 0);
   save(); render(); buildMap();

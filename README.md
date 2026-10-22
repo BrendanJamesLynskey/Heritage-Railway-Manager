@@ -44,7 +44,12 @@ timetable (or the last day you ran) with the trains moving along the line.
 ## How to Play
 
 Each turn is one week. Plan the weekend on the **Timetable** tab, then press
-**Run the Weekend**.
+**Run the Weekend**. The weekend plays out live on the **Line Map**, day by
+day, at the speed you pick there (1 to 60 minutes a second), and the button
+stays locked until the last train is home. Meanwhile the rest of the game is
+open: book future events, buy stock, recruit volunteers or plan next week's
+timetable. Locos and coaches out on the line can't be sold or sent to the
+works, and the takings and the week report arrive when the weekend ends.
 
 1. **Timetable.** Every train is a round trip from Ravensgill Junction to
    Moorend and back, about two hours with turn-rounds. A *diagram* is one
