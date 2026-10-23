@@ -263,7 +263,8 @@
         <input type="range" id="rp-slider" min="480" max="1380" step="1" value="540">
         <select class="sel" id="rp-speed">
           <option value="1">1 min/s</option>
-          <option value="4" selected>4 min/s</option>
+          <option value="4">4 min/s</option>
+          <option value="6" selected>6 min/s</option>
           <option value="10">10 min/s</option>
           <option value="30">30 min/s</option>
           <option value="60">60 min/s</option>
@@ -342,7 +343,7 @@
     <div class="card" style="max-width:800px">
       <p>You are general manager of the <b>Ravensgill &amp; Highmoor Railway</b>, a preserved branch line in the Pennine dales of the north of England. Run normal services, organise steam and diesel galas, beer and music festivals, 1940s weekends and Santa specials, and grow the line until it's named <i>Heritage Railway of the Year</i>.</p>
       <ul style="font-size:.9rem">
-        <li><b>Each turn is one week.</b> Plan the weekend on the <b>Timetable</b> tab, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week. The weekend then plays out live on the <b>Line Map</b> (change the speed there, or pause it). You can't start the next week until the last train is home, but you can carry on booking events, buying stock and recruiting while it runs. The takings arrive when the weekend ends.</li>
+        <li><b>Each turn is one week.</b> Plan the weekend on the <b>Timetable</b> tab, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week. The weekend then plays out live on the <b>Line Map</b>, all its days together in the time of one (change the speed there, or pause it). You can't start the next week until the last train is home, but you can carry on booking events, buying stock and recruiting while it runs. The takings arrive when the weekend ends.</li>
         <li><b>Timetabling:</b> every train is a round trip from Ravensgill Junction to Moorend and back, about two hours with turn-rounds. Give each loco a set of departure times. If a train isn't back in time, its next trip leaves late.</li>
         <li><b>Single line:</b> trains can only pass at the loops (Lowerdale and Fellside, plus Brackenby and Highmoor Summit once built), and only one train may be on each single-line section. The train graph shows where trains are held. Each loop has one road for each direction (Moorend holds two trains), so too many trains with too few loops means trains are held and run late.</li>
         <li><b>Passengers</b> arrive through the day (mostly late morning and lunchtime) and take the next train. A gap of more than two hours loses them; a full train turns them away. Steam draws more people than diesel, and both draw more than a DMU.</li>
@@ -1021,7 +1022,7 @@ function advanceWeek(){
     report.dayRes.push(res);
   }
   if(!runDays){ settleWeek(plan, report, state.marketing); return; }   // closed: nothing to watch
-  live = {plan, report, mk:state.marketing, day:0};
+  live = {plan, report, mk:state.marketing, day:report.days-1};   // every day runs side by side; the map shows the last
   render();
   startLiveDay();
 }
@@ -1037,7 +1038,6 @@ function startLiveDay(){
 }
 function liveTick(){
   if(replay.t < live.endT) return;
-  if(live.day+1 < live.report.days){ live.day++; startLiveDay(); return; }
   const {plan, report, mk} = live;
   live = null;
   setPlaying(false);
@@ -1047,11 +1047,10 @@ function liveTick(){
   settleWeek(plan, report, mk);
 }
 function liveStatus(){
-  const r = live.report, sim = r.dayRes[live.day].sim;
-  const pax = r.dayRes.slice(0, live.day).reduce((a,x)=>a+x.pax, 0)
-    + sim.trips.filter(t=>!t.cancelled && t.dep<=replay.t).reduce((a,t)=>a+t.pax, 0);
-  const pct = Math.max(0, Math.min(100, (live.day + (replay.t-live.t0)/(live.endT-live.t0)) / r.days * 100));
-  return `🚂 <b>Running: day ${live.day+1} of ${r.days}</b> · ${fmtT(replay.t)} · ${pax.toLocaleString("en-GB")} passengers so far${replay.playing?"":" · <b>paused</b>"}
+  const r = live.report;
+  const pax = r.dayRes.reduce((a,x)=>a + x.sim.trips.filter(t=>!t.cancelled && t.dep<=replay.t).reduce((b,t)=>b+t.pax, 0), 0);
+  const pct = Math.max(0, Math.min(100, (replay.t-live.t0)/(live.endT-live.t0) * 100));
+  return `🚂 <b>Running the ${r.days>1?r.days+"-day weekend":"day"}</b> · ${fmtT(replay.t)} · ${pax.toLocaleString("en-GB")} passengers so far${replay.playing?"":" · <b>paused</b>"}
     <span class="liveprog"><i style="width:${pct.toFixed(1)}%"></i></span>`;
 }
 function liveBar(){ const el = document.getElementById("ab-live"); if(el && live) el.innerHTML = liveStatus(); }
@@ -1899,7 +1898,7 @@ function stationInfo(i){
 }
 
 /* ============================ REPLAY ============================ */
-const replay = {t:9*60, playing:false, speed:4, source:"plan", last:0};
+const replay = {t:9*60, playing:false, speed:6, source:"plan", last:0};
 function replaySim(){
   if(replay.source==="live" && live) return live.report.dayRes[live.day].sim;
   return replay.source==="last" && lastDaySim ? lastDaySim : previewSim;
