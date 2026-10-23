@@ -227,7 +227,8 @@
 <main>
   <div class="actionbar">
     <div id="ab-info"></div>
-    <button class="act small" id="btn-save" style="margin-left:auto;background:var(--br-blue)">💾 Save / Load</button>
+    <button class="act small" id="btn-new" style="margin-left:auto;background:var(--lms-maroon)">🆕 New Game</button>
+    <button class="act small" id="btn-save" style="margin-left:0;background:var(--br-blue)">💾 Save / Load</button>
     <button class="act" id="btn-advance" style="margin-left:0">Run the Weekend ▸</button>
   </div>
   <div id="winBanner"></div>
@@ -1141,7 +1142,7 @@ function checkFinish(){
     state.over = true; save();
     openModal("The Railway Has Closed", `<p>Two weeks overdrawn, and the bank has called in the overdraft. The trustees have closed the Ravensgill &amp; Highmoor Railway.</p>
       <p>You reached <b>week ${woy()}, year ${yearOf()}</b> with a reputation of <b>${state.rep}</b> (${repTier()}).</p>
-      <button class="act warnbtn" onclick="closeModal();newGame();">Start again</button>`, true);
+      <button class="act warnbtn" onclick="closeModal();newGame();buildMap();showTab('tt');">Start again</button>`, true);
   } else if(state.overdrawnWeeks===1){
     setTimeout(()=>alert("Warning: the railway is overdrawn. Finish next week overdrawn and the bank will close it. Sell stock or cut costs."), 50);
   }
@@ -2086,9 +2087,13 @@ document.getElementById("modalClose").onclick = closeModal;
 document.getElementById("modalBg").addEventListener("click", e=>{ if(e.target.id==="modalBg" && !state.over) closeModal(); });
 document.getElementById("btn-advance").onclick = advanceWeek;
 document.querySelectorAll(".tabs button").forEach(b=>{ b.onclick = ()=>showTab(b.dataset.tab); });
-document.getElementById("btn-newgame").onclick = ()=>{
-  if(confirm("Abandon this railway and start again?")){ newGame(); buildMap(); }
-};
+function startAgain(){
+  if(!confirm("Start a new game from scratch? This railway will be lost unless you've saved a link to it.")) return;
+  closeModal(); pendingReport = null;
+  newGame(); buildMap(); replay.source = "plan"; replayControls(); replayDraw(true); showTab("tt");
+}
+document.getElementById("btn-newgame").onclick = startAgain;
+document.getElementById("btn-new").onclick = startAgain;
 document.getElementById("rp-play").onclick = ()=>setPlaying(!replay.playing);
 document.getElementById("rp-slider").oninput = e=>{ replay.t = +e.target.value; replayDraw(false); };
 document.getElementById("rp-speed").onchange = e=>{ replay.speed = +e.target.value; };

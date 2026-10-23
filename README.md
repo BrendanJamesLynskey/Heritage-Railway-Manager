@@ -25,6 +25,9 @@ it as a small text file. Opening the link on any device (another computer, a
 phone, the Pi) asks whether to load that railway. You can also paste a link or
 open a save file from the same dialog.
 
+To start from scratch, press **🆕 New Game** (next to Save / Load). It asks
+first, so save a link beforehand if you might want the old railway back.
+
 ## The Line
 
 | Station | Mile | Passing loop | Notes |
