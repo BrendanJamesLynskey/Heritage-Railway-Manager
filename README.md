@@ -16,6 +16,31 @@ Everything runs in a single self-contained `index.html`: no build step, no
 dependencies, no network after load. It runs comfortably in Chromium on a
 Raspberry Pi 5. Progress auto-saves to your browser's local storage.
 
+## The Laptop
+
+The game runs on the general manager's laptop: a bezel frames the screen,
+and the railway's apps sit on a desktop with a Pennine wallpaper. **Double-click
+an icon** (or tap it on a touch screen) to open an app in its own window:
+Timetable, Line Map, Events Calendar, Mail, Ravensgill Shed, Motive Power,
+Carriages, Works, Volunteers &amp; Upgrades, Ledger and How to Play. Drag
+windows by the title bar, resize them from the corner, minimise, maximise and
+close them, and switch between them on the **taskbar**, which also holds the
+**Run the Weekend** button, the balance, reputation, volunteers and week. The
+**Start** button (the R&amp;H roundel) lists every app, plus Save / Load and
+New Game. On a phone, windows open full screen.
+
+## Mail: Hiring Out Your Locomotives
+
+Railtour companies and other heritage railways (all fictional) email asking
+to hire your engines: a main-line railtour, a gala on another line, or a
+winter loan of several weeks. Each email names the loco, the dates and an
+opening offer. **Accept**, **decline** or **send a counter-offer**: each sender
+has a private ceiling and limited patience, so ask for a bit more and they may
+meet you, or meet you halfway; ask far too much and they'll find another
+engine. Unanswered offers lapse. The fee is paid when you agree; the engine is
+away for the agreed weeks (it can't run, be sold or go to the works then) and
+comes back a little more worn, with a small boost to your reputation.
+
 ## Saving and Carrying On Elsewhere
 
 Press **💾 Save / Load** for a **save link**: the whole railway is compressed
@@ -40,13 +65,13 @@ first, so save a link beforehand if you might want the old railway back.
 | Highmoor Summit | 11.8 | Buildable | Summit, just beyond Highmoor Tunnel |
 | Moorend | 14.0 | Yes (2 trains) | Moorland terminus by Highmoor Reservoir |
 
-The **Line Map** tab draws the railway with the River Raven, the moors,
+The **Line Map** app draws the railway with the River Raven, the moors,
 viaduct, tunnel and the main line. Press play to watch the planned
 timetable (or the last day you ran) with the trains moving along the line.
 
 ## How to Play
 
-Each turn is one week. Plan the weekend on the **Timetable** tab, then press
+Each turn is one week. Plan the weekend in the **Timetable** app, then press
 **Run the Weekend**. The weekend plays out live on the **Line Map**, all its
 days together in the time of one, at the speed you pick there (6 minutes a
 second by default, from 1 to 60), and the button
@@ -71,7 +96,7 @@ works, and the takings and the week report arrive when the weekend ends.
 3. **Passengers** arrive through the day and take the next train within two
    hours. Leave long gaps and they go elsewhere; run full trains and they're
    turned away. Steam draws more than diesel, and both more than a DMU.
-4. **Events** are booked on the **Events Calendar**, ideally four weeks ahead
+4. **Events** are booked in the **Events Calendar**, ideally four weeks ahead
    for full publicity. A quarter of the cost is paid as a deposit.
 5. **Volunteers** crew every train. If a day needs more than turn up, it
    can't run. Busy weekends tire them; quiet weeks and socials restore

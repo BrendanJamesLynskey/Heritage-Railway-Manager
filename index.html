@@ -20,49 +20,149 @@
     --shadow:0 2px 6px rgba(0,0,0,.18);
   }
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden}
   body{
     font-family:"Segoe UI",Tahoma,Verdana,sans-serif;
-    background:#e7e1d3 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><rect width='40' height='40' fill='%23e7e1d3'/><path d='M0 39 H40' stroke='%23d9d1c0' stroke-width='1'/></svg>");
+    background:radial-gradient(ellipse at 50% 35%,#4b4137,#1b1713 78%);
     color:var(--ink);
     line-height:1.45;
   }
-  header{
-    background:linear-gradient(180deg,var(--gwr-green),#0a3a24);
-    color:#fff;border-bottom:4px solid var(--warn);
-  }
-  .brand{
-    display:flex;align-items:center;gap:14px;padding:12px 18px;max-width:1200px;margin:0 auto;
-    flex-wrap:wrap;
-  }
+  .view{display:block}
   .totem{
     width:40px;height:40px;flex:0 0 auto;border-radius:50%;background:var(--coach-cream);
     border:4px solid var(--lms-maroon);display:flex;align-items:center;justify-content:center;
     font:700 .62rem/1 Georgia,serif;color:var(--lms-maroon);letter-spacing:.5px;
   }
-  h1{font-size:1.35rem;margin:0;letter-spacing:.5px;font-weight:700}
-  h1 small{display:block;font-size:.72rem;font-weight:400;opacity:.8;letter-spacing:2px;text-transform:uppercase}
-  .stats{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
-  .stat{
-    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);
-    border-radius:6px;padding:5px 11px;min-width:86px;text-align:center;
+  /* ---- the laptop: bezel round the screen, keyboard deck along the bottom ---- */
+  .laptop{position:fixed;inset:0;display:flex;flex-direction:column;padding:12px 28px 0}
+  .lid{
+    flex:1;min-height:0;position:relative;padding:24px 18px 26px;
+    background:linear-gradient(160deg,#33373d,#16181b);border-radius:20px 20px 6px 6px;
+    box-shadow:inset 0 0 0 2px #474c54,0 14px 40px rgba(0,0,0,.6);
   }
-  .stat b{display:block;font-size:1.02rem}
-  .stat span{font-size:.62rem;text-transform:uppercase;letter-spacing:1px;opacity:.8}
+  .cam{position:absolute;top:9px;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%,#3c4a63,#05070a 60%);box-shadow:0 0 0 2px #25282d}
+  .lid-logo{position:absolute;bottom:6px;left:0;right:0;text-align:center;font:600 .6rem/14px "Segoe UI",sans-serif;letter-spacing:4px;color:#7f868f;text-transform:uppercase}
+  .screen{position:relative;height:100%;overflow:hidden;border-radius:4px;display:flex;flex-direction:column;background:#0d2a1d;box-shadow:0 0 0 1px #000}
+  .base{flex:0 0 18px;margin:0 -24px;position:relative;background:linear-gradient(#dde1e6,#a9afb6 60%,#7b8188);border-radius:2px 2px 16px 16px;box-shadow:0 6px 18px rgba(0,0,0,.6)}
+  .base::before{content:"";position:absolute;left:50%;top:0;width:150px;height:7px;margin-left:-75px;background:linear-gradient(#9ca2a9,#c6cbd0);border-radius:0 0 10px 10px}
+  @media(max-width:700px){
+    .laptop{padding:6px 8px 0}
+    .lid{padding:16px 7px 18px;border-radius:14px 14px 4px 4px}
+    .cam{top:5px}.lid-logo{bottom:2px;font-size:.5rem;letter-spacing:3px}
+    .base{flex-basis:10px;margin:0 -6px}.base::before{width:70px;margin-left:-35px;height:4px}
+  }
+  /* ---- desktop ---- */
+  .desktop{flex:1;min-height:0;position:relative;overflow:hidden;background:#3d6b5a center/cover no-repeat;user-select:none}
+  .icons{position:absolute;top:10px;left:8px;bottom:10px;display:grid;grid-auto-flow:column;grid-template-rows:repeat(auto-fill,90px);grid-auto-columns:88px;gap:4px}
+  .dicon{background:none;border:1px solid transparent;border-radius:6px;color:#fff;cursor:default;display:flex;flex-direction:column;align-items:center;gap:5px;padding:7px 2px;
+    font:600 .72rem/1.15 "Segoe UI",sans-serif;text-shadow:0 1px 3px rgba(0,0,0,.95),0 0 8px rgba(0,0,0,.6)}
+  .dicon:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.2)}
+  .dicon.sel,.dicon:focus-visible{background:rgba(120,170,255,.35);border-color:rgba(170,200,255,.75);outline:none}
+  .dicon .di{font-size:2.1rem;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.55));position:relative}
+  .nbadge{position:absolute;top:-5px;right:-11px;background:#d13438;color:#fff;font:700 .62rem/16px "Segoe UI",sans-serif;min-width:16px;height:16px;border-radius:8px;padding:0 4px;text-align:center;font-style:normal;text-shadow:none}
+  .nbadge:empty{display:none}
+  .gadget{position:absolute;top:12px;right:12px;width:340px;background:rgba(251,247,238,.94);border-radius:10px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.6);user-select:text}
+  .g-brand{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+  .g-brand b{display:block;font-size:1rem;color:var(--gwr-green)}
+  .g-brand small{font-size:.62rem;letter-spacing:1.5px;text-transform:uppercase;color:#6a7480}
+  #ab-info{font-size:.82rem;color:var(--ink)}
+  #ab-info b{color:var(--gwr-green)}
+  #ab-live{margin-top:5px}
+  .liveprog{display:inline-block;vertical-align:middle;width:120px;height:7px;border-radius:4px;background:var(--line);overflow:hidden;margin-left:6px}
+  .liveprog i{display:block;height:100%;background:var(--gwr-green)}
+  .g-btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .g-hint{font-size:.72rem;color:#6a7480;margin:8px 0 0;font-style:italic}
+  @media(max-width:720px){
+    .desktop{overflow:auto;display:flex;flex-direction:column}
+    .gadget{position:static;width:auto;margin:10px}
+    .icons{position:static;grid-auto-flow:row;grid-template-rows:none;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));padding:0 8px 10px}
+  }
+  /* ---- windows ---- */
+  .win{position:absolute;display:flex;flex-direction:column;background:#efe9dc;border-radius:8px;overflow:hidden;resize:both;min-width:300px;min-height:180px;user-select:text;
+    box-shadow:0 12px 40px rgba(0,0,0,.45),0 0 0 1px rgba(0,0,0,.35)}
+  .win[hidden]{display:none}
+  .win.max{left:0!important;top:0!important;width:100%!important;height:100%!important;border-radius:0;resize:none}
+  .win-title{flex:0 0 34px;display:flex;align-items:center;gap:8px;padding-left:10px;background:#dfe4ea;color:#5a6470;font-size:.8rem;cursor:default;user-select:none;touch-action:none}
+  .win.active .win-title{background:linear-gradient(90deg,var(--gwr-green),#1f6d48);color:#fff}
+  .win-title .wt{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+  .wbtns{display:flex;align-self:stretch}
+  .wbtns button{width:44px;border:none;background:none;color:inherit;font-size:.85rem;cursor:pointer}
+  .wbtns button:hover{background:rgba(255,255,255,.22)}
+  .wbtns .wb-close:hover{background:#e81123;color:#fff}
+  .win-body{flex:1;min-height:0;overflow:auto;padding:16px;container-type:inline-size;
+    background:#e7e1d3 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><rect width='40' height='40' fill='%23e7e1d3'/><path d='M0 39 H40' stroke='%23d9d1c0' stroke-width='1'/></svg>")}
+  #w-mail .win-body{padding:0}
+  /* ---- taskbar, start menu, notifications ---- */
+  .taskbar{flex:0 0 48px;display:flex;align-items:center;gap:4px;padding:0 6px;background:rgba(17,23,29,.97);color:#fff;border-top:1px solid rgba(255,255,255,.08);position:relative;z-index:7000}
+  .startbtn{flex:0 0 44px;height:40px;border:none;background:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+  .startbtn:hover,.startbtn.on{background:rgba(255,255,255,.13)}
+  .totem.mini{width:30px;height:30px;border-width:3px;font-size:.48rem}
+  .tasks{flex:1;display:flex;gap:3px;overflow:hidden;min-width:0}
+  .task{display:flex;align-items:center;gap:6px;height:40px;padding:0 10px;max-width:170px;flex:0 1 auto;min-width:40px;border:none;border-radius:6px;background:rgba(255,255,255,.05);color:#e6ebf0;font-size:.76rem;cursor:pointer;position:relative;white-space:nowrap}
+  .task:hover{background:rgba(255,255,255,.1)}
+  .task .tn{overflow:hidden;text-overflow:ellipsis}
+  .task::after{content:"";position:absolute;bottom:2px;left:35%;right:35%;height:3px;border-radius:2px;background:#7d8b99}
+  .task.on{background:rgba(255,255,255,.15)}
+  .task.on::after{background:var(--warn);left:20%;right:20%}
+  .task .nbadge{top:3px;right:3px}
+  .taskbar #btn-advance{width:auto;margin:0;padding:8px 14px;background:var(--gwr-green);white-space:nowrap;font-size:.8rem;flex:0 0 auto}
+  .taskbar #btn-advance:hover{background:#0b3d26}
+  .taskbar #btn-advance:disabled{background:#4d5a52;color:#d8e2db}
+  .tray{display:flex;align-items:center}
+  .stat{padding:2px 8px;text-align:right;line-height:1.15}
+  .stat b{display:block;font-size:.8rem;font-weight:600;white-space:nowrap}
+  .stat span{font-size:.58rem;opacity:.7;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
   .stat.cash b{color:#ffe9a8}
-  nav{background:#0a3a24;border-bottom:3px solid var(--warn)}
-  .tabs{max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap}
-  .tabs button{
-    background:none;border:none;color:#cfe3d6;padding:12px 15px;cursor:pointer;
-    font-size:.8rem;font-weight:600;letter-spacing:.4px;border-bottom:3px solid transparent;
-    text-transform:uppercase;
+  .tclock{padding:2px 8px;text-align:right;font-size:.74rem;line-height:1.25;border-left:1px solid rgba(255,255,255,.14);white-space:nowrap}
+  @media(max-width:1050px){.stat.vol{display:none}.task .tn{display:none}}
+  @media(max-width:640px){.stat.rep,.tclock{display:none}.taskbar #btn-advance{padding:8px 9px;font-size:.72rem}.stat{padding:2px 5px}}
+  .startmenu{position:absolute;left:8px;bottom:56px;width:min(340px,calc(100% - 16px));max-height:calc(100% - 70px);overflow:auto;background:rgba(26,34,42,.98);color:#fff;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.6);z-index:8000;padding:12px}
+  .startmenu[hidden]{display:none}
+  .sm-head{display:flex;gap:10px;align-items:center;padding:4px 6px 10px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px}
+  .sm-head small{display:block;font-size:.62rem;letter-spacing:1.5px;text-transform:uppercase;opacity:.65}
+  .sm-app{display:flex;gap:10px;align-items:center;width:100%;background:none;border:none;color:#fff;padding:7px 10px;border-radius:6px;font-size:.85rem;cursor:pointer;text-align:left}
+  .sm-app:hover{background:rgba(255,255,255,.1)}
+  .sm-app .di{font-size:1.2rem;width:26px;text-align:center}
+  .sm-sep{border-top:1px solid rgba(255,255,255,.12);margin:6px 0}
+  .sm-about{font-size:.66rem;opacity:.55;margin:8px 6px 0;line-height:1.4}
+  .toast{position:absolute;right:12px;bottom:60px;width:310px;max-width:calc(100% - 24px);background:rgba(26,34,42,.98);color:#fff;border-radius:8px;padding:12px 14px;
+    box-shadow:0 10px 30px rgba(0,0,0,.5);z-index:8500;font-size:.82rem;cursor:pointer;transform:translateY(16px);opacity:0;transition:transform .25s,opacity .25s;pointer-events:none}
+  .toast.show{transform:none;opacity:1;pointer-events:auto}
+  .toast small{display:block;opacity:.65;font-size:.68rem;margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px}
+  /* ---- mail ---- */
+  #v-mail{height:100%}
+  .mail{display:grid;grid-template-columns:290px 1fr;height:100%;background:#fff}
+  .mlist{border-right:1px solid var(--line);overflow:auto;background:var(--panel)}
+  .mlist h4{margin:0;padding:10px 12px;font-size:.78rem;text-transform:uppercase;letter-spacing:.6px;color:#4a545f;border-bottom:1px solid var(--line);background:#ece4d1}
+  .mrow{padding:9px 12px;border-bottom:1px solid #eae1cd;cursor:pointer;font-size:.8rem;border-left:3px solid transparent}
+  .mrow:hover{background:#f3ecdb}
+  .mrow.sel{background:#e3eef7;border-left-color:var(--br-blue)}
+  .mrow.unread{border-left-color:var(--warn)}
+  .mrow.unread b,.mrow.unread .msubj{font-weight:700;color:var(--ink)}
+  .mrow .mdate{float:right;color:#8a94a0;font-size:.7rem}
+  .msubj{color:#4a545f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mchip{display:inline-block;font-size:.6rem;text-transform:uppercase;letter-spacing:.5px;padding:1px 7px;border-radius:10px;margin-top:4px;background:#eee;color:#666;font-weight:700}
+  .mchip.open{background:#fff3cd;color:#7a5a12}
+  .mchip.agreed{background:#dff0e2;color:var(--good)}
+  .mread{overflow:auto;padding:16px 18px}
+  .mread h3{margin:0 0 2px;font-size:1.05rem}
+  .mfrom{font-size:.78rem;color:#6a7480;margin-bottom:10px}
+  .msg{border:1px solid #e4dcc8;border-radius:8px;padding:8px 12px;margin:8px 0;font-size:.85rem;background:#fffdf8;max-width:92%}
+  .msg.me{margin-left:auto;background:#eaf2fb;border-color:#c9dbef}
+  .msg .mh{font-size:.68rem;color:#8a94a0;margin-bottom:2px}
+  .msg p{margin:.35rem 0}
+  .deal{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:12px;font-size:.84rem}
+  .deal .row2{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+  .deal input{width:110px;padding:7px 8px;border:1px solid var(--line);border-radius:6px;font-size:.85rem}
+  .mback{display:none;margin-bottom:8px!important}
+  .mempty{color:#8a94a0;font-style:italic;padding:30px;text-align:center}
+  @container (max-width:640px){
+    .mail{grid-template-columns:1fr}
+    .mail.reading .mlist{display:none}
+    .mail:not(.reading) .mread{display:none}
+    .mback{display:inline-block}
   }
-  .tabs button:hover{color:#fff;background:rgba(255,255,255,.06)}
-  .tabs button.active{color:#fff;border-bottom-color:var(--warn);background:rgba(255,255,255,.09)}
-  main{max-width:1200px;margin:0 auto;padding:18px}
-  .view{display:none;animation:fade .2s ease}
-  .view.active{display:block}
-  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1}}
   h2{color:var(--gwr-green);border-bottom:2px solid var(--line);padding-bottom:6px;margin-top:0;font-size:1.2rem}
   .lede{color:#4a545f;font-size:.9rem;margin-top:-4px}
   .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
@@ -117,13 +217,13 @@
   .pos{color:var(--good)} .neg{color:var(--danger)}
   /* modal */
   .modal-bg{
-    display:none;position:fixed;inset:0;background:rgba(12,25,40,.65);z-index:50;
+    display:none;position:absolute;inset:0;background:rgba(12,25,40,.65);z-index:9000;
     align-items:center;justify-content:center;padding:16px;
   }
   .modal-bg.show{display:flex}
   .modal{
     background:var(--coach-cream);border:3px solid var(--gwr-green);border-radius:10px;max-width:640px;width:100%;
-    max-height:90vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.4);
+    max-height:100%;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.4);
   }
   .modal .head{background:var(--gwr-green);color:#fff;padding:12px 18px;font-weight:700;font-size:1.05rem}
   .modal .body{padding:18px}
@@ -139,22 +239,9 @@
   .seg button:last-child{border-right:none}
   .seg button.on{background:var(--gwr-green);color:#fff;font-weight:700}
   .seg button:disabled{color:#aab;cursor:not-allowed}
-  footer{max-width:1200px;margin:10px auto 30px;padding:0 18px;color:#6a7480;font-size:.76rem;text-align:center}
   a{color:var(--br-blue)}
   .win-banner{background:var(--gwr-green);color:#fff;padding:10px 16px;border-radius:8px;margin-bottom:14px;font-weight:600}
   .busy-tag{background:#fbeecb;border:1px solid #e5c977;color:#7a5a12;font-size:.74rem;font-weight:600;border-radius:6px;padding:4px 8px;margin:2px 0 8px}
-  .actionbar{
-    position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
-    background:var(--coach-cream);border:1px solid var(--line);border-left:5px solid var(--warn);
-    border-radius:8px;padding:9px 14px;margin-bottom:14px;box-shadow:var(--shadow);
-  }
-  .actionbar #ab-info{font-size:.85rem;color:var(--ink)}
-  .actionbar #ab-info b{color:var(--gwr-green)}
-  #ab-live{margin-top:3px}
-  .liveprog{display:inline-block;vertical-align:middle;width:120px;height:7px;border-radius:4px;background:var(--line);overflow:hidden;margin-left:6px}
-  .liveprog i{display:block;height:100%;background:var(--gwr-green)}
-  .actionbar button{margin-left:auto;width:auto;background:var(--gwr-green)}
-  .actionbar button:hover{background:#0b3d26}
   /* timetable */
   .diag{border-left:6px solid var(--br-blue)}
   .diag .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0;font-size:.8rem}
@@ -169,7 +256,7 @@
   .graphbox{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:14px;box-shadow:var(--shadow);overflow-x:auto}
   .graphbox svg{display:block;width:100%;min-width:640px;height:auto}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  @media(max-width:900px){.two{grid-template-columns:1fr}}
+  @container (max-width:760px){.two{grid-template-columns:1fr}}
   /* map */
   .mapwrap{background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);overflow:hidden}
   .mapwrap svg{display:block;width:100%;height:auto}
@@ -197,44 +284,45 @@
 </style>
 </head>
 <body>
-<header>
-  <div class="brand">
-    <div class="totem" title="Ravensgill &amp; Highmoor Railway">R&amp;H</div>
-    <h1>Heritage Railway Manager<small>Ravensgill &amp; Highmoor Railway</small></h1>
-    <div class="stats">
-      <div class="stat cash"><b id="s-cash">—</b><span>Balance</span></div>
-      <div class="stat"><b id="s-rep">—</b><span>Reputation</span></div>
-      <div class="stat"><b id="s-vol">—</b><span>Volunteers</span></div>
-      <div class="stat"><b id="s-week">—</b><span id="s-season">Season</span></div>
-    </div>
-  </div>
-</header>
-<nav>
-  <div class="tabs">
-    <button data-tab="tt" class="active">Timetable</button>
-    <button data-tab="map">Line Map</button>
-    <button data-tab="events">Events Calendar</button>
-    <button data-tab="depot">Depot</button>
-    <button data-tab="power">Motive Power</button>
-    <button data-tab="carriages">Carriages</button>
-    <button data-tab="works">Works</button>
-    <button data-tab="railway">Volunteers &amp; Upgrades</button>
-    <button data-tab="log">Ledger</button>
-    <button data-tab="help">How to Play</button>
-  </div>
-</nav>
-
-<main>
-  <div class="actionbar">
+<div class="laptop">
+<div class="lid">
+<div class="cam" title="Webcam"></div>
+<div class="screen" id="screen">
+<div class="desktop" id="desktop">
+  <div class="gadget" id="gadget">
+    <div class="g-brand"><div class="totem" title="Ravensgill &amp; Highmoor Railway">R&amp;H</div><div><b>Heritage Railway Manager</b><small>Ravensgill &amp; Highmoor Railway</small></div></div>
     <div id="ab-info"></div>
-    <button class="act small" id="btn-new" style="margin-left:auto;background:var(--lms-maroon)">🆕 New Game</button>
-    <button class="act small" id="btn-save" style="margin-left:0;background:var(--br-blue)">💾 Save / Load</button>
-    <button class="act" id="btn-advance" style="margin-left:0">Run the Weekend ▸</button>
+    <div id="winBanner"></div>
+    <div class="g-btns">
+      <button class="act small" onclick="openSaveDialog()">💾 Save / Load</button>
+      <button class="act small warnbtn" onclick="startAgain()">🆕 New Game</button>
+    </div>
+    <p class="g-hint">Double-click an icon (or tap it on a touch screen) to open it. Run the weekend from the taskbar.</p>
   </div>
-  <div id="winBanner"></div>
+  <div class="icons" id="icons"></div>
+  <div id="windows"></div>
+</div>
+<div class="startmenu" id="startMenu" hidden></div>
+<div class="toast" id="toast"></div>
+<div class="taskbar">
+  <button class="startbtn" id="startBtn" title="Start"><span class="totem mini">R&amp;H</span></button>
+  <div class="tasks" id="tasks"></div>
+  <button class="act" id="btn-advance">Run the Weekend ▸</button>
+  <div class="tray">
+    <div class="stat cash"><b id="s-cash">—</b><span>Balance</span></div>
+    <div class="stat rep"><b id="s-rep">—</b><span>Reputation</span></div>
+    <div class="stat vol"><b id="s-vol">—</b><span>Volunteers</span></div>
+    <div class="stat"><b id="s-week">—</b><span id="s-season">Season</span></div>
+    <div class="tclock" id="t-clock"></div>
+  </div>
+</div>
+
+<div id="appSrc" hidden>
+  <!-- MAIL -->
+  <section class="view" id="v-mail"><div class="mail" id="mail-app"></div></section>
 
   <!-- TIMETABLE -->
-  <section class="view active" id="v-tt">
+  <section class="view" id="v-tt">
     <h2>This Week's Timetable</h2>
     <p class="lede">Every train starts at Ravensgill Junction, runs up the dale to Moorend and back. Give each locomotive (and its carriage set) a list of departure times. The line is single track: trains can only pass at the loops at Lowerdale and Fellside (and Brackenby or Highmoor Summit, if you build them), so the signallers will hold one train at a loop until the other has cleared the single line.</p>
     <div class="toolbar" id="tt-toolbar"></div>
@@ -344,7 +432,9 @@
     <div class="card" style="max-width:800px">
       <p>You are general manager of the <b>Ravensgill &amp; Highmoor Railway</b>, a preserved branch line in the Pennine dales of the north of England. Run normal services, organise steam and diesel galas, beer and music festivals, 1940s weekends and Santa specials, and grow the line until it's named <i>Heritage Railway of the Year</i>.</p>
       <ul style="font-size:.9rem">
-        <li><b>Each turn is one week.</b> Plan the weekend on the <b>Timetable</b> tab, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week. The weekend then plays out live on the <b>Line Map</b>, all its days together in the time of one (change the speed there, or pause it). You can't start the next week until the last train is home, but you can carry on booking events, buying stock and recruiting while it runs. The takings arrive when the weekend ends.</li>
+        <li><b>The laptop:</b> each part of the railway is an app on the desktop. Double-click an icon (or tap it on a touch screen) to open its window; drag windows by the title bar, resize them from the corner, and switch between them on the taskbar. The <b>Start</b> button (the R&amp;H roundel) lists every app.</li>
+        <li><b>Mail:</b> railtour companies and other heritage railways email asking to hire your locomotives. Accept their offer, decline, or send a counter-offer: ask for more, but push too hard and they'll go elsewhere. A hired-out engine is away for the weeks agreed, and comes back a little more worn.</li>
+        <li><b>Each turn is one week.</b> Plan the weekend in the <b>Timetable</b> app, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week. The weekend then plays out live on the <b>Line Map</b>, all its days together in the time of one (change the speed there, or pause it). You can't start the next week until the last train is home, but you can carry on booking events, buying stock and recruiting while it runs. The takings arrive when the weekend ends.</li>
         <li><b>Timetabling:</b> every train is a round trip from Ravensgill Junction to Moorend and back, about two hours with turn-rounds. Give each loco a set of departure times. If a train isn't back in time, its next trip leaves late.</li>
         <li><b>Single line:</b> trains can only pass at the loops (Lowerdale and Fellside, plus Brackenby and Highmoor Summit once built), and only one train may be on each single-line section. The train graph shows where trains are held. Each loop has one road for each direction (Moorend holds two trains), so too many trains with too few loops means trains are held and run late.</li>
         <li><b>Passengers</b> arrive through the day (mostly late morning and lunchtime) and take the next train. A gap of more than two hours loses them; a full train turns them away. Steam draws more people than diesel, and both draw more than a DMU.</li>
@@ -359,14 +449,10 @@
       <div class="toolbar">
         <button class="act small warnbtn" id="btn-newgame">Start a New Railway</button>
       </div>
+      <p class="sub">The Ravensgill &amp; Highmoor Railway, its stations and the companies that write to you are fictional; the rolling stock is inspired by real preserved locomotives.</p>
     </div>
   </section>
-</main>
-
-<footer>
-  Heritage Railway Manager · a self-contained browser tycoon · progress auto-saves in your browser ·
-  the Ravensgill &amp; Highmoor Railway and its stations are fictional; the rolling stock is inspired by real preserved locomotives.
-</footer>
+</div>
 
 <div class="modal-bg" id="modalBg">
   <div class="modal">
@@ -375,6 +461,11 @@
     <div class="body" style="padding-top:0"><button class="act" id="modalClose">Continue</button></div>
   </div>
 </div>
+</div><!-- /screen -->
+<div class="lid-logo">R&amp;H Book</div>
+</div><!-- /lid -->
+<div class="base"></div>
+</div><!-- /laptop -->
 
 <script>
 "use strict";
@@ -625,10 +716,13 @@ function newGame(){
     ledger: [],
     overdrawnWeeks: 0,
     won: false,
-    over: false
+    over: false,
+    mail: [],
+    mailSeq: 1
   };
   state.weather = rollWeather(state.week);
   lastDaySim = null;
+  welcomeMail();
   logEntry("You've taken over the Ravensgill & Highmoor Railway: £60,000 in the bank, Ivatt tank 41241, Class 25 25059 and two Mk1 sets. The season starts this weekend.", 0);
   save(); render();
 }
@@ -652,6 +746,7 @@ function load(){
     const d = JSON.parse(raw);
     if(!d || !d.state || !Array.isArray(d.state.tt)) return false;
     state = d.state; uid = d.uid || 1;
+    upgradeState();
     return true;
   }catch(e){ return false; }
 }
@@ -692,6 +787,10 @@ function repTier(){
 }
 function condColour(c){ return c>0.6?"var(--good)":c>0.3?"var(--warn)":"var(--danger)"; }
 function isBusy(item){ return (item.busyUntil||0) > state.week; }
+// a loco hired out to another railway: away from h.from until (not including) h.until
+function isAway(l){ return !!l.hire && state.week >= l.hire.from && state.week < l.hire.until; }
+function hirePending(l){ return !!l.hire && l.hire.until > state.week; }
+function hireNote(l){ const h = l.hire; return isAway(l) ? `📤 On hire to ${h.org} until week ${woy(h.until)}` : `📤 Booked out to ${h.org}, weeks ${woy(h.from)}–${woy(h.until-1)}`; }
 function sellValue(kind, item){
   const cat = catOf(kind, item.cat);
   return Math.round(cat.cost * (0.35 + 0.4*item.condition));
@@ -735,7 +834,8 @@ function currentPlan(){
     } else {
       loco = state.locos.find(l=>l.id===d.loco);
       if(!loco){ err("No locomotive chosen."); return; }
-      if(isBusy(loco)){ err(`${loco.number} is in the works until week ${loco.busyUntil} — diagram skipped.`); return; }
+      if(isBusy(loco)){ err(`${loco.number} is in the works until week ${woy(loco.busyUntil)} — diagram skipped.`); return; }
+      if(isAway(loco)){ err(`${loco.number} is away on hire to ${loco.hire.org} until week ${woy(loco.hire.until)} — diagram skipped.`); return; }
       if(loco.condition<0.15){ err(`${loco.number} is too run-down to run: send it to the works.`); return; }
       lcat = catOf("loco", loco.cat); kind = loco.kind;
     }
@@ -1000,7 +1100,7 @@ function advanceWeek(){
 
   if(runDays && plan.volNeed > plan.volAvail){
     openModal("Not Enough Volunteers", `<p>This timetable needs <b>${plan.volNeed}</b> volunteers a day but only <b>${plan.volAvail}</b> can turn out this week.</p>
-      <div class="event bad">Cut some trains, recruit more volunteers on the <b>Volunteers &amp; Upgrades</b> tab, or close for the week.</div>`);
+      <div class="event bad">Cut some trains, recruit more volunteers in the <b>Volunteers &amp; Upgrades</b> app, or close for the week.</div>`);
     return;
   }
   if(ev && !runDays){
@@ -1025,6 +1125,7 @@ function advanceWeek(){
   if(!runDays){ settleWeek(plan, report, state.marketing); return; }   // closed: nothing to watch
   live = {plan, report, mk:state.marketing, day:report.days-1};   // every day runs side by side; the map shows the last
   render();
+  openApp("map");
   startLiveDay();
 }
 function startLiveDay(){
@@ -1054,7 +1155,12 @@ function liveStatus(){
   return `🚂 <b>Running the ${r.days>1?r.days+"-day weekend":"day"}</b> · ${fmtT(replay.t)} · ${pax.toLocaleString("en-GB")} passengers so far${replay.playing?"":" · <b>paused</b>"}
     <span class="liveprog"><i style="width:${pct.toFixed(1)}%"></i></span>`;
 }
-function liveBar(){ const el = document.getElementById("ab-live"); if(el && live) el.innerHTML = liveStatus(); }
+function liveButton(){ return `⏳ ${fmtT(replay.t)} · ${Math.round(Math.max(0, Math.min(100, (replay.t-live.t0)/(live.endT-live.t0)*100)))}%`; }
+function liveBar(){
+  if(!live) return;
+  const el = document.getElementById("ab-live"); if(el) el.innerHTML = liveStatus();
+  document.getElementById("btn-advance").textContent = liveButton();
+}
 function abandonLive(){ if(!live) return; live = null; setPlaying(false); replay.source = "plan"; replayControls(); }
 
 let pendingReport = null;
@@ -1127,12 +1233,18 @@ function settleWeek(plan, report, mk){
   // next week
   state.week++;
   state.weather = rollWeather(state.week);
+  const unread0 = unreadMail();
+  mailWeek();
   if(!eventThisWeek() && state.days===4 && !isSchoolHols()) state.days = 2;
   if(state.cash < 0) state.overdrawnWeeks++; else state.overdrawnWeeks = 0;
   render();
   // don't snatch a booking form out of the player's hands: offer the report instead
-  if(document.getElementById("modalBg").classList.contains("show")){ pendingReport = report; render(); }
+  if(document.getElementById("modalBg").classList.contains("show")){
+    pendingReport = report; render();
+    toast("Weekend over", "📋 The week report is ready. Click to read it.", openPendingReport);
+  }
   else showWeekReport(report);
+  if(unreadMail() > unread0) setTimeout(()=>mailToast(), pendingReport ? 6500 : 400);
   checkFinish();
 }
 function openPendingReport(){ const r = pendingReport; pendingReport = null; render(); if(r) showWeekReport(r); }
@@ -1167,7 +1279,7 @@ function render(){
     + (pendingReport ? ` <button class="act small" style="margin-left:6px" onclick="openPendingReport()">📋 Weekend report</button>` : "");
   const adv = document.getElementById("btn-advance");
   adv.disabled = !!live;
-  adv.textContent = live ? "⏳ Weekend running…" : days ? "Run the Weekend ▸" : "Next Week ▸";
+  adv.textContent = live ? liveButton() : days ? "Run the Weekend ▸" : "Next Week ▸";
 
   const wb = document.getElementById("winBanner");
   if(netWorth() >= 500000 && state.rep>=110 && !state.won){ state.won = true; save();
@@ -1184,6 +1296,8 @@ function render(){
   renderRailway();
   renderLedger();
   refreshReplaySource();
+  renderMail();
+  drawBadges();
   save();
 }
 
@@ -1191,7 +1305,7 @@ function stockOptions(d){
   const ev = eventThisWeek();
   let html = `<option value="">— choose —</option>`;
   state.locos.forEach(l=>{
-    const note = isBusy(l) ? " (in works)" : l.condition<0.15 ? " (worn out)" : "";
+    const note = isBusy(l) ? " (in works)" : isAway(l) ? " (on hire)" : l.condition<0.15 ? " (worn out)" : "";
     html += `<option value="${l.id}" ${d.loco===l.id?"selected":""}>${l.number} · ${catOf("loco",l.cat).name}${note}</option>`;
   });
   if(ev) ev.guests.forEach(k=>{
@@ -1375,11 +1489,12 @@ function renderDepot(){
   const L = document.getElementById("depot-locos");
   L.innerHTML = state.locos.length ? state.locos.map(l=>{
     const c = catOf("loco",l.cat);
-    const busy = isBusy(l);
+    const busy = isBusy(l) || hirePending(l);
     return `<div class="card">
       <h3>${kindBadge(l.kind)}${l.number}</h3>
       <p class="sub">${c.name}</p>
-      ${busy?`<div class="busy-tag">🔧 In the works until week ${woy(l.busyUntil)}</div>`:""}
+      ${isBusy(l)?`<div class="busy-tag">🔧 In the works until week ${woy(l.busyUntil)}</div>`:""}
+      ${hirePending(l)?`<div class="busy-tag">${hireNote(l)}</div>`:""}
       <div class="cond-lbl"><span>Condition</span><span>${Math.round(l.condition*100)}%</span></div>
       <div class="bar"><i style="width:${l.condition*100}%;background:${condColour(l.condition)}"></i></div>
       <ul class="specs">
@@ -1388,7 +1503,7 @@ function renderDepot(){
         <li><span>${l.kind==="dmu"?"Seats":"Max load on the bank"}</span><span>${l.kind==="dmu"?c.seats:c.maxHaul+" coaches"}</span></li>
         <li><span>Coal / fuel</span><span>${money(c.runPerMile)}/mi</span></li>
       </ul>
-      <button class="act small warnbtn" ${busy||onLine(l)?"disabled":""} onclick="sellItem('loco',${l.id})">${busy?"In the works":onLine(l)?"Out on the line":`Sell · ${money(sellValue("loco",l))}`}</button>
+      <button class="act small warnbtn" ${busy||onLine(l)?"disabled":""} onclick="sellItem('loco',${l.id})">${isBusy(l)?"In the works":hirePending(l)?"Hired out":onLine(l)?"Out on the line":`Sell · ${money(sellValue("loco",l))}`}</button>
     </div>`;
   }).join("") : `<div class="empty">No locomotives. Visit the Motive Power market.</div>`;
 
@@ -1459,10 +1574,11 @@ function renderWorks(){
   const box = document.getElementById("works-list");
   const items = [];
   const card = (kind, it, title, badge) => {
-    const busy = isBusy(it) || onLine(it), w = worksCosts(kind, it);
+    const busy = isBusy(it) || onLine(it) || (kind==="loco" && isAway(it)), w = worksCosts(kind, it);
     return `<div class="card">
       <h3>${badge}${title}</h3>
       ${isBusy(it)?`<div class="busy-tag">🔧 In the works until week ${woy(it.busyUntil)}</div>`:onLine(it)?`<div class="busy-tag">🚂 Out on the line this weekend</div>`:""}
+      ${kind==="loco" && hirePending(it)?`<div class="busy-tag">${hireNote(it)}</div>`:""}
       <div class="cond-lbl"><span>Condition</span><span>${Math.round(it.condition*100)}%</span></div>
       <div class="bar"><i style="width:${it.condition*100}%;background:${condColour(it.condition)}"></i></div>
       <button class="act small" ${busy||it.condition>=0.95||state.cash<w.repair?"disabled":""} onclick="works('${kind}',${it.id},'repair')">Running repair (+25%, 1 week) · ${money(w.repair)}</button>
@@ -1548,7 +1664,7 @@ function applyPreset(n){
   ].sort((a,b)=>b.cat.capacity-a.cat.capacity);
   const pool = [];
   if(ev) ev.guests.forEach(k=>pool.push({loco:k, draw:catOf("guest",k).draw+1, kind:catOf("guest",k).kind, maxHaul:catOf("guest",k).maxHaul}));
-  state.locos.filter(l=>!isBusy(l) && l.condition>=0.15).forEach(l=>{
+  state.locos.filter(l=>!isBusy(l) && !isAway(l) && l.condition>=0.15).forEach(l=>{
     const c = catOf("loco",l.cat);
     pool.push({loco:l.id, draw:c.draw, kind:l.kind, maxHaul:c.maxHaul||99});
   });
@@ -1617,7 +1733,7 @@ function buyRake(key){
 }
 function sellItem(kind,id){
   const arr = kind==="loco"?state.locos:state.rakes;
-  const i = arr.findIndex(x=>x.id===id); if(i<0 || onLine(arr[i])) return;
+  const i = arr.findIndex(x=>x.id===id); if(i<0 || onLine(arr[i]) || (kind==="loco" && hirePending(arr[i]))) return;
   const item = arr[i]; const v = sellValue(kind,item);
   if(!confirm(`Sell ${item.number||catOf(kind,item.cat).name} for ${money(v)}?`)) return;
   state.cash += v; arr.splice(i,1);
@@ -1628,6 +1744,9 @@ function sellItem(kind,id){
 function works(kind, id, what){
   const item = (kind==="loco"?state.locos:state.rakes).find(x=>x.id===id); if(!item || isBusy(item) || onLine(item)) return;
   const w = worksCosts(kind, item);
+  if(kind==="loco" && hirePending(item) && state.week + (what==="repair"?1:w.weeks) > item.hire.from){
+    alert(`${item.number} is promised to ${item.hire.org} from week ${woy(item.hire.from)}, and the works wouldn't finish in time.`); return;
+  }
   const cost = what==="repair" ? w.repair : w.heavy;
   if(state.cash<cost) return;
   state.cash -= cost;
@@ -1991,6 +2110,7 @@ async function pipeBytes(bytes, stream){
 async function encodeSave(){
   const snap = JSON.parse(JSON.stringify({state, uid}));
   snap.state.ledger = snap.state.ledger.slice(0, 25);           // keep links short
+  snap.state.mail = snap.state.mail.filter((m,i)=>i<4 || (m.deal && m.deal.status==="open"));
   const raw = new TextEncoder().encode(JSON.stringify(snap));
   if(typeof CompressionStream==="function") return "z" + b64url(await pipeBytes(raw, new CompressionStream("deflate-raw")));
   return "j" + b64url(raw);
@@ -2006,7 +2126,7 @@ async function decodeSave(code){
 }
 function adoptSave(d){
   abandonLive();
-  state = d.state; uid = d.uid || 1; lastDaySim = null;
+  state = d.state; uid = d.uid || 1; lastDaySim = null; upgradeState();
   logEntry("Railway restored from a saved link.", 0);
   save(); render(); buildMap();
 }
@@ -2069,7 +2189,400 @@ async function loadFromHash(){
   }catch(e){ alert("This save link couldn't be read. It may have been cut short when it was copied."); }
 }
 
-/* ============================ MODAL / TABS / BOOT ============================ */
+
+/* ============================ THE LAPTOP DESKTOP ============================ */
+// Every part of the game is an "app": a window holding one of the sections above.
+const APPS = [
+  {id:"tt",        name:"Timetable",            icon:"🗓️"},
+  {id:"map",       name:"Line Map",             icon:"🗺️"},
+  {id:"events",    name:"Events Calendar",      icon:"🎪"},
+  {id:"mail",      name:"Mail",                 icon:"📧"},
+  {id:"depot",     name:"Ravensgill Shed",      icon:"🏚️"},
+  {id:"power",     name:"Motive Power",         icon:"🚂"},
+  {id:"carriages", name:"Carriages",            icon:"🚃"},
+  {id:"works",     name:"Works",                icon:"🔧"},
+  {id:"railway",   name:"Volunteers & Upgrades",icon:"👷"},
+  {id:"log",       name:"Ledger",               icon:"📒"},
+  {id:"help",      name:"How to Play",          icon:"❓"}
+];
+const wm = {z:10, open:{}, active:null, n:0};   // open: id -> {min, max}
+const desk = () => document.getElementById("desktop");
+const narrowDesk = () => desk().clientWidth < 720;
+function wallpaper(){
+  // Pennine dusk: moors, the dale and Brackenby Viaduct
+  let arches = "";
+  for(let i=0;i<12;i++){ const x = 470 + i*44; arches += ` M${x+7} 640 v-42 a15 15 0 0 1 30 0 v42 z`; }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+    <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d4a6b"/><stop offset=".55" stop-color="#c98f63"/><stop offset="1" stop-color="#f2d29b"/></linearGradient></defs>
+    <rect width="1600" height="900" fill="url(#sky)"/>
+    <circle cx="1180" cy="430" r="46" fill="#ffe4a8" opacity=".85"/>
+    <path d="M0 470 Q200 380 420 430 T860 400 T1260 420 T1600 380 V900 H0z" fill="#5d5a6e" opacity=".85"/>
+    <path d="M0 540 Q260 450 520 520 T1040 490 T1600 470 V900 H0z" fill="#4a5a4a"/>
+    <path d="M0 610 Q300 560 600 600 T1200 580 T1600 600 V900 H0z" fill="#33472f"/>
+    <path d="M460 560 h548 v80 h-548 z${arches}" fill="#2c2620" fill-rule="evenodd"/>
+    <path d="M470 552 h530" stroke="#1d1a16" stroke-width="5"/>
+    <g fill="#1d1a16"><rect x="640" y="522" width="70" height="26" rx="4"/><rect x="700" y="510" width="10" height="16"/><rect x="590" y="528" width="44" height="20" rx="3"/><rect x="545" y="528" width="40" height="20" rx="3"/></g>
+    <path d="M700 505 q-30 -40 -90 -50 q-50 -10 -100 10" stroke="#e8e0d4" stroke-width="16" fill="none" opacity=".35" stroke-linecap="round"/>
+    <path d="M0 700 Q400 650 800 690 T1600 680 V900 H0z" fill="#23331f"/>
+    <path d="M520 900 Q700 760 760 700 Q820 650 1000 640" stroke="#6e8fa6" stroke-width="18" fill="none" opacity=".7"/>
+  </svg>`;
+  desk().style.backgroundImage = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+}
+function buildDesktop(){
+  wallpaper();
+  const icons = document.getElementById("icons");
+  icons.innerHTML = APPS.map(a=>`<button class="dicon" data-app="${a.id}" title="Double-click to open ${a.name}"><span class="di">${a.icon}${a.id==="mail"?`<i class="nbadge" data-badge></i>`:""}</span><span>${a.name}</span></button>`).join("");
+  icons.querySelectorAll(".dicon").forEach(b=>{
+    const id = b.dataset.app;
+    b.addEventListener("click", e=>{ icons.querySelectorAll(".dicon").forEach(x=>x.classList.toggle("sel", x===b)); e.stopPropagation(); });
+    b.addEventListener("dblclick", ()=>openApp(id));
+    b.addEventListener("pointerup", e=>{ if(e.pointerType==="touch") openApp(id); });   // one tap on a touch screen
+    b.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); openApp(id); } });
+  });
+  desk().addEventListener("click", e=>{ if(e.target===desk() || e.target===icons) icons.querySelectorAll(".dicon").forEach(x=>x.classList.remove("sel")); });
+  const holder = document.getElementById("windows");
+  APPS.forEach(a=>{
+    const w = document.createElement("div");
+    w.className = "win"; w.id = "w-"+a.id; w.hidden = true;
+    w.innerHTML = `<div class="win-title"><span>${a.icon}</span><span class="wt">${a.name}</span><span class="wbtns">
+      <button class="wb-min" title="Minimise">─</button><button class="wb-max" title="Maximise">▢</button><button class="wb-close" title="Close">✕</button></span></div><div class="win-body"></div>`;
+    w.querySelector(".win-body").appendChild(document.getElementById("v-"+a.id));
+    holder.appendChild(w);
+    const title = w.querySelector(".win-title");
+    w.addEventListener("pointerdown", ()=>{ if(wm.active!==a.id) focusApp(a.id); }, true);
+    w.querySelector(".wb-min").onclick = ()=>minimiseApp(a.id);
+    w.querySelector(".wb-max").onclick = ()=>maximiseApp(a.id);
+    w.querySelector(".wb-close").onclick = ()=>closeApp(a.id);
+    title.addEventListener("dblclick", e=>{ if(!e.target.closest("button")) maximiseApp(a.id); });
+    title.addEventListener("pointerdown", e=>{
+      if(e.target.closest("button") || wm.open[a.id].max || narrowDesk()) return;
+      const sx = e.clientX, sy = e.clientY, ox = w.offsetLeft, oy = w.offsetTop, D = desk();
+      title.setPointerCapture(e.pointerId);
+      const move = ev=>{
+        w.style.left = Math.max(120 - w.offsetWidth, Math.min(D.clientWidth - 120, ox + ev.clientX - sx)) + "px";
+        w.style.top  = Math.max(0, Math.min(D.clientHeight - 34, oy + ev.clientY - sy)) + "px";
+      };
+      const up = ()=>{ title.removeEventListener("pointermove", move); title.removeEventListener("pointerup", up); };
+      title.addEventListener("pointermove", move); title.addEventListener("pointerup", up);
+    });
+  });
+  document.getElementById("startBtn").onclick = e=>{ e.stopPropagation(); toggleStart(); };
+  document.addEventListener("click", e=>{ if(!e.target.closest("#startMenu")) toggleStart(false); });
+  document.addEventListener("keydown", e=>{ if(e.key==="Escape") toggleStart(false); });
+  window.addEventListener("resize", ()=>{ if(narrowDesk()) Object.keys(wm.open).forEach(id=>{ wm.open[id].max = true; document.getElementById("w-"+id).classList.add("max"); }); });
+  tickClock(); setInterval(tickClock, 15000);
+  drawTaskbar();
+}
+function openApp(id){
+  if(!APPS.some(a=>a.id===id)) return;
+  toggleStart(false);
+  const w = document.getElementById("w-"+id);
+  let s = wm.open[id];
+  if(!s){
+    s = wm.open[id] = {min:false, max:narrowDesk()};
+    const D = desk(), k = wm.n++ % 7;
+    const W = Math.min(1040, D.clientWidth - 130), H = Math.min(700, D.clientHeight - 24);
+    w.style.width = W+"px"; w.style.height = H+"px";
+    w.style.left = Math.max(0, Math.min(D.clientWidth - W, 104 + k*30)) + "px";
+    w.style.top = Math.max(0, Math.min(D.clientHeight - H, 8 + k*26)) + "px";
+  }
+  s.min = false; w.hidden = false;
+  w.classList.toggle("max", s.max);
+  focusApp(id);
+  if(id==="map") replayDraw(true);
+  if(id==="mail") renderMail();
+}
+function focusApp(id){
+  wm.active = id;
+  document.getElementById("w-"+id).style.zIndex = ++wm.z;
+  document.querySelectorAll(".win").forEach(x=>x.classList.toggle("active", x.id==="w-"+id));
+  drawTaskbar();
+}
+function topApp(){
+  let best = null, z = -1;
+  Object.keys(wm.open).forEach(id=>{ const s = wm.open[id], el = document.getElementById("w-"+id); if(!s.min && +el.style.zIndex > z){ z = +el.style.zIndex; best = id; } });
+  return best;
+}
+function closeApp(id){
+  document.getElementById("w-"+id).hidden = true;
+  delete wm.open[id];
+  const t = topApp(); if(t) focusApp(t); else { wm.active = null; drawTaskbar(); }
+}
+function minimiseApp(id){
+  wm.open[id].min = true; document.getElementById("w-"+id).hidden = true;
+  const t = topApp(); if(t) focusApp(t); else { wm.active = null; document.querySelectorAll(".win").forEach(x=>x.classList.remove("active")); drawTaskbar(); }
+}
+function maximiseApp(id){
+  if(narrowDesk()) return;
+  const s = wm.open[id]; s.max = !s.max;
+  document.getElementById("w-"+id).classList.toggle("max", s.max);
+}
+function drawTaskbar(){
+  document.getElementById("tasks").innerHTML = APPS.filter(a=>wm.open[a.id]).map(a=>{
+    const on = wm.active===a.id && !wm.open[a.id].min;
+    return `<button class="task ${on?"on":""}" onclick="taskClick('${a.id}')" title="${a.name}"><span>${a.icon}</span><span class="tn">${a.name}</span>${a.id==="mail"?`<i class="nbadge" data-badge></i>`:""}</button>`;
+  }).join("");
+  drawBadges();
+}
+function taskClick(id){
+  if(wm.active===id && !wm.open[id].min) minimiseApp(id); else openApp(id);
+}
+function toggleStart(on){
+  const m = document.getElementById("startMenu");
+  const show = on===undefined ? m.hidden : on;
+  if(show){
+    m.innerHTML = `<div class="sm-head"><span class="totem">R&amp;H</span><div><b>Heritage Railway Manager</b><small>Ravensgill &amp; Highmoor Railway</small></div></div>
+      ${APPS.map(a=>`<button class="sm-app" onclick="openApp('${a.id}')"><span class="di">${a.icon}</span>${a.name}</button>`).join("")}
+      <div class="sm-sep"></div>
+      <button class="sm-app" onclick="toggleStart(false);openSaveDialog()"><span class="di">💾</span>Save / Load</button>
+      <button class="sm-app" onclick="toggleStart(false);startAgain()"><span class="di">🆕</span>New Game</button>
+      <p class="sm-about">A self-contained browser tycoon. Progress saves in this browser automatically; use Save / Load for a link you can take to another device.</p>`;
+  }
+  m.hidden = !show;
+  document.getElementById("startBtn").classList.toggle("on", show);
+}
+function tickClock(){
+  const d = new Date();
+  document.getElementById("t-clock").innerHTML = `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}<br><span style="opacity:.7">${d.toLocaleDateString("en-GB")}</span>`;
+}
+let toastTimer = null, toastAction = null;
+function toast(head, text, action){
+  const t = document.getElementById("toast");
+  t.innerHTML = `<small>${head}</small>${text}`;
+  toastAction = action || null;
+  t.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove("show"), 7000);
+}
+document.getElementById("toast").onclick = ()=>{ document.getElementById("toast").classList.remove("show"); if(toastAction) toastAction(); };
+
+/* ============================ MAIL: HIRING OUT YOUR LOCOS ============================ */
+// Railtour companies and other heritage lines write in to hire your engines. Each has a
+// private ceiling on what it will pay and a limited patience for haggling.
+const RAILTOUR_COS = [
+  {org:"Dalesman Railtours",        who:"Graham Pickles",    sign:"Charters Manager",  tours:["The Pennine Explorer","The Ribblehead Rambler","The Dales Venturer"]},
+  {org:"Kittiwake Rail Charters",   who:"Ruth Featherstone", sign:"Operations",        tours:["The Kittiwake Coast Express","The Northumbrian","The Border Reiver"]},
+  {org:"Red Rose Railtours",        who:"Des Halliwell",     sign:"Traction Planning", tours:["The Lancastrian","The Fylde Coaster","The Cotton Mill Express"]},
+  {org:"Ironstone Excursions",      who:"Priya Mistry",      sign:"Tour Planner",      tours:["The Cleveland Ironmaster","The Esk Valley Explorer","The Teesside Steelman"]},
+  {org:"Wolds & Coast Rail Tours",  who:"Neil Barraclough",  sign:"Director",          tours:["The Wolds Wanderer","The Holderness Belle","The Humber Clipper"]}
+];
+const HERITAGE_RLYS = [
+  {org:"Swaledale Valley Railway",        who:"Ann Metcalfe",   sign:"Gala Coordinator"},
+  {org:"Coquet Valley Railway",           who:"Tom Armstrong",  sign:"Locomotive Manager"},
+  {org:"Ebor Moors Railway",              who:"Sunita Rao",     sign:"Events Manager"},
+  {org:"Thornbeck & Ashby Light Railway", who:"Bill Entwistle", sign:"Traffic Manager"},
+  {org:"Lune Valley Steam Railway",       who:"Hannah Wilde",   sign:"General Manager"},
+  {org:"Kirkholme Heritage Line",         who:"Mo Hussain",     sign:"Diesel Group Secretary"}
+];
+const r50 = n => Math.max(50, Math.round(n/50)*50);
+const pickOne = a => a[Math.floor(Math.random()*a.length)];
+const sending = new Set();   // mail ids awaiting a reply (not saved)
+let mailSel = null;
+function upgradeState(){
+  if(!Array.isArray(state.mail)) state.mail = [];
+  if(!state.mailSeq) state.mailSeq = 1;
+}
+function unreadMail(){ return state.mail.filter(m=>!m.read).length; }
+function addMail(from, subject, text, deal){
+  const m = {id:state.mailSeq++, week:state.week, from, subject, read:false, msgs:[{me:false, week:state.week, text}], deal:deal||null};
+  state.mail.unshift(m);
+  state.mail = state.mail.slice(0, 40);
+  return m;
+}
+function welcomeMail(){
+  addMail({org:"Ravensgill & Highmoor Railway Trust", who:"Margaret Ashworth", sign:"Chair of Trustees"}, "Welcome aboard",
+    `<p>Dear General Manager,</p><p>Welcome to the Ravensgill &amp; Highmoor! The trustees are delighted to have you. Everything you need is on this laptop: double-click an icon on the desktop to open it. The <b>Timetable</b> is the place to start, and the <b>Events Calendar</b> is where the money is.</p>
+     <p>Other railways and the main-line railtour companies sometimes write asking to borrow our engines. Those emails arrive here in <b>Mail</b>. Hiring an engine out brings in useful money, but don't sell yourself short, and don't promise an engine you need for a gala.</p>
+     <p>Good luck, and do mind the 1 in 60.</p><p>Margaret Ashworth<br>Chair of Trustees</p>`);
+}
+function hireValue(c, kind, weeks){
+  const base = kind==="railtour" ? c.cost*0.07 : kind==="gala" ? c.cost*0.035*weeks + 600 : c.cost*0.012*weeks;
+  return base * (0.85 + state.rep/400) * (0.8 + 0.25*c.draw);
+}
+function maybeMail(){
+  if(state.mail.filter(m=>m.deal && m.deal.status==="open").length >= 3) return;
+  if(Math.random() > 0.3 + state.rep/400) return;
+  const promised = new Set(state.mail.filter(m=>m.deal && m.deal.status==="open").map(m=>m.deal.locoId));
+  const free = state.locos.filter(l=>l.kind!=="dmu" && !hirePending(l) && !isBusy(l) && l.condition>=0.4 && !promised.has(l.id));
+  if(!free.length) return;
+  const winter = seasonName()==="Winter", r = Math.random();
+  let kind = winter ? (r<0.6?"loan":"railtour") : (r<0.42?"railtour":r<0.85?"gala":"loan");
+  let pool = free;
+  if(kind==="railtour"){ pool = free.filter(l=>l.condition>=0.6 && catOf("loco",l.cat).maxHaul>=6); if(!pool.length){ kind = "gala"; pool = free; } }
+  const loco = pickOne(pool), c = catOf("loco", loco.cat);
+  const weeks = kind==="railtour" ? 1 : kind==="gala" ? 1 + (Math.random()<0.4?1:0) : 4 + Math.floor(Math.random()*4);
+  const start = state.week + 2 + Math.floor(Math.random()*3);
+  const V = hireValue(c, kind, weeks);
+  const max = r50(V*(1.05 + Math.random()*0.3));
+  const fee = r50(Math.min(max - 100, V*(0.72 + Math.random()*0.13)));
+  const deal = {kind, locoId:loco.id, number:loco.number, start, weeks, fee, max, status:"open",
+    patience: kind==="railtour" ? 2 : 3, wear: kind==="railtour" ? 0.07 : kind==="gala" ? 0.035*weeks : 0.02*weeks, rep: kind==="railtour" ? 2 : 1};
+  const her = loco.kind==="steam" ? "her" : "it";
+  const when = weeks>1 ? `for ${weeks} weeks from the weekend of ${dateLabel(start)}` : `for the weekend of ${dateLabel(start)}`;
+  let from, subject, body;
+  if(kind==="railtour"){
+    from = pickOne(RAILTOUR_COS); const tour = pickOne(from.tours);
+    subject = `${loco.number} for "${tour}"?`;
+    body = `<p>Dear General Manager,</p><p>We're running <b>"${tour}"</b> over the main line on the weekend of ${dateLabel(start)}, and we'd love <b>${loco.number}</b>, your ${c.name}, at the front. We'd collect ${her} from Ravensgill the week before and have ${her} back straight after, with main-line support crew and certification at our cost.</p>
+      <p>We can offer <b>${money(fee)}</b> for the hire. Would that work for you?</p>`;
+  } else if(kind==="gala"){
+    from = pickOne(HERITAGE_RLYS);
+    subject = `Could we borrow ${loco.number} for our gala?`;
+    body = `<p>Hello from ${from.org}!</p><p>We're putting on a ${loco.kind} gala and ${loco.number} would be a real draw. Could we have ${her} ${when}? We'd cover the road haulage both ways and give ${her} a good polish before ${her} comes home.</p>
+      <p>We were thinking <b>${money(fee)}</b> all in.</p>`;
+  } else {
+    from = pickOne(HERITAGE_RLYS);
+    subject = `Loan of ${loco.number}?`;
+    body = `<p>Dear colleague,</p><p>Our regular engine has been stopped for its boiler ticket and we're stuck for motive power. Would you lend us <b>${loco.number}</b> ${when}? We'd do the routine maintenance while ${her}'s with us.</p>
+      <p>We could pay <b>${money(fee)}</b> for the loan.</p>`;
+  }
+  body += `<p>Best wishes,<br>${from.who}<br>${from.sign}, ${from.org}</p>`;
+  addMail(from, subject, body, deal);
+}
+function mailWeek(){
+  state.locos.forEach(l=>{
+    const h = l.hire;
+    if(h && state.week >= h.until){
+      l.condition = Math.max(0.05, l.condition - h.wear);
+      state.rep = Math.min(160, state.rep + h.rep);
+      delete l.hire;
+      logEntry(`${l.number} is back from ${h.org}.`, 0);
+      addMail(h.by, `${l.number} is on ${l.kind==="steam"?"her":"its"} way home`, `<p>Just to say ${l.number} is back with you. Thank you! The crowds loved ${l.kind==="steam"?"her":"it"}, and we'll be sure to ask again.</p><p>${h.by.who}<br>${h.by.org}</p>`);
+    }
+  });
+  state.mail.forEach(m=>{
+    const d = m.deal;
+    if(d && d.status==="open" && state.week > d.start - 2){
+      d.status = "expired"; m.read = false;
+      m.msgs.push({me:false, week:state.week, text:`<p>As we hadn't heard back, we've found another engine. Perhaps next time!</p><p>${m.from.who}</p>`});
+    }
+  });
+  maybeMail();
+}
+function mailToast(){
+  const n = unreadMail(); if(!n) return;
+  const m = state.mail.find(x=>!x.read);
+  toast("📧 Mail", `<b>${m.from.org}</b><br>${m.subject}${n>1?`<br><span style="opacity:.7">and ${n-1} more unread</span>`:""}`, ()=>{ mailSel = m.id; openApp("mail"); readMail(m.id); });
+}
+function drawBadges(){
+  const n = state ? unreadMail() : 0;
+  document.querySelectorAll("[data-badge]").forEach(b=>b.textContent = n || "");
+}
+function readMail(id){
+  const m = state.mail.find(x=>x.id===id); if(!m) return;
+  mailSel = id; m.read = true;
+  renderMail(); drawBadges(); save();
+}
+function mailBack(){ mailSel = null; renderMail(); }
+function dealChip(m){
+  const d = m.deal; if(!d) return "";
+  const lbl = {open:"Awaiting reply", agreed:"Agreed", declined:"Declined", withdrawn:"Withdrawn", expired:"Expired"}[d.status];
+  return `<span class="mchip ${d.status==="open"?"open":d.status==="agreed"?"agreed":""}">${lbl}${d.status==="agreed"?" · "+money(d.fee):""}</span>`;
+}
+function renderMail(){
+  const box = document.getElementById("mail-app");
+  if(!box || !wm.open.mail) return;
+  const m = state.mail.find(x=>x.id===mailSel);
+  box.classList.toggle("reading", !!m);
+  const list = state.mail.length ? state.mail.map(x=>`<div class="mrow ${x.read?"":"unread"} ${x.id===mailSel?"sel":""}" onclick="readMail(${x.id})">
+      <span class="mdate">Wk ${woy(x.week)}</span><b>${x.from.org}</b><div class="msubj">${x.subject}</div>${dealChip(x)}</div>`).join("")
+    : `<div class="mempty">No mail.</div>`;
+  let read = `<div class="mempty">Choose a message to read it.</div>`;
+  if(m){
+    read = `<button class="act small mback" onclick="mailBack()">◂ Inbox</button>
+      <h3>${m.subject}</h3><div class="mfrom">${m.from.who} · ${m.from.sign}, ${m.from.org}</div>
+      ${m.msgs.map(x=>`<div class="msg ${x.me?"me":""}"><div class="mh">${x.me?"You":m.from.who} · week ${woy(x.week)}</div>${x.text}</div>`).join("")}
+      ${m.deal ? dealBox(m) : ""}`;
+  }
+  box.innerHTML = `<div class="mlist"><h4>Inbox${unreadMail()?` (${unreadMail()} unread)`:""}</h4>${list}</div><div class="mread">${read}</div>`;
+}
+function dealBox(m){
+  const d = m.deal, l = state.locos.find(x=>x.id===d.locoId);
+  const kindName = {railtour:"Main-line railtour", gala:"Gala on another railway", loan:"Loan to another railway"}[d.kind];
+  const clashes = [];
+  for(let w=d.start; w<d.start+d.weeks; w++) if(state.events[w]) clashes.push(`${EVENTS[state.events[w].type].icon} ${EVENTS[state.events[w].type].name} (week ${woy(w)})`);
+  let html = `<div class="deal"><b>${kindName}</b>
+    <ul class="specs">
+      <li><span>Locomotive</span><span>${d.number}${l?" · "+catOf("loco",l.cat).name:" (no longer yours)"}</span></li>
+      ${l?`<li><span>Condition now</span><span>${Math.round(l.condition*100)}% (about −${Math.round(d.wear*100)}% while away)</span></li>`:""}
+      <li><span>Away</span><span>${d.weeks>1?`weeks ${woy(d.start)}–${woy(d.start+d.weeks-1)}`:`week ${woy(d.start)} (${dateLabel(d.start)})`}</span></li>
+      <li><span>${d.status==="agreed"?"Agreed fee":"Their offer"}</span><span>${money(d.fee)}</span></li>
+      ${d.status==="open"?`<li><span>Reply by</span><span>the weekend of ${dateLabel(d.start-2)}</span></li>`:""}
+    </ul>`;
+  if(d.status==="open" && clashes.length) html += `<div class="issue">⚠ You have ${clashes.join(", ")} booked while ${d.number} would be away.</div>`;
+  if(d.status==="open"){
+    const busy = sending.has(m.id);
+    html += `<div class="row2">
+        <button class="act small greenbtn" ${busy?"disabled":""} onclick="dealAccept(${m.id})">Accept ${money(d.fee)}</button>
+        <span>or ask £<input type="number" id="counter-${m.id}" min="0" step="50" value="${r50(d.fee*1.2)}"></span>
+        <button class="act small" ${busy?"disabled":""} onclick="dealCounter(${m.id})">Send counter-offer</button>
+        <button class="act small warnbtn" ${busy?"disabled":""} onclick="dealDecline(${m.id})">Decline</button>
+      </div>
+      <p class="sub" style="margin:8px 0 0">${busy?"Sending… waiting for a reply.":`Every counter-offer tests their patience. Ask too much and they'll find another engine.`}</p>`;
+  }
+  return html + `</div>`;
+}
+function hireProblem(d){
+  const l = state.locos.find(x=>x.id===d.locoId);
+  if(!l) return `${d.number} isn't ours any more.`;
+  if(hirePending(l)) return `${d.number} is already promised to ${l.hire.org}.`;
+  if((l.busyUntil||0) > d.start) return `${d.number} will still be in the works.`;
+  return null;
+}
+function sendMail(m, myText, reply){
+  m.msgs.push({me:true, week:state.week, text:myText});
+  sending.add(m.id); renderMail(); save();
+  setTimeout(()=>{
+    sending.delete(m.id);
+    if(!state.mail.includes(m)) return;   // a new game was started meanwhile
+    reply();
+    render();
+    if(!(wm.active==="mail" && mailSel===m.id)){ m.read = false; drawBadges(); mailToast(); }
+    else { m.read = true; renderMail(); }
+  }, 1300 + Math.random()*900);
+}
+function agreeHire(m, fee, theirText){
+  const d = m.deal, l = state.locos.find(x=>x.id===d.locoId);
+  const prob = hireProblem(d);
+  if(prob){ d.status = "withdrawn"; m.msgs.push({me:false, week:state.week, text:`<p>Ah, we've just heard: ${prob} Never mind, we'll find something else.</p><p>${m.from.who}</p>`}); return; }
+  d.status = "agreed"; d.fee = fee;
+  l.hire = {org:m.from.org, by:m.from, from:d.start, until:d.start+d.weeks, wear:d.wear, rep:d.rep};
+  state.cash += fee;
+  logEntry(`Hired ${d.number} to ${m.from.org} (${d.weeks>1?d.weeks+" weeks":"week "+woy(d.start)}).`, fee);
+  m.msgs.push({me:false, week:state.week, text:theirText + `<p>The contract's attached and ${money(fee)} is on its way to you now.</p><p>${m.from.who}</p>`});
+}
+function dealAccept(id){
+  const m = state.mail.find(x=>x.id===id); if(!m || m.deal.status!=="open") return;
+  const prob = hireProblem(m.deal); if(prob){ alert(prob); return; }
+  sendMail(m, `<p>Thanks for asking. ${money(m.deal.fee)} is fine. ${m.deal.number} is yours for those dates.</p>`,
+    ()=>agreeHire(m, m.deal.fee, `<p>Splendid, thank you!</p>`));
+}
+function dealDecline(id){
+  const m = state.mail.find(x=>x.id===id); if(!m || m.deal.status!=="open") return;
+  sendMail(m, `<p>Sorry, we can't spare ${m.deal.number} on those dates.</p>`, ()=>{
+    m.deal.status = "declined";
+    m.msgs.push({me:false, week:state.week, text:`<p>Understood. Thanks for letting us know, and perhaps another time.</p><p>${m.from.who}</p>`});
+  });
+}
+function dealCounter(id){
+  const m = state.mail.find(x=>x.id===id); if(!m || m.deal.status!=="open") return;
+  const d = m.deal, ask = r50(+document.getElementById("counter-"+id).value || 0);
+  const prob = hireProblem(d); if(prob){ alert(prob); return; }
+  if(ask <= d.fee){ dealAccept(id); return; }
+  sendMail(m, `<p>We'd be happy to help, but we'd need <b>${money(ask)}</b> for ${d.number}.</p>`, ()=>{
+    if(ask <= d.max){ agreeHire(m, ask, `<p>${ask > d.fee*1.25 ? "That's a stretch for us, but" : "Fair enough:"} ${money(ask)} it is.</p>`); return; }
+    d.patience -= ask > d.max*1.6 ? 2 : 1;
+    if(d.patience <= 0){
+      d.status = "withdrawn";
+      m.msgs.push({me:false, week:state.week, text:`<p>I'm afraid that's well beyond our budget, so we'll look elsewhere. No hard feelings.</p><p>${m.from.who}</p>`});
+      return;
+    }
+    const prev = d.fee;
+    d.fee = Math.min(d.max, Math.max(prev + 50, r50(prev + (d.max - prev)*(0.5 + Math.random()*0.3))));
+    m.msgs.push({me:false, week:state.week, text:`<p>We can't stretch to ${money(ask)}, but we could go to <b>${money(d.fee)}</b>.${d.patience===1?" That really is our final offer.":""}</p><p>${m.from.who}</p>`});
+  });
+}
+
+/* ============================ MODAL / BOOT ============================ */
 function openModal(head, body, noClose){
   document.getElementById("modalHead").textContent = head;
   document.getElementById("modalBody").innerHTML = body;
@@ -2077,30 +2590,25 @@ function openModal(head, body, noClose){
   document.getElementById("modalBg").classList.add("show");
 }
 function closeModal(){ document.getElementById("modalBg").classList.remove("show"); }
-function showTab(name){
-  document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("active", x.dataset.tab===name));
-  document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active", x.id==="v-"+name));
-  if(name==="map") replayDraw(true);
-}
+function showTab(name){ openApp(name); }
 
 document.getElementById("modalClose").onclick = closeModal;
 document.getElementById("modalBg").addEventListener("click", e=>{ if(e.target.id==="modalBg" && !state.over) closeModal(); });
 document.getElementById("btn-advance").onclick = advanceWeek;
-document.querySelectorAll(".tabs button").forEach(b=>{ b.onclick = ()=>showTab(b.dataset.tab); });
 function startAgain(){
   if(!confirm("Start a new game from scratch? This railway will be lost unless you've saved a link to it.")) return;
   closeModal(); pendingReport = null;
   newGame(); buildMap(); replay.source = "plan"; replayControls(); replayDraw(true); showTab("tt");
 }
 document.getElementById("btn-newgame").onclick = startAgain;
-document.getElementById("btn-new").onclick = startAgain;
 document.getElementById("rp-play").onclick = ()=>setPlaying(!replay.playing);
 document.getElementById("rp-slider").oninput = e=>{ replay.t = +e.target.value; replayDraw(false); };
 document.getElementById("rp-speed").onchange = e=>{ replay.speed = +e.target.value; };
 document.getElementById("rp-source").onchange = e=>{ replay.source = e.target.value; replayDraw(true); };
 
-document.getElementById("btn-save").onclick = openSaveDialog;
+buildDesktop();
 if(!load()){ newGame(); } else { render(); }
+if(unreadMail()) setTimeout(mailToast, 900);
 buildMap();
 replayDraw(true);
 loadFromHash();
