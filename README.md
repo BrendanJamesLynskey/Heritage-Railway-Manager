@@ -29,6 +29,33 @@ close them, and switch between them on the **taskbar**, which also holds the
 **Start** button (the R&amp;H roundel) lists every app, plus Save / Load and
 New Game. On a phone, windows open full screen.
 
+## The Yard: Drive the Shunter
+
+When you press **Run the Weekend** you're offered the chance to marshal the
+first train yourself. Say yes and the laptop folds away: you're in the cab of
+the Class 08 shunter in Ravensgill yard, in first person (a small built-in
+WebGL renderer, so it still works offline).
+
+The yard is a classic *Inglenook* shunting puzzle: a headshunt that holds the
+shunter and three coaches, a three-way point, and three roads (the Platform
+road, Siding A and Siding B). The day's train engine, three of its coaches and
+a few spare vehicles start scattered across the sidings. Form the train on the
+Platform road **in the order shown**, engine nearest the points.
+
+| Control | Keys / on screen |
+|---------|------------------|
+| Drive forward / back | ↑ / ↓ or W / S, or hold ▶ / ◀ |
+| Brake | Space, or hold ■ |
+| Look round | ← / → or A / D, or drag (double-click to recentre) |
+| Points | 1 Platform road · 2 Siding A · 3 Siding B (locked while anything stands over them) |
+| Uncouple | U drops the far vehicle, or click ✂ between any two vehicles |
+
+Buffer up at under 2 mph to couple to everything standing in that cut; faster
+is a rough shunt, and over 5 mph is a crash. A mini-map and the job card show
+progress. Finish quickly with no rough shunts for ★★★ (+2 reputation and a
+morale boost), or leave the yard at any time and the shed staff finish the job.
+Then the weekend runs as normal.
+
 ## Mail: Hiring Out Your Locomotives
 
 Railtour companies and other heritage railways (all fictional) email asking
@@ -171,5 +198,7 @@ extension.
 ## Raspberry Pi 5
 
 Open the Pages link in Chromium on the Pi, or copy `index.html` across and
-open it as a file. Graphics are SVG and DOM only, with no WebGL, so they run
-smoothly on the Pi.
+open it as a file. The management game is SVG and DOM only. The yard uses
+WebGL, but only plain coloured boxes with no textures, and the picture is
+capped at 1.5× resolution, so the Pi 5's GPU handles it easily. If WebGL is
+turned off, the shed staff simply marshal the train for you.

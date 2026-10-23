@@ -130,6 +130,64 @@
     box-shadow:0 10px 30px rgba(0,0,0,.5);z-index:8500;font-size:.82rem;cursor:pointer;transform:translateY(16px);opacity:0;transition:transform .25s,opacity .25s;pointer-events:none}
   .toast.show{transform:none;opacity:1;pointer-events:auto}
   .toast small{display:block;opacity:.65;font-size:.68rem;margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px}
+  /* ---- the laptop folds away for the yard ---- */
+  .laptop{transition:transform .6s ease,opacity .6s ease}
+  .laptop.away{transform:scale(.55) translateY(40%);opacity:0;pointer-events:none}
+  /* ---- the yard (first person, WebGL) ---- */
+  #yard{position:fixed;inset:0;z-index:20000;background:#9ec3df;opacity:0;transition:opacity .6s;font-family:"Segoe UI",Tahoma,sans-serif;color:#fff;user-select:none;touch-action:none;overflow:hidden;line-height:1.35}
+  #yard.show{opacity:1}
+  #yard[hidden]{display:none}
+  #ygl,#ylab{position:absolute;inset:0;width:100%;height:100%;display:block}
+  #ylab{pointer-events:none}
+  .yh{position:absolute;background:rgba(14,19,25,.8);border:1px solid rgba(255,255,255,.16);border-radius:10px;padding:10px 12px;font-size:.78rem;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+  .yh b{color:#ffe9a8}
+  .ytl{top:12px;left:12px;width:215px}
+  .ytr{top:12px;right:12px;width:min(520px,calc(100% - 255px))}
+  .ybl{left:12px;bottom:12px;width:215px}
+  .ybc{position:absolute;left:239px;right:356px;bottom:12px;display:flex;flex-direction:column;gap:8px;align-items:center}
+  .ybc .yh{position:static}
+  .ybr{right:12px;bottom:12px;padding:6px}
+  .ybr canvas{display:block;width:330px;height:136px}
+  .yspeed{font:700 1.9rem/1 "Courier New",monospace;color:#ffe9a8}
+  .ysub{opacity:.75;font-size:.72rem}
+  .ystrip{display:flex;align-items:center;gap:3px;flex-wrap:wrap;margin:4px 0 8px}
+  .ychip{display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border-radius:5px;font-size:.7rem;font-weight:700;border:2px solid rgba(255,255,255,.25);white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+  .ychip.ok{border-color:#7ee08a}
+  .ychip.target{border-color:#ffd24a}
+  .ystop{display:inline-block;width:8px;height:22px;background:#c0392b;border-radius:2px;margin-right:3px}
+  .yh button,.ydrive button{background:#2b3a48;color:#fff;border:1px solid rgba(255,255,255,.22);border-radius:7px;cursor:pointer;font:600 .74rem "Segoe UI",sans-serif;padding:6px 9px}
+  .yh button:hover,.ydrive button:hover{background:#3b5064}
+  .yh button.on{background:#c48a00;border-color:#ffd24a;color:#1b1406}
+  .ypts{display:flex;flex-direction:column;gap:5px;margin-top:6px}
+  .ypts button{text-align:left}
+  .ylock{display:inline-block;width:9px;height:9px;border-radius:50%;background:#3ad16a;margin-right:5px;vertical-align:middle;box-shadow:0 0 6px #3ad16a}
+  .ylock.on{background:#e74c3c;box-shadow:0 0 6px #e74c3c}
+  .ycons{display:flex;align-items:center;flex-wrap:wrap;justify-content:center;gap:2px}
+  .ycut{padding:2px 5px!important;font-size:.8rem!important;background:none!important;border:none!important;opacity:.85}
+  .ycut:hover{opacity:1;color:#ff9d9d}
+  .ydrive{display:flex;gap:8px}
+  .ydrive button{width:76px;height:50px;font-size:.8rem;background:rgba(14,19,25,.82)}
+  .ydrive button.brake{background:rgba(110,31,36,.9)}
+  .ymsg{position:absolute;top:24%;left:50%;transform:translateX(-50%);font-size:1.35rem;font-weight:700;text-shadow:0 2px 8px #000;opacity:0;transition:opacity .3s;text-align:center;pointer-events:none;width:90%}
+  .ymsg.show{opacity:1}
+  .ymsg.bad{color:#ffb4a8}
+  .ydone{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,14,18,.55)}
+  .ydone[hidden]{display:none}
+  .ydone .card{max-width:420px;color:var(--ink);text-align:center}
+  .ystars{font-size:2.4rem;color:#c48a00;letter-spacing:4px}
+  @media(max-width:900px){
+    .yh{font-size:.72rem}
+    .ytl{top:8px;left:8px;width:calc(58% - 12px);padding:7px 9px}
+    .ytl .yhelp{display:none}
+    .yspeed{font-size:1.4rem}
+    .ybr{top:8px;right:8px;bottom:auto;width:calc(42% - 12px);padding:4px}
+    .ybr canvas{width:100%;height:auto}
+    .ytr{top:auto;bottom:250px;left:8px;right:8px;width:auto}
+    .ybl{left:8px;right:8px;bottom:138px;width:auto;padding:7px 9px}
+    .ypts{flex-direction:row;flex-wrap:wrap}
+    .ybc{left:8px;right:8px;bottom:8px}
+    .ydrive button{width:84px;height:46px}
+  }
   /* ---- mail ---- */
   #v-mail{height:100%}
   .mail{display:grid;grid-template-columns:290px 1fr;height:100%;background:#fff}
@@ -434,6 +492,7 @@
       <ul style="font-size:.9rem">
         <li><b>The laptop:</b> each part of the railway is an app on the desktop. Double-click an icon (or tap it on a touch screen) to open its window; drag windows by the title bar, resize them from the corner, and switch between them on the taskbar. The <b>Start</b> button (the R&amp;H roundel) lists every app.</li>
         <li><b>Mail:</b> railtour companies and other heritage railways email asking to hire your locomotives. Accept their offer, decline, or send a counter-offer: ask for more, but push too hard and they'll go elsewhere. A hired-out engine is away for the weeks agreed, and comes back a little more worn.</li>
+        <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to marshal the first train: the laptop folds away and you're in the cab. Form the train on the Platform road in the order shown, using the headshunt and Sidings A and B. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the far vehicle. Buffer up gently (under 2 mph) to couple. A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
         <li><b>Each turn is one week.</b> Plan the weekend in the <b>Timetable</b> app, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week. The weekend then plays out live on the <b>Line Map</b>, all its days together in the time of one (change the speed there, or pause it). You can't start the next week until the last train is home, but you can carry on booking events, buying stock and recruiting while it runs. The takings arrive when the weekend ends.</li>
         <li><b>Timetabling:</b> every train is a round trip from Ravensgill Junction to Moorend and back, about two hours with turn-rounds. Give each loco a set of departure times. If a train isn't back in time, its next trip leaves late.</li>
         <li><b>Single line:</b> trains can only pass at the loops (Lowerdale and Fellside, plus Brackenby and Highmoor Summit once built), and only one train may be on each single-line section. The train graph shows where trains are held. Each loop has one road for each direction (Moorend holds two trains), so too many trains with too few loops means trains are held and run late.</li>
@@ -466,6 +525,20 @@
 </div><!-- /lid -->
 <div class="base"></div>
 </div><!-- /laptop -->
+
+<div id="yard" hidden>
+  <canvas id="ygl"></canvas><canvas id="ylab"></canvas>
+  <div class="yh ytl" id="yInfo"></div>
+  <div class="yh ytr" id="yJob"></div>
+  <div class="yh ybl" id="yPoints"></div>
+  <div class="ybc"><div class="yh ycons" id="yConsist"></div>
+    <div class="ydrive">
+      <button data-hold="rev">◀ Back</button><button class="brake" data-hold="brake">■ Brake</button><button data-hold="fwd">Forward ▶</button>
+    </div></div>
+  <div class="yh ybr"><canvas id="ymap" width="660" height="272"></canvas></div>
+  <div class="ymsg" id="yMsg"></div>
+  <div class="ydone" id="yDone" hidden></div>
+</div>
 
 <script>
 "use strict";
@@ -1091,7 +1164,7 @@ function evaluateDay(plan, sim, noise){
 // so the player can carry on booking events and buying stock while it runs.
 let live = null;   // the weekend in progress: {plan, report, mk, day, t0, endT}
 function onLine(item){ return !!live && live.plan.sets.some(s=>s.loco===item || s.rake===item); }
-function advanceWeek(){
+function advanceWeek(opt={}){
   if(state.over || live) return;
   const plan = currentPlan();
   const days = daysThisWeek();
@@ -1107,7 +1180,13 @@ function advanceWeek(){
     if(!confirm(`The ${def.name} is booked this weekend but there are no trains in the timetable. Cancel it and lose the deposit?`)) return;
   }
 
+  if(runDays && !opt.go){
+    const job = shuntJob(plan);
+    if(job){ offerShunt(job); return; }
+  }
+
   const report = {week:state.week, weather:state.weather, days:runDays, ev, def, dayRes:[], events:[], startCash:state.cash};
+  if(opt.shunt) report.events.push({cls:"good", text:`🚜 You marshalled the ${opt.shunt.train} train yourself: ${"★".repeat(opt.shunt.stars)}${"☆".repeat(3-opt.shunt.stars)} (${opt.shunt.time}, ${opt.shunt.rough} rough shunt${opt.shunt.rough===1?"":"s"}).`});
   for(let d=0; d<runDays; d++){
     // roll failures for each set: per-trip probability from condition and reliability
     const failTrip = plan.sets.map(s=>{
@@ -2582,6 +2661,506 @@ function dealCounter(id){
   });
 }
 
+
+/* ============================ THE YARD: SHUNTING IN FIRST PERSON ============================ */
+// An "Inglenook" yard: a headshunt (the lead) and a three-way point to the Platform road,
+// Siding A and Siding B. The shunter can only push and pull, so the order of a train
+// has to be worked out by splitting and re-forming cuts of vehicles.
+// Track is measured in metres along each route; the lead (0..LEAD) is shared by all three.
+const YARD = {lead:75, zone:36, sid:[86,64,64], off:[0, 4.6, -10]};
+const ROUTE_NAMES = ["Platform road", "Siding A", "Siding B"];
+const MPH = 2.237, COUPLE = 0.9, CRASH = 2.3, VMAX = 6.7;   // m/s
+const YPATH = [1,2,3].map(r=>{
+  const off = YARD.off[r-1], pts = [];
+  let s = YARD.lead, px = 0, pz = YARD.lead, zoneEnd = 0;
+  for(let z = YARD.lead; ; z += 0.5){
+    const t = Math.min(1, (z - YARD.lead)/YARD.zone), x = off*(1 - Math.cos(Math.PI*t))/2;
+    s += Math.hypot(x - px, z - pz); px = x; pz = z;
+    if(t>=1 && !zoneEnd) zoneEnd = s;
+    pts.push({x, z, s});
+    if(zoneEnd && s >= zoneEnd + YARD.sid[r-1] + 2) break;
+  }
+  return {pts, zoneEnd, end: zoneEnd + YARD.sid[r-1]};
+});
+const zoneEnd = r => YPATH[(r||1)-1].zoneEnd;
+const routeEnd = r => YPATH[r-1].end;
+function pathPos(r, s){
+  if(s <= YARD.lead || !r) return {x:0, z:s};
+  const P = YPATH[r-1].pts;
+  let lo = 0, hi = P.length-1;
+  while(hi - lo > 1){ const m = (lo+hi)>>1; if(P[m].s < s) lo = m; else hi = m; }
+  const a = P[lo], b = P[hi], f = Math.max(0, Math.min(1, (s - a.s)/((b.s - a.s)||1)));
+  return {x: a.x + (b.x-a.x)*f, z: a.z + (b.z-a.z)*f};
+}
+function vPose(v){
+  const f = pathPos(v.route, v.s + v.len*0.36), r = pathPos(v.route, v.s - v.len*0.36);
+  return {x:(f.x+r.x)/2, z:(f.z+r.z)/2, yaw:Math.atan2(f.x-r.x, f.z-r.z)};
+}
+
+let yd = null;   // the shunting session
+const shuffle = a => { for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; };
+function locoLivery(key, kind){
+  if(kind==="diesel") return ["c37","c47","c31","c56","c60","c50"].some(k=>key.includes(k)) ? [.16,.32,.56] : [.1,.34,.21];
+  if(key.includes("pannier") || key.includes("duke") || key.includes("braunton")) return [.07,.3,.15];
+  if(["b1","k1","k4","a4","tornado","greenarrow","j27"].some(k=>key.includes(k))) return [.24,.5,.2];
+  return [.09,.09,.1];
+}
+function shuntJob(plan){
+  const set = plan.sets.find(x=>x.kind!=="dmu" && x.rcat);
+  if(!set) return null;
+  const rk = set.rcat.key || "";
+  const liv = rk.includes("teak") ? [[.5,.29,.13],[.72,.52,.3]] : rk.includes("pullman") ? [[.34,.2,.12],[.9,.84,.68]]
+            : rk.includes("mk2") ? [[.16,.3,.55],[.86,.86,.86]] : [[.42,.08,.1],[.86,.8,.62]];
+  const num = () => String(10000 + Math.floor(Math.random()*89999));
+  const types = shuffle(["BSK","SK","TSO","RMB","CK","BCK"]);
+  const coach = (t) => ({type:"coach", label:`${t} ${num()}`, len:20, col:liv[0], win:liv[1]});
+  const loco = {type:set.kind, label:set.label, len:set.kind==="steam"?14:17, col:locoLivery(set.lcat.key||"", set.kind), key:set.lcat.key||""};
+  const coaches = [coach(types[0]), coach(types[1]), coach(types[2])];
+  const target = [...coaches, loco];                     // from the buffer stops out to the points
+  const spares = [coach(types[3]), {type:"van", label:"Brake van", len:8, col:[.38,.29,.22]}];
+  const other = state.locos.find(l=>l.kind!=="dmu" && !plan.sets.some(x=>x.loco===l) && !isAway(l));
+  spares.push(other ? {type:other.kind, label:other.number, len:other.kind==="steam"?14:17, col:locoLivery(other.cat, other.kind), key:other.cat}
+                    : {type:"coach", label:`BG ${num()}`, len:18, col:liv[0], win:liv[0]});
+  return {train:`${fmtT(set.deps[0])} ${set.label}`, time:fmtT(set.deps[0]), set:set.label, target, spares};
+}
+function offerShunt(job){
+  openModal("Marshal the First Train?", `<p>Before the ${job.time} departure, <b>${job.set}</b> and its coaches have to be formed up on the Platform road in the right order. The yard's a jumble after last week.</p>
+    <p>Climb into the Class 08 shunter and do it yourself? A clean, quick job lifts reputation and morale. Or the shed staff will sort it out.</p>
+    <div class="toolbar" style="margin-bottom:0">
+      <button class="act greenbtn" style="width:auto" onclick="closeModal();startShunt(pendingJob)">🚜 Drive the shunter</button>
+      <button class="act" style="width:auto" onclick="closeModal();advanceWeek({go:true})">Let the shed staff do it ▸</button>
+    </div>`);
+  pendingJob = job;
+  document.getElementById("modalClose").style.display = "none";
+}
+let pendingJob = null;
+
+function startShunt(job){
+  const gl = yardGL();
+  if(!gl){ alert("Your browser can't show the 3D yard (WebGL is turned off), so the shed staff will marshal the train."); advanceWeek({go:true}); return; }
+  // lay the vehicles out at random, keeping each siding within its length
+  const veh = [...job.target, ...job.spares].map((v,i)=>({...v, id:i, s:0, route:null}));
+  const targetIds = job.target.map(t=>veh.find(v=>v.label===t.label).id);
+  let lay;
+  for(let tries=0; tries<400; tries++){
+    lay = [[],[],[]]; const room = [YARD.sid[0]-1, YARD.sid[1]-1, YARD.sid[2]-1];
+    let ok = true;
+    for(const v of shuffle([...veh])){
+      const fits = [0,1,2].filter(k=>room[k] >= v.len);
+      if(!fits.length){ ok = false; break; }
+      const k = fits[Math.floor(Math.random()*fits.length)];
+      lay[k].push(v); room[k] -= v.len;
+    }
+    if(ok && !(lay[0].length===targetIds.length && lay[0].every((v,i)=>v.id===targetIds[i]))) break;
+  }
+  lay.forEach((list,k)=>{ let edge = routeEnd(k+1) - 0.4; list.forEach(v=>{ v.route = k+1; v.s = edge - v.len/2; edge -= v.len; }); });
+  const sh = {id:-1, type:"shunter", label:"08 773", len:9, col:[.1,.36,.22], s:6.5, route:null};
+  yd = {job, veh, sh, string:[sh], targetIds, points:1, v:0, look:0, pitch:-0.06, t:0, rough:0, keys:{}, done:false, raf:0, last:0, msgT:0};
+  yd.all = [sh, ...veh];
+  yd.all.forEach(v=>{ v.mesh = meshBuffer(gl, v.type==="shunter" ? shunterMesh() : vehicleMesh(v)); });
+  // fold the laptop away and drop into the cab
+  document.querySelector(".laptop").classList.add("away");
+  setTimeout(()=>{
+    const y = document.getElementById("yard");
+    y.hidden = false; document.getElementById("yDone").hidden = true;
+    yardSize(); yHud();
+    requestAnimationFrame(()=>y.classList.add("show"));
+    yd.raf = requestAnimationFrame(yardFrame);
+    yMsg(`Form the ${job.set} train on the Platform road`);
+  }, 550);
+}
+function endShunt(result){
+  cancelAnimationFrame(yd.raf);
+  const gl = yardGL(); yd.all.forEach(v=>gl.deleteBuffer(v.mesh.buf));
+  const job = yd.job; yd = null;
+  const y = document.getElementById("yard");
+  y.classList.remove("show");
+  setTimeout(()=>{ y.hidden = true; document.querySelector(".laptop").classList.remove("away"); }, 450);
+  if(result){
+    const rep = result.stars===3 ? 2 : result.stars===2 ? 1 : 0;
+    state.rep = Math.min(160, state.rep + rep);
+    state.vol.morale = Math.min(1, state.vol.morale + (result.stars===3 ? 0.03 : 0.01));
+    logEntry(`Marshalled the ${job.train} train in the yard yourself (${"★".repeat(result.stars)}).`, 0);
+    result.train = job.train;
+  }
+  setTimeout(()=>advanceWeek({go:true, shunt:result}), 650);
+}
+function quitShunt(){
+  if(confirm("Leave the yard? The shed staff will finish marshalling the train.")) endShunt(null);
+}
+
+/* ---- yard physics ---- */
+function yRouteFor(v){ return v.route || yd.points; }
+function yShares(r, v){ return v.route==null || v.route===r; }
+function yFoul(){   // anything standing over the points locks them
+  return yd.all.some(v=>v.s + v.len/2 > YARD.lead && v.s - v.len/2 < zoneEnd(yRouteFor(v)));
+}
+function ySetRoutes(){
+  yd.all.forEach(v=>{ if(v.s + v.len/2 > YARD.lead){ if(v.route==null) v.route = yd.points; } else v.route = null; });
+}
+function ySetPoints(r){
+  if(!yd || yd.points===r) return;
+  if(yFoul()){ yMsg("Points locked: something is standing over them", true); return; }
+  yd.points = r; yHud();
+}
+function yUncouple(keep){
+  if(Math.abs(yd.v) > 0.05){ yMsg("Stop before uncoupling", true); return; }
+  if(yd.string.length<2){ yMsg("Nothing coupled to the shunter", true); return; }
+  if(keep===undefined) keep = yd.string.length-1;
+  const left = yd.string.splice(keep);
+  yMsg(`Uncoupled ${left.map(v=>v.label).join(", ")}`);
+  yHud();
+}
+function yStep(dt){
+  const k = yd.keys, n = yd.string.length - 1;
+  const acc = 0.75/(1 + 0.12*n);
+  if(k.fwd) yd.v += acc*dt;
+  if(k.rev) yd.v -= acc*dt;
+  if(k.brake) yd.v -= Math.sign(yd.v)*Math.min(Math.abs(yd.v), 2.0*dt);
+  else if(!k.fwd && !k.rev) yd.v -= Math.sign(yd.v)*Math.min(Math.abs(yd.v), 0.06*dt);
+  yd.v = Math.max(-VMAX, Math.min(VMAX, yd.v));
+  let ds = yd.v*dt;
+  if(ds > 0){
+    const F = yd.string.reduce((a,b)=>b.s>a.s?b:a), r = yRouteFor(F);
+    let gap = routeEnd(r) - (F.s + F.len/2), hit = null;
+    yd.veh.forEach(v=>{ if(!yd.string.includes(v) && v.s > F.s && yShares(r, v)){ const g = v.s - v.len/2 - (F.s + F.len/2); if(g < gap){ gap = g; hit = v; } } });
+    if(ds >= gap){ ds = Math.max(0, gap); yImpact(hit); }
+  } else if(ds < 0){
+    const gap = yd.sh.s - yd.sh.len/2 - 0.4;
+    if(-ds >= gap){ ds = -Math.max(0, gap); yImpact(null); }
+  }
+  yd.string.forEach(v=>v.s += ds);
+  ySetRoutes();
+  yd.t += dt;
+}
+function yImpact(v){
+  const sp = Math.abs(yd.v); yd.v = 0;
+  if(!v){ if(sp > COUPLE){ yd.rough++; yMsg("Bang! You hit the buffer stops", true); } return; }
+  if(sp > CRASH){ yd.rough += 3; yMsg(`Crash! Far too fast into ${v.label}`, true); return; }
+  // couple to the whole cut standing buffer to buffer
+  let cur = v; const cut = [v];
+  for(;;){
+    const r = yRouteFor(cur);
+    const nx = yd.veh.find(w=>!yd.string.includes(w) && !cut.includes(w) && w.s > cur.s && yShares(r, w) && (w.s - w.len/2) - (cur.s + cur.len/2) < 0.2);
+    if(!nx) break; cut.push(nx); cur = nx;
+  }
+  yd.string.push(...cut);
+  if(sp > COUPLE){ yd.rough++; yMsg(`Rough shunt! Coupled to ${cut.length>1?cut.length+" vehicles":v.label}, but take it gently`, true); }
+  else yMsg(`Coupled to ${cut.map(x=>x.label).join(", ")}`);
+  yHud();
+}
+function yPlatform(){   // what's on the Platform road, buffer-stop end first (coupled vehicles included)
+  return yd.veh.filter(v=>v.route===1 && v.s + v.len/2 > YARD.lead).sort((a,b)=>b.s-a.s);
+}
+function yCheckDone(){
+  if(yd.done || Math.abs(yd.v) > 0.02) return;
+  const P = yPlatform();
+  if(!(P.length===yd.targetIds.length && P.every((v,i)=>v.id===yd.targetIds[i] && v.s - v.len/2 >= zoneEnd(1) - 0.01))) return;
+  if(P.some(v=>yd.string.includes(v))){ if(!yd.toldUncouple){ yd.toldUncouple = true; yMsg("That's the train! Uncouple the shunter to finish"); } return; }
+  {
+    yd.done = true; yd.v = 0;
+    const mins = yd.t/60, stars = yd.rough===0 && mins < 12 ? 3 : yd.rough <= 2 && mins < 20 ? 2 : 1;
+    const time = `${Math.floor(yd.t/60)}:${String(Math.floor(yd.t%60)).padStart(2,"0")}`;
+    yd.result = {stars, time, rough:yd.rough};
+    const d = document.getElementById("yDone");
+    d.innerHTML = `<div class="card"><h3 style="justify-content:center">Train marshalled!</h3>
+      <div class="ystars">${"★".repeat(stars)}${"☆".repeat(3-stars)}</div>
+      <p>${yd.job.set}'s train is ready on the Platform road.<br>Time ${time} · ${yd.rough} rough shunt${yd.rough===1?"":"s"}</p>
+      <p class="sub">${stars===3?"A textbook job. The shed staff are impressed (+2 reputation, morale up).":stars===2?"Good work (+1 reputation).":"It's done, if not pretty."}</p>
+      <button class="act greenbtn" onclick="endShunt(yd.result)">Back to the laptop and run the weekend ▸</button></div>`;
+    d.hidden = false;
+  }
+}
+
+/* ---- yard HUD ---- */
+const rgb = c => `rgb(${c.map(x=>Math.round(x*255)).join(",")})`;
+function yChip(v, cls){ return `<span class="ychip ${cls||""}" style="background:${rgb(v.col)}">${v.label}</span>`; }
+function yMsg(text, bad){
+  const m = document.getElementById("yMsg"); m.textContent = text; m.className = "ymsg show" + (bad?" bad":"");
+  clearTimeout(yd.msgT); yd.msgT = setTimeout(()=>m.className = "ymsg", 2600);
+}
+function yHud(){
+  if(!yd) return;
+  const want = yd.targetIds.map(id=>yd.veh[id]), P = yPlatform();
+  document.getElementById("yJob").innerHTML = `<b>Form the ${yd.job.train} train on the Platform road</b>
+    <div class="ysub">In this order, from the buffer stops out to the points:</div>
+    <div class="ystrip"><span class="ystop"></span>${want.map(v=>yChip(v,"target")).join("")}<span class="ysub">→ points</span></div>
+    <div class="ysub">On the Platform road now:</div>
+    <div class="ystrip"><span class="ystop"></span>${P.length ? P.map((v,i)=>yChip(v, v.id===yd.targetIds[i]?"ok":"")).join("") : `<span class="ysub">empty</span>`}</div>`;
+  const foul = yFoul();
+  document.getElementById("yPoints").innerHTML = `<b>Points</b> <span class="ysub">(keys 1 · 2 · 3)</span><div class="ysub" style="margin-top:3px"><span class="ylock ${foul?"on":""}"></span>${foul?"Locked: vehicle over the points":"Free to change"}</div>
+    <div class="ypts">${[2,1,3].map(r=>`<button class="${yd.points===r?"on":""}" onclick="ySetPoints(${r})">${r} ${r===2?"◤":r===1?"▲":"◥"} ${ROUTE_NAMES[r-1]}</button>`).join("")}</div>`;
+  document.getElementById("yConsist").innerHTML = yd.string.map((v,i)=>
+      (i ? `<button class="ycut" title="Uncouple here" onclick="yUncouple(${i})">✂</button>` : "") + yChip(v)).join("")
+    + `<span class="ysub" style="margin-left:8px">U uncouples the far end</span>`;
+  yInfo();
+}
+function yInfo(){
+  const mph = Math.abs(yd.v)*MPH;
+  document.getElementById("yInfo").innerHTML = `<div class="ysub">Class 08 shunter · ${yd.v>0.05?"forward ▲":yd.v<-0.05?"reverse ▼":"stopped"}</div>
+    <div class="yspeed">${mph.toFixed(1)} <span style="font-size:.9rem">mph</span></div>
+    <div class="ysub">${mph > 2 ? "<b>Too fast to couple</b>" : "Couple at under 2 mph"}</div>
+    <div style="margin-top:6px">⏱ ${Math.floor(yd.t/60)}:${String(Math.floor(yd.t%60)).padStart(2,"0")} · rough shunts <b>${yd.rough}</b></div>
+    <div class="ysub yhelp" style="margin:6px 0">↑/↓ or W/S drive · Space brake · ←/→ look · 1/2/3 points · U uncouple</div>
+    <button onclick="quitShunt()">✕ Leave the yard</button>`;
+}
+function yMap(){
+  const c = document.getElementById("ymap"), g = c.getContext("2d"), W = c.width, H = c.height;
+  const zMax = 200, u = z => 14 + z*(W-28)/zMax, v = x => H*0.48 - x*(H/34);
+  g.clearRect(0,0,W,H);
+  g.lineCap = "round";
+  g.strokeStyle = "rgba(255,255,255,.35)"; g.lineWidth = 4;
+  g.beginPath(); g.moveTo(u(0), v(0)); g.lineTo(u(YARD.lead), v(0)); g.stroke();
+  YPATH.forEach((P,i)=>{ g.strokeStyle = (i+1)===yd.points ? "rgba(255,210,74,.9)" : "rgba(255,255,255,.35)"; g.beginPath(); P.pts.forEach((q,j)=>j?g.lineTo(u(q.z),v(q.x)):g.moveTo(u(q.z),v(q.x))); g.stroke(); });
+  g.fillStyle = "#c0392b"; g.fillRect(u(0)-6, v(0)-9, 5, 18);
+  [1,2,3].forEach(r=>{ const e = pathPos(r, routeEnd(r)); g.fillRect(u(e.z)+1, v(e.x)-9, 5, 18); });
+  g.font = "bold 17px Segoe UI, sans-serif"; g.fillStyle = "rgba(255,255,255,.65)";
+  [1,2,3].forEach(r=>{ const e = pathPos(r, zoneEnd(r) + 4); g.fillText(ROUTE_NAMES[r-1], u(e.z), v(e.x) + (r===2?-12:24)); });
+  yd.all.forEach(x=>{
+    const a = pathPos(x.route, x.s - x.len/2 + 0.6), b = pathPos(x.route, x.s + x.len/2 - 0.6);
+    g.strokeStyle = x.type==="shunter" ? "#ffd24a" : rgb(x.col); g.lineWidth = 12;
+    g.beginPath(); g.moveTo(u(a.z), v(a.x)); g.lineTo(u(b.z), v(b.x)); g.stroke();
+    if(yd.targetIds.includes(x.id)){ g.strokeStyle = "#ffd24a"; g.lineWidth = 2; g.strokeRect(Math.min(u(a.z),u(b.z))-7, Math.min(v(a.x),v(b.x))-7, Math.abs(u(b.z)-u(a.z))+14, Math.abs(v(b.x)-v(a.x))+14); }
+  });
+}
+
+/* ---- yard rendering: a small WebGL box renderer ---- */
+let YGL = null;
+function yardGL(){
+  if(YGL !== null) return YGL && YGL.gl;
+  const cv = document.getElementById("ygl");
+  const gl = cv.getContext("webgl", {antialias:true});
+  if(!gl){ YGL = false; return null; }
+  const sh = (type, src)=>{ const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); return o; };
+  const prog = gl.createProgram();
+  gl.attachShader(prog, sh(gl.VERTEX_SHADER, `attribute vec3 p; attribute vec3 n; attribute vec3 c;
+    uniform mat4 vp, m; varying vec3 col; varying float d;
+    void main(){ vec4 w = m*vec4(p,1.0); gl_Position = vp*w; vec3 nn = (m*vec4(n,0.0)).xyz;
+      float l = max(dot(nn, normalize(vec3(0.45,0.8,0.35))), 0.0); col = c*(0.48 + 0.62*l + 0.06*nn.y); d = gl_Position.w; }`));
+  gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, `precision mediump float; uniform vec3 fog; varying vec3 col; varying float d;
+    void main(){ float f = clamp((d - 90.0)/380.0, 0.0, 1.0); gl_FragColor = vec4(mix(col, fog, f*f*0.85 + f*0.15), 1.0); }`));
+  gl.linkProgram(prog); gl.useProgram(prog);
+  YGL = {gl, prog, vp:gl.getUniformLocation(prog,"vp"), m:gl.getUniformLocation(prog,"m"), fog:gl.getUniformLocation(prog,"fog"),
+         ap:gl.getAttribLocation(prog,"p"), an:gl.getAttribLocation(prog,"n"), ac:gl.getAttribLocation(prog,"c")};
+  gl.enable(gl.DEPTH_TEST);
+  YGL.scene = meshBuffer(gl, sceneryMesh());
+  return gl;
+}
+const FACES = [
+  [[1,0,0],[[1,-1,-1],[1,1,-1],[1,1,1],[1,-1,1]]], [[-1,0,0],[[-1,-1,1],[-1,1,1],[-1,1,-1],[-1,-1,-1]]],
+  [[0,1,0],[[-1,1,-1],[-1,1,1],[1,1,1],[1,1,-1]]], [[0,-1,0],[[-1,-1,1],[-1,-1,-1],[1,-1,-1],[1,-1,1]]],
+  [[0,0,1],[[1,-1,1],[1,1,1],[-1,1,1],[-1,-1,1]]], [[0,0,-1],[[-1,-1,-1],[-1,1,-1],[1,1,-1],[1,-1,-1]]]];
+function box(a, x,y,z, w,h,l, col, yaw){
+  const c = Math.cos(yaw||0), s = Math.sin(yaw||0);
+  for(const [n,q] of FACES){
+    const nx = c*n[0] + s*n[2], nz = -s*n[0] + c*n[2];
+    const P = q.map(([qx,qy,qz])=>{ const lx = qx*w/2, lz = qz*l/2; return [x + c*lx + s*lz, y + qy*h/2, z - s*lx + c*lz]; });
+    for(const i of [0,1,2,0,2,3]) a.push(P[i][0],P[i][1],P[i][2], nx,n[1],nz, col[0],col[1],col[2]);
+  }
+}
+function meshBuffer(gl, arr){
+  const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arr), gl.STATIC_DRAW);
+  return {buf, count: arr.length/9};
+}
+function sceneryMesh(){
+  const a = [], grass = [.36,.47,.25], cinder = [.36,.33,.29], ballast = [.47,.44,.4], sleeper = [.26,.18,.12], rail = [.55,.53,.5];
+  const brick = [.56,.3,.23], slate = [.24,.25,.29], cream = [.86,.8,.62], dark = [.12,.12,.13];
+  box(a, 0,-0.1,100, 1400,0.2,1400, grass);
+  box(a, -2,0.01,95, 46,0.02,240, cinder);
+  const track = (r, s0, s1)=>{
+    for(let s=s0; s<s1; s+=2){
+      const p = pathPos(r, s+1), q = pathPos(r, s+1.01), yaw = Math.atan2(q.x-p.x, q.z-p.z);
+      box(a, p.x,0.12,p.z, 3.4,0.24,2.05, ballast, yaw);
+      for(const o of [-0.72, 0.72]) box(a, p.x + Math.cos(yaw)*o, 0.45, p.z - Math.sin(yaw)*o, 0.09,0.16,2.05, rail, yaw);
+    }
+    for(let s=s0+0.4; s<s1; s+=0.8){
+      const p = pathPos(r, s), q = pathPos(r, s+0.01), yaw = Math.atan2(q.x-p.x, q.z-p.z);
+      box(a, p.x,0.3,p.z, 2.6,0.14,0.26, sleeper, yaw);
+    }
+  };
+  track(1, -2, YARD.lead); [1,2,3].forEach(r=>track(r, YARD.lead, routeEnd(r)+1.5));
+  const stop = (x,z,yaw)=>{ box(a, x,0.75,z, 2.4,1.0,0.8, [.35,.25,.18], yaw); box(a, x,1.35,z, 2.8,0.35,0.3, [.75,.15,.12], yaw); };
+  stop(0,-0.6,0);
+  [1,2,3].forEach(r=>{ const e = pathPos(r, routeEnd(r)+0.6); stop(e.x, e.z, 0); });
+  // ground frame for the points and a lamp
+  box(a, 3.2,0.5,YARD.lead-4, 1.2,0.8,2.4, [.4,.36,.3]); box(a, 3.2,1.1,YARD.lead-4, 0.15,0.9,0.15, [.85,.85,.85]);
+  // platform between the Platform road and Siding B, with canopy and building
+  const pz0 = zoneEnd(1)+2, pz1 = routeEnd(1)+4, pc = (pz0+pz1)/2;
+  box(a, -5,0.47,pc, 6.9,0.94,pz1-pz0, [.6,.57,.52]); box(a, -1.72,0.95,pc, 0.3,0.02,pz1-pz0, [.95,.92,.8]); box(a, -8.28,0.95,pc, 0.3,0.02,pz1-pz0, [.95,.92,.8]);
+  for(let z=pz0+6; z<pz0+50; z+=8) box(a, -5,2.6,z, 0.25,3.3,0.25, [.3,.12,.12]);
+  box(a, -5,4.35,pz0+27, 5.4,0.25,50, [.32,.3,.3]); box(a, -5,4.1,pz0+27, 5.6,0.2,50.4, cream);
+  box(a, -5,2.6,pc+28, 4.2,3.3,14, brick); box(a, -5,4.5,pc+28, 4.8,0.5,14.6, slate);
+  for(let z=pc+22; z<pc+35; z+=3) box(a, -2.88,2.4,z, 0.05,1.2,1.2, [.18,.22,.27]);
+  // signal box at the toe of the points
+  box(a, -6,1.7,YARD.lead-6, 4,3.4,6, brick); box(a, -6,4.6,YARD.lead-6, 4.2,2.4,6.2, cream);
+  box(a, -3.88,4.7,YARD.lead-6, 0.05,1.4,5.2, [.18,.22,.27]); box(a, -6,6.1,YARD.lead-6, 5,0.5,7.2, slate);
+  box(a, -6,6.6,YARD.lead-6, 0.3,0.3,7.6, slate);
+  // engine shed, water tower and coal stage beside the lead
+  box(a, 16,3.6,18, 12,7.2,34, brick); box(a, 16,7.6,18, 13,0.9,35, slate); box(a, 16,8.4,18, 2,0.8,35, slate);
+  box(a, 9.96,2.8,10, 0.05,5,4.6, [.08,.08,.09]); box(a, 9.96,2.8,24, 0.05,5,4.6, [.08,.08,.09]);
+  for(const [dx,dz] of [[-1.1,-1.1],[1.1,-1.1],[-1.1,1.1],[1.1,1.1]]) box(a, 5.5+dx,2.5,40+dz, 0.3,5,0.3, dark);
+  box(a, 5.5,6.2,40, 3.4,2.4,3.4, [.2,.24,.27]); box(a, 4.2,4.8,40, 0.25,0.25,2.6, dark);
+  box(a, 6,0.8,56, 4,1.6,8, [.08,.08,.08]);
+  // fences
+  for(let z=-10; z<230; z+=3) box(a, 24,0.6,z, 0.12,1.2,0.12, [.4,.32,.22]);
+  box(a, 24,1.0,110, 0.06,0.12,240, [.4,.32,.22]);
+  // moors and hills round about
+  let seed = 7; const rnd = ()=>((seed = (seed*16807) % 2147483647)/2147483647);
+  for(let i=0;i<46;i++){
+    const ang = i/46*Math.PI*2 + rnd()*0.1, dist = 320 + rnd()*220, w = 120 + rnd()*160, h = 22 + rnd()*55;
+    const col = rnd()<0.4 ? [.46,.4,.3] : [.28+rnd()*.06,.4+rnd()*.06,.24];
+    box(a, Math.sin(ang)*dist, h/2-2, 100 + Math.cos(ang)*dist, w, h, w*0.7, col, ang);
+  }
+  for(let i=0;i<70;i++){
+    const x = (rnd()-0.5)*260, z = -60 + rnd()*340;
+    if(x > -30 && x < 30 && z > -25 && z < 225) continue;
+    const h = 3 + rnd()*3, y = rnd()*Math.PI;
+    box(a, x,h/2,z, 0.5,h,0.5, [.3,.22,.15], y);
+    box(a, x,h+1.6,z, 3.2+rnd(),3.6,3.2+rnd(), [.17,.32+rnd()*.08,.16], y);
+  }
+  return a;
+}
+function vehicleMesh(v){
+  const a = [], L = v.len, h = L/2, dark = [.11,.11,.12], red = [.62,.12,.1];
+  if(v.type==="coach"){
+    box(a, 0,2.25,0, 2.8,2.5,L-0.7, v.col); box(a, 0,3.62,0, 2.6,0.26,L-0.9, [.3,.3,.32]);
+    for(const sx of [1.41,-1.41]) box(a, sx,2.75,0, 0.03,0.62,L-3, v.win);
+    box(a, 0,1.05,0, 2.3,0.3,L-2, dark);
+    for(const z of [-L*0.34, L*0.34]) box(a, 0,0.8,z, 2.2,0.6,2.6, dark);
+    for(const z of [-(h-0.3), h-0.3]) box(a, 0,2.3,z, 1.1,2.2,0.6, [.15,.15,.16]);
+  } else if(v.type==="van"){
+    box(a, 0,1.0,0, 2.2,0.5,L-0.4, dark); box(a, 0,2.25,-0.6, 2.5,2.0,L-2.6, v.col); box(a, 0,3.35,-0.2, 2.6,0.2,L-1.4, [.3,.3,.3]);
+    for(const z of [-L*0.3, L*0.3]) box(a, 0,0.75,z, 0.3,1.0,1.0, dark);
+    for(const z of [-h, h]) box(a, 0,1.15,z-Math.sign(z)*0.15, 2.4,0.35,0.3, red);
+  } else if(v.type==="steam"){
+    box(a, 0,1.1,0, 2.3,0.6,L-0.4, dark);
+    for(const sx of [1.0,-1.0]) for(const z of [-2.2,0,2.2]) box(a, sx,0.95,z, 0.3,1.5,1.5, dark);
+    box(a, 0,2.55,1.2, 1.7,1.7,L*0.55, v.col); box(a, 0,2.55,h-1.4, 1.75,1.75,1.3, [.07,.07,.07]);
+    box(a, 0,3.7,h-1.4, 0.55,0.8,0.55, dark); box(a, 0,3.55,0.6, 0.8,0.5,0.9, v.col);
+    box(a, 0,2.75,-h+2.1, 2.65,2.7,2.9, v.col); box(a, 0,4.18,-h+2.1, 2.8,0.16,3.2, dark);
+    for(const sx of [1.33,-1.33]) box(a, sx,3.3,-h+2.1, 0.03,0.8,1.2, [.15,.18,.2]);
+    box(a, 0,2.2,-h+0.6, 2.5,1.8,1.2, v.col);
+    for(const z of [-h, h]) box(a, 0,1.35,z-Math.sign(z)*0.15, 2.6,0.4,0.3, red);
+  } else {   // diesel
+    box(a, 0,1.1,0, 2.4,0.5,L-0.6, dark);
+    for(const z of [-L*0.32, L*0.32]) box(a, 0,0.8,z, 2.3,0.6,3.2, dark);
+    box(a, 0,2.45,0, 2.7,2.3,L-1.2, v.col); box(a, 0,3.68,0, 2.5,0.2,L-1.6, [.35,.37,.38]);
+    for(const z of [-(h-0.62), h-0.62]){ box(a, 0,2.35,z, 2.72,2.1,0.1, [.92,.76,.1]); box(a, 0,3.1,z+Math.sign(z)*0.02, 2.0,0.6,0.1, [.12,.15,.18]); }
+    for(const sx of [1.36,-1.36]) box(a, sx,2.9,0, 0.03,0.4,L-6, [.75,.75,.72]);
+  }
+  return a;
+}
+function shunterMesh(){
+  // Class 08, cab at the back (where the driver sits) and the long bonnet ahead
+  const a = [], g = [.1,.36,.22], dark = [.1,.1,.11], yel = [.95,.78,.1];
+  box(a, 0,1.15,0, 2.5,0.5,8.6, dark);
+  for(const sx of [1.0,-1.0]) for(const z of [-2.6,-0.2,2.2]) box(a, sx,0.95,z, 0.3,1.4,1.4, dark);
+  box(a, 0,1.95,1.35, 1.8,1.4,5.9, g); box(a, 0,2.7,1.35, 1.6,0.1,5.7, [.08,.28,.17]);
+  box(a, 0,2.95,3.2, 0.25,0.45,0.25, dark);
+  box(a, 0,1.65,4.3, 2.6,0.5,0.12, yel);
+  for(const sx of [0.9,-0.9]) box(a, sx,1.5,4.45, 0.4,0.4,0.3, dark);
+  // cab: roof, corner pillars, sills and a desk; no walls in front so the driver can see
+  box(a, 0,4.05,-2.9, 2.75,0.14,3.2, g);
+  for(const sx of [1.3,-1.3]){ box(a, sx,3.15,-1.45, 0.12,1.7,0.12, g); box(a, sx,3.15,-4.35, 0.12,1.7,0.12, g); box(a, sx,1.95,-2.9, 0.12,1.1,2.9, g); }
+  box(a, 0,2.05,-1.45, 2.6,1.0,0.12, g);
+  box(a, 0,3.95,-1.45, 2.6,0.1,0.1, g);
+  box(a, 0,2.42,-1.7, 1.9,0.22,0.4, [.2,.2,.22]);
+  box(a, -0.35,2.58,-1.7, 0.07,0.12,0.07, [.8,.1,.1]); box(a, 0.35,2.58,-1.7, 0.07,0.12,0.07, [.85,.85,.85]);
+  return a;
+}
+function yardSize(){
+  const cv = document.getElementById("ygl"), lab = document.getElementById("ylab");
+  const dpr = Math.min(window.devicePixelRatio||1, 1.5);
+  for(const c of [cv, lab]){ c.width = Math.round(innerWidth*dpr); c.height = Math.round(innerHeight*dpr); }
+  yardGL().viewport(0, 0, cv.width, cv.height);
+}
+window.addEventListener("resize", ()=>{ if(yd) yardSize(); });
+function m4mul(a, b){ const o = new Float32Array(16); for(let c=0;c<4;c++) for(let r=0;r<4;r++){ let t=0; for(let k=0;k<4;k++) t += a[k*4+r]*b[c*4+k]; o[c*4+r] = t; } return o; }
+function m4persp(fovy, asp, near, far){ const f = 1/Math.tan(fovy/2), nf = 1/(near-far); return new Float32Array([f/asp,0,0,0, 0,f,0,0, 0,0,(far+near)*nf,-1, 0,0,2*far*near*nf,0]); }
+function m4look(e, f){
+  const z = [-f[0],-f[1],-f[2]], up = [0,1,0];
+  let x = [up[1]*z[2]-up[2]*z[1], up[2]*z[0]-up[0]*z[2], up[0]*z[1]-up[1]*z[0]]; const xl = Math.hypot(...x); x = x.map(q=>q/xl);
+  const y = [z[1]*x[2]-z[2]*x[1], z[2]*x[0]-z[0]*x[2], z[0]*x[1]-z[1]*x[0]];
+  const d = v => v[0]*e[0]+v[1]*e[1]+v[2]*e[2];
+  return new Float32Array([x[0],y[0],z[0],0, x[1],y[1],z[1],0, x[2],y[2],z[2],0, -d(x),-d(y),-d(z),1]);
+}
+function m4model(x, z, yaw){ const c = Math.cos(yaw), s = Math.sin(yaw); return new Float32Array([c,0,-s,0, 0,1,0,0, s,0,c,0, x,0,z,1]); }
+function yDraw(){
+  const gl = YGL.gl, cv = gl.canvas;
+  gl.clearColor(.62,.76,.88,1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  // the driver's seat: in the shunter's cab, looking along the bonnet
+  const p = vPose(yd.sh), fwd = [Math.sin(p.yaw), Math.cos(p.yaw)];
+  const eye = [p.x - fwd[0]*2.9, 3.55, p.z - fwd[1]*2.9];
+  const yaw = p.yaw + yd.look, dir = [Math.sin(yaw)*Math.cos(yd.pitch), Math.sin(yd.pitch), Math.cos(yaw)*Math.cos(yd.pitch)];
+  const vp = m4mul(m4persp(1.2, cv.width/cv.height, 0.25, 900), m4look(eye, dir));
+  gl.uniformMatrix4fv(YGL.vp, false, vp);
+  gl.uniform3f(YGL.fog, .62,.76,.88);
+  const draw = (mesh, model)=>{
+    gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buf);
+    gl.enableVertexAttribArray(YGL.ap); gl.vertexAttribPointer(YGL.ap, 3, gl.FLOAT, false, 36, 0);
+    gl.enableVertexAttribArray(YGL.an); gl.vertexAttribPointer(YGL.an, 3, gl.FLOAT, false, 36, 12);
+    gl.enableVertexAttribArray(YGL.ac); gl.vertexAttribPointer(YGL.ac, 3, gl.FLOAT, false, 36, 24);
+    gl.uniformMatrix4fv(YGL.m, false, model);
+    gl.drawArrays(gl.TRIANGLES, 0, mesh.count);
+  };
+  draw(YGL.scene, m4model(0,0,0));
+  yd.all.forEach(v=>{ const q = vPose(v); draw(v.mesh, m4model(q.x, q.z, q.yaw)); });
+  // name boards over each vehicle
+  const lab = document.getElementById("ylab"), g = lab.getContext("2d");
+  g.clearRect(0,0,lab.width,lab.height);
+  const k = lab.width/innerWidth;
+  g.font = `600 ${Math.round(12*k)}px Segoe UI, sans-serif`; g.textAlign = "center";
+  yd.veh.forEach(v=>{
+    const q = vPose(v), X = q.x, Y = 4.9, Z = q.z;
+    const cx = vp[0]*X+vp[4]*Y+vp[8]*Z+vp[12], cy = vp[1]*X+vp[5]*Y+vp[9]*Z+vp[13], cw = vp[3]*X+vp[7]*Y+vp[11]*Z+vp[15];
+    if(cw < 1 || cw > 160) return;
+    const sx = (cx/cw + 1)/2*lab.width, sy = (1 - cy/cw)/2*lab.height;
+    const tw = g.measureText(v.label).width + 12*k;
+    g.fillStyle = yd.targetIds.includes(v.id) ? "rgba(196,138,0,.9)" : "rgba(14,19,25,.75)";
+    g.fillRect(sx - tw/2, sy - 11*k, tw, 18*k);
+    g.fillStyle = "#fff"; g.fillText(v.label, sx, sy + 2*k);
+  });
+}
+function yardFrame(ts){
+  if(!yd) return;
+  const dt = yd.last ? Math.min(0.05, (ts - yd.last)/1000) : 0; yd.last = ts;
+  if(!yd.done){
+    yStep(dt);
+    const L = yd.keys.left, R = yd.keys.right;
+    if(L || R) yd.look = Math.max(-2.6, Math.min(2.6, yd.look + (L?1:-1)*1.6*dt));
+    yCheckDone();
+  }
+  yDraw(); yMap();
+  if(Math.floor(yd.t*4) !== yd.hudTick){ yd.hudTick = Math.floor(yd.t*4); yInfo(); }
+  const foul = yFoul(); if(foul !== yd.foul){ yd.foul = foul; yHud(); }
+  yd.raf = requestAnimationFrame(yardFrame);
+}
+// keyboard, drag-to-look and the hold-down drive buttons
+const YKEYS = {ArrowUp:"fwd", w:"fwd", W:"fwd", ArrowDown:"rev", s:"rev", S:"rev", " ":"brake", ArrowLeft:"left", a:"left", A:"left", ArrowRight:"right", d:"right", D:"right"};
+addEventListener("keydown", e=>{
+  if(!yd || yd.done) return;
+  if(YKEYS[e.key]){ yd.keys[YKEYS[e.key]] = true; e.preventDefault(); return; }
+  if(e.key==="1") ySetPoints(1); else if(e.key==="2") ySetPoints(2); else if(e.key==="3") ySetPoints(3);   // 1 Platform, 2 Siding A, 3 Siding B
+  else if(e.key==="u" || e.key==="U") yUncouple();
+  else if(e.key==="Escape") quitShunt();
+});
+addEventListener("keyup", e=>{ if(yd && YKEYS[e.key]) yd.keys[YKEYS[e.key]] = false; });
+(()=>{
+  const cv = document.getElementById("ygl"); let drag = null;
+  cv.addEventListener("pointerdown", e=>{ drag = {x:e.clientX, y:e.clientY, look:yd?yd.look:0, pitch:yd?yd.pitch:0}; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener("pointermove", e=>{ if(!drag || !yd) return;
+    yd.look = Math.max(-2.6, Math.min(2.6, drag.look - (e.clientX - drag.x)*0.006));
+    yd.pitch = Math.max(-0.6, Math.min(0.4, drag.pitch - (e.clientY - drag.y)*0.004)); });
+  cv.addEventListener("pointerup", ()=>drag = null);
+  cv.addEventListener("dblclick", ()=>{ if(yd){ yd.look = 0; yd.pitch = -0.06; } });
+  document.querySelectorAll("[data-hold]").forEach(b=>{
+    const k = b.dataset.hold, set = on => { if(yd) yd.keys[k] = on; };
+    b.addEventListener("pointerdown", e=>{ e.preventDefault(); set(true); });
+    for(const ev of ["pointerup","pointerleave","pointercancel"]) b.addEventListener(ev, ()=>set(false));
+  });
+})();
+
 /* ============================ MODAL / BOOT ============================ */
 function openModal(head, body, noClose){
   document.getElementById("modalHead").textContent = head;
@@ -2594,7 +3173,7 @@ function showTab(name){ openApp(name); }
 
 document.getElementById("modalClose").onclick = closeModal;
 document.getElementById("modalBg").addEventListener("click", e=>{ if(e.target.id==="modalBg" && !state.over) closeModal(); });
-document.getElementById("btn-advance").onclick = advanceWeek;
+document.getElementById("btn-advance").onclick = ()=>advanceWeek();
 function startAgain(){
   if(!confirm("Start a new game from scratch? This railway will be lost unless you've saved a link to it.")) return;
   closeModal(); pendingReport = null;
