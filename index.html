@@ -532,7 +532,7 @@
       <ul style="font-size:.9rem">
         <li><b>The laptop:</b> each part of the railway is an app on the desktop. Double-click an icon (or tap it on a touch screen) to open its window; drag windows by the title bar, resize them from the corner, and switch between them on the taskbar. The <b>Start</b> button (the R&amp;H roundel) lists every app.</li>
         <li><b>Mail:</b> railtour companies and other heritage railways email asking to hire your locomotives. Accept their offer, decline, or send a counter-offer: ask for more, but push too hard and they'll go elsewhere. A hired-out engine is away for the weeks agreed, and comes back a little more worn.</li>
-        <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to make up the first train: the laptop folds away and you're in the cab. The coaches are already on the Platform road; the train engine (and the pilot, for a double-header) is in the engine shed with the rest of the fleet, every engine facing the shunter. Set the points for the right shed road, buffer up to the engine, draw it out, set the points back to the Platform road and buffer it up to the coaches, then uncouple. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the shunter. Buffer up gently (under 2 mph) to couple. Every class of engine is modelled from its own wheel arrangement, size and livery. A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
+        <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to make up the first train: the laptop folds away and you're in the cab. The coaches are already on the Platform road; the train engine (and the pilot, for a double-header) is in the engine shed with the rest of the fleet, every engine facing the shunter. Set the points for the right shed road, buffer up to the engine, draw it out, set the points back to the Platform road and buffer it up to the coaches, then uncouple. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the shunter. Buffer up gently (under 2 mph) to couple. Every class of engine is modelled from its own wheel arrangement, size and livery. If the timetable runs DMUs, you can drive each unit yourself instead: out of the shed onto the headshunt, change ends (E), then into the platform up to the STOP board. A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
         <li><b>Each turn is one week.</b> Plan the weekend in the <b>Timetable</b> app, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week. The weekend then plays out live on the <b>Line Map</b>, all its days together in the time of one (change the speed there, or pause it). You can't start the next week until the last train is home, but you can carry on booking events, buying stock and recruiting while it runs. The takings arrive when the weekend ends.</li>
         <li><b>Timetabling:</b> every train is a round trip from Ravensgill Junction to Moorend and back, about two hours with turn-rounds. Give each loco a set of departure times. If a train isn't back in time, its next trip leaves late.</li>
         <li><b>The printed timetable:</b> the Up and Down tables at the top of the Timetable app are the public timetable, a column for each train. The times are worked out by the signallers' plan, so a train held at a loop shows its real, later time. <b>|</b> means the train runs through without stopping.</li>
@@ -1315,12 +1315,12 @@ function advanceWeek(opt={}){
   }
 
   if(runDays && !opt.go){
-    const job = shuntJob(plan);
-    if(job){ offerShunt(job); return; }
+    const jobs = shuntJobs(plan);
+    if(jobs.length){ offerShunt(jobs); return; }
   }
 
   const report = {week:state.week, weather:state.weather, days:runDays, ev, def, dayRes:[], events:[], startCash:state.cash};
-  if(opt.shunt) report.events.push({cls:"good", text:`🚜 You marshalled the ${opt.shunt.train} train yourself: ${"★".repeat(opt.shunt.stars)}${"☆".repeat(3-opt.shunt.stars)} (${opt.shunt.time}, ${opt.shunt.rough} rough shunt${opt.shunt.rough===1?"":"s"}).`});
+  if(opt.shunt) report.events.push({cls:"good", text:`${opt.shunt.dmu ? `🚃 You drove the ${opt.shunt.train} unit off shed and into the platform yourself` : `🚜 You marshalled the ${opt.shunt.train} train yourself`}: ${"★".repeat(opt.shunt.stars)}${"☆".repeat(3-opt.shunt.stars)} (${opt.shunt.time}, ${opt.shunt.rough} rough shunt${opt.shunt.rough===1?"":"s"}).`});
   for(let d=0; d<runDays; d++){
     // roll failures for each set: per-trip probability from condition and reliability
     const failTrip = plan.sets.map(s=>{
@@ -2927,6 +2927,7 @@ const YARD = {lead:75, zone:36, sid:[125,72,72], off:[0, 5.2, 10.4]};
 const ROUTE_NAMES = ["Platform road", "Shed road 1", "Shed road 2"];
 const SHED_GAP = 2.5;   // engines stand apart in the shed, so the shunter picks up only the one it buffers up to
 const MPH = 2.237, COUPLE = 0.9, CRASH = 2.3, VMAX = 6.7;   // m/s
+const YSTOP = 10;   // a unit must draw up within this far of the platform's buffer stops (the stop board)
 const YPATH = [1,2,3].map(r=>{
   const off = YARD.off[r-1], pts = [];
   let s = YARD.lead, px = 0, pz = YARD.lead, zoneEnd = 0;
@@ -2956,6 +2957,21 @@ function vPose(v){
 
 let yd = null;   // the shunting session
 const shuffle = a => { for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; };
+function shuntJobs(plan){
+  const jobs = [], coach = shuntJob(plan);
+  if(coach) jobs.push(coach);
+  plan.sets.filter(x=>x.kind==="dmu" && x.deps.length).forEach(set=>jobs.push(dmuJob(set)));
+  return jobs;
+}
+const yEngine = (key, number, name, livery) => { const md = locoModel(key, livery); return {type:md.kind, label:number, name, len:md.len, col:md.col, key, livery, cars:md.cars, flip:true}; };
+// the unit stands in the shed: drive it out onto the headshunt, change ends and draw it into the platform
+function dmuJob(set){
+  const unit = yEngine(set.lcat.key, set.loco.number, set.lcat.name, set.trainGuest ? null : liveryOf(set.loco));
+  unit.need = true;
+  const decoys = shuffle(state.locos.filter(l=>l!==set.loco && !isAway(l))).slice(0, 4)
+    .map(l=>yEngine(l.cat, l.number, catOf("loco", l.cat).name, liveryOf(l)));
+  return {mode:"dmu", train:`${fmtT(set.deps[0])} ${set.label}`, time:fmtT(set.deps[0]), set:set.label, coaches:[], need:[unit], decoys};
+}
 function shuntJob(plan){
   const set = plan.sets.find(x=>x.kind!=="dmu" && x.rcat);
   if(!set) return null;
@@ -2965,7 +2981,7 @@ function shuntJob(plan){
   const num = () => String(10000 + Math.floor(Math.random()*89999));
   const types = shuffle(["BSK","SK","TSO","RMB","CK","BCK"]);
   const coach = (t) => ({type:"coach", label:`${t} ${num()}`, len:20, col:liv[0], win:liv[1]});
-  const engine = (key, number, name, livery) => { const md = locoModel(key, livery); return {type:md.kind, label:number, name, len:md.len, col:md.col, key, livery, flip:true}; };
+  const engine = yEngine;
   const need = [engine(set.lcat.key, set.loco.number, set.lcat.name, set.trainGuest ? null : liveryOf(set.loco))];
   if(set.pilot) need.push(engine(set.pcat.key, set.pilot.number, set.pcat.name, set.pilotGuest ? null : liveryOf(set.pilot)));
   need.forEach(v=>v.need = true);
@@ -2975,17 +2991,20 @@ function shuntJob(plan){
   return {train:`${fmtT(set.deps[0])} ${set.label}`, time:fmtT(set.deps[0]), set:set.label,
           coaches:[coach(types[0]), coach(types[1]), coach(types[2])], need, decoys};
 }
-function offerShunt(job){
-  openModal("Marshal the First Train?", `<p>Before the ${job.time} departure, the coaches are waiting on the Platform road, but <b>${job.need.map(v=>`${v.label} (${v.name})`).join(" and ")}</b> ${job.need.length>1?"are":"is"} still in the engine shed.</p>
-    <p>Climb into the Class 08 shunter, fetch the right engine from the shed and put it on the front of the train? A clean, quick job lifts reputation and morale. Or the shed staff will sort it out.</p>
+function offerShunt(jobs){
+  const coach = jobs.find(j=>j.mode!=="dmu"), units = jobs.filter(j=>j.mode==="dmu");
+  openModal(coach ? "Marshal the First Train?" : "Bring the Unit off Shed?", `${coach ? `<p>Before the ${coach.time} departure, the coaches are waiting on the Platform road, but <b>${coach.need.map(v=>`${v.label} (${v.name})`).join(" and ")}</b> ${coach.need.length>1?"are":"is"} still in the engine shed.</p>
+    <p>Climb into the Class 08 shunter, fetch the right engine from the shed and put it on the front of the train?</p>` : ""}
+    ${units.length ? `<p>${units.map(j=>`<b>${j.need[0].label} (${j.need[0].name})</b> for the ${j.time}`).join(", and ")} ${units.length>1?"are":"is"} stabled in the engine shed. Take the driver's seat, run it out onto the headshunt, change ends and draw it into the platform?</p>` : ""}
+    <p>A clean, quick job lifts reputation and morale. Or the shed staff will sort it out.</p>
     <div class="toolbar" style="margin-bottom:0">
-      <button class="act greenbtn" style="width:auto" onclick="closeModal();startShunt(pendingJob)">🚜 Drive the shunter</button>
+      ${jobs.map((j,i)=>`<button class="act greenbtn" style="width:auto" onclick="closeModal();startShunt(pendingJobs[${i}])">${j.mode==="dmu" ? `🚃 Drive ${j.need[0].label}` : "🚜 Drive the shunter"}</button>`).join("")}
       <button class="act" style="width:auto" onclick="closeModal();advanceWeek({go:true})">Let the shed staff do it ▸</button>
     </div>`);
-  pendingJob = job;
+  pendingJobs = jobs;
   document.getElementById("modalClose").style.display = "none";
 }
-let pendingJob = null;
+let pendingJobs = [];
 
 function startShunt(job){
   const gl = yardGL();
@@ -3008,10 +3027,14 @@ function startShunt(job){
   [2,3].forEach(r=>{ let e = routeEnd(r) - 0.4; lists[r].forEach(v=>{ v.route = r; v.s = e - v.len/2; e -= v.len + SHED_GAP; }); });
   for(let i=veh.length-1;i>=0;i--) if(veh[i].gone) veh.splice(i,1);
   veh.forEach((v,i)=>{ const t = targetIds.indexOf(v.id); v.id = i; if(t>=0) targetIds[t] = i; });
-  const sh = {id:-1, type:"shunter", label:"08 773", len:9, col:[.1,.36,.22], s:6.5, route:null};
-  yd = {job, veh, sh, string:[sh], targetIds, points:1, v:0, look:0, pitch:-0.06, t:0, rough:0, keys:{}, done:false, raf:0, last:0, msgT:0};
-  yd.all = [sh, ...veh];
-  yd.all.forEach(v=>{ v.mesh = meshBuffer(gl, v.type==="shunter" ? shunterMesh() : vehicleMesh(v)); });
+  const dmu = job.mode==="dmu";
+  const sh = dmu ? veh[targetIds[0]] : {id:-1, type:"shunter", label:"08 773", len:9, col:[.1,.36,.22], s:6.5, route:null};
+  yd = {job, dmu, veh, sh, string:[sh], targetIds, points:1, v:0, dir:dmu?-1:1, look:0, pitch:-0.06, t:0, rough:0, keys:{}, done:false, raf:0, last:0, msgT:0};
+  yd.all = dmu ? veh : [sh, ...veh];
+  yd.all.forEach(v=>{
+    if(v.cars) v.parts = v.cars().map(c=>({...c, mesh:meshBuffer(gl, c.mesh)}));   // a unit bends round the curves car by car
+    else v.mesh = meshBuffer(gl, v.type==="shunter" ? shunterMesh() : vehicleMesh(v));
+  });
   // fold the laptop away and drop into the cab
   document.querySelector(".laptop").classList.add("away");
   setTimeout(()=>{
@@ -3021,12 +3044,12 @@ function startShunt(job){
     yardSize(); yHud();
     requestAnimationFrame(()=>y.classList.add("show"));
     yd.raf = requestAnimationFrame(yardFrame);
-    yMsg(`Fetch ${job.need.map(v=>v.label).join(" and ")} from the shed`);
+    yMsg(dmu ? `You're in the cab of ${sh.label}: drive out of the shed onto the headshunt` : `Fetch ${job.need.map(v=>v.label).join(" and ")} from the shed`);
   }, 550);
 }
 function endShunt(result){
   cancelAnimationFrame(yd.raf);
-  const gl = yardGL(); yd.all.forEach(v=>gl.deleteBuffer(v.mesh.buf));
+  const gl = yardGL(); yd.all.forEach(v=>(v.parts || [v]).forEach(c=>gl.deleteBuffer(c.mesh.buf)));
   const job = yd.job; yd = null;
   const y = document.getElementById("yard");
   y.classList.remove("show");
@@ -3035,8 +3058,8 @@ function endShunt(result){
     const rep = result.stars===3 ? 2 : result.stars===2 ? 1 : 0;
     state.rep = Math.min(160, state.rep + rep);
     state.vol.morale = Math.min(1, state.vol.morale + (result.stars===3 ? 0.03 : 0.01));
-    logEntry(`Marshalled the ${job.train} train in the yard yourself (${"★".repeat(result.stars)}).`, 0);
-    result.train = job.train;
+    logEntry(`${job.mode==="dmu" ? `Drove the ${job.train} unit off shed` : `Marshalled the ${job.train} train in the yard`} yourself (${"★".repeat(result.stars)}).`, 0);
+    result.train = job.train; result.dmu = job.mode==="dmu";
   }
   setTimeout(()=>advanceWeek({go:true, shunt:result}), 650);
 }
@@ -3058,7 +3081,15 @@ function ySetPoints(r){
   if(yFoul()){ yMsg("Points locked: something is standing over them", true); return; }
   yd.points = r; yHud();
 }
+function yChangeEnds(){
+  if(!yd.dmu){ yMsg("The shunter only has one cab", true); return; }
+  if(Math.abs(yd.v) > 0.05){ yMsg("Stop before changing ends", true); return; }
+  yd.dir = -yd.dir; yd.look = 0;
+  yMsg(`You walk through to the other cab: now facing ${yd.dir>0 ? "the station" : "the shed and the headshunt"}`);
+  yHud(); yInfo();
+}
 function yUncouple(keep){
+  if(yd.dmu){ yMsg("Nothing to uncouple: just drive the unit into the platform", true); return; }
   if(Math.abs(yd.v) > 0.05){ yMsg("Stop before uncoupling", true); return; }
   if(yd.string.length<2){ yMsg("Nothing coupled to the shunter", true); return; }
   if(keep===undefined) keep = 1;
@@ -3069,8 +3100,8 @@ function yUncouple(keep){
 function yStep(dt){
   const k = yd.keys, n = yd.string.length - 1;
   const acc = 0.75/(1 + 0.12*n);
-  if(k.fwd) yd.v += acc*dt;
-  if(k.rev) yd.v -= acc*dt;
+  if(k.fwd) yd.v += acc*dt*yd.dir;
+  if(k.rev) yd.v -= acc*dt*yd.dir;
   if(k.brake) yd.v -= Math.sign(yd.v)*Math.min(Math.abs(yd.v), 2.0*dt);
   else if(!k.fwd && !k.rev) yd.v -= Math.sign(yd.v)*Math.min(Math.abs(yd.v), 0.06*dt);
   yd.v = Math.max(-VMAX, Math.min(VMAX, yd.v));
@@ -3081,8 +3112,10 @@ function yStep(dt){
     yd.veh.forEach(v=>{ if(!yd.string.includes(v) && v.s > F.s && yShares(r, v)){ const g = v.s - v.len/2 - (F.s + F.len/2); if(g < gap){ gap = g; hit = v; } } });
     if(ds >= gap){ ds = Math.max(0, gap); yImpact(hit); }
   } else if(ds < 0){
-    const gap = yd.sh.s - yd.sh.len/2 - 0.4;
-    if(-ds >= gap){ ds = -Math.max(0, gap); yImpact(null); }
+    const B = yd.string.reduce((a,b)=>b.s<a.s?b:a), r = yRouteFor(B);
+    let gap = B.s - B.len/2 - 0.4, hit = null;
+    yd.veh.forEach(v=>{ if(!yd.string.includes(v) && v.s < B.s && yShares(r, v)){ const g = B.s - B.len/2 - (v.s + v.len/2); if(g < gap){ gap = g; hit = v; } } });
+    if(-ds >= gap){ ds = -Math.max(0, gap); yImpact(hit); }
   }
   yd.string.forEach(v=>v.s += ds);
   ySetRoutes();
@@ -3092,6 +3125,7 @@ function yImpact(v){
   const sp = Math.abs(yd.v); yd.v = 0;
   if(!v){ if(sp > COUPLE){ yd.rough++; yMsg("Bang! You hit the buffer stops", true); } return; }
   if(sp > CRASH){ yd.rough += 3; yMsg(`Crash! Far too fast into ${v.label}`, true); return; }
+  if(yd.dmu){ if(sp > COUPLE){ yd.rough++; yMsg(`Bump! You ran into ${v.label}`, true); } else yMsg(`Buffered up to ${v.label}: back off and try another road`); return; }
   // couple to the whole cut standing buffer to buffer
   let cur = v; const cut = [v];
   for(;;){
@@ -3110,18 +3144,23 @@ function yPlatform(){   // what's on the Platform road, buffer-stop end first (c
 function yCheckDone(){
   if(yd.done || Math.abs(yd.v) > 0.02) return;
   const P = yPlatform();
-  if(!(P.length===yd.targetIds.length && P.every((v,i)=>v.id===yd.targetIds[i] && v.s - v.len/2 >= zoneEnd(1) - 0.01))) return;
-  if(P.some(v=>yd.string.includes(v))){ if(!yd.toldUncouple){ yd.toldUncouple = true; yMsg("That's the train! Uncouple the shunter (U) to finish"); } return; }
+  if(yd.dmu){
+    const u = yd.sh, short = routeEnd(1) - 0.4 - (u.s + u.len/2);
+    if(u.route!==1 || u.s - u.len/2 < zoneEnd(1) + 2) return;
+    if(short > YSTOP){ if(!yd.toldStop){ yd.toldStop = true; yMsg("Draw right up to the stop board at the end of the platform"); } return; }
+  } else if(!(P.length===yd.targetIds.length && P.every((v,i)=>v.id===yd.targetIds[i] && v.s - v.len/2 >= zoneEnd(1) - 0.01))) return;
+  else if(P.some(v=>yd.string.includes(v))){ if(!yd.toldUncouple){ yd.toldUncouple = true; yMsg("That's the train! Uncouple the shunter (U) to finish"); } return; }
   {
     yd.done = true; yd.v = 0;
     const mins = yd.t/60/yd.veh.filter(v=>v.need).length;   // time allowed per engine fetched
-    const stars = yd.rough===0 && mins < 6 ? 3 : yd.rough <= 2 && mins < 12 ? 2 : 1;
+    const par = yd.dmu ? 4 : 6;   // a unit is quicker: there's nothing to couple
+    const stars = yd.rough===0 && mins < par ? 3 : yd.rough <= 2 && mins < par*2 ? 2 : 1;
     const time = `${Math.floor(yd.t/60)}:${String(Math.floor(yd.t%60)).padStart(2,"0")}`;
     yd.result = {stars, time, rough:yd.rough};
     const d = document.getElementById("yDone");
-    d.innerHTML = `<div class="card"><h3 style="justify-content:center">Train marshalled!</h3>
+    d.innerHTML = `<div class="card"><h3 style="justify-content:center">${yd.dmu?"Unit in the platform!":"Train marshalled!"}</h3>
       <div class="ystars">${"★".repeat(stars)}${"☆".repeat(3-stars)}</div>
-      <p>${yd.job.set}'s train is ready on the Platform road.<br>Time ${time} · ${yd.rough} rough shunt${yd.rough===1?"":"s"}</p>
+      <p>${yd.dmu ? `${yd.sh.label} is in the platform for the ${yd.job.train}.` : `${yd.job.set}'s train is ready on the Platform road.`}<br>Time ${time} · ${yd.rough} rough shunt${yd.rough===1?"":"s"}</p>
       <p class="sub">${stars===3?"A textbook job. The shed staff are impressed (+2 reputation, morale up).":stars===2?"Good work (+1 reputation).":"It's done, if not pretty."}</p>
       <button class="act greenbtn" onclick="endShunt(yd.result)">Back to the laptop and run the weekend ▸</button></div>`;
     d.hidden = false;
@@ -3139,27 +3178,32 @@ function yHud(){
   if(!yd) return;
   const want = yd.targetIds.map(id=>yd.veh[id]), P = yPlatform(), need = yd.veh.filter(v=>v.need);
   const shed = r => yd.veh.filter(v=>v.route===r && !yd.string.includes(v)).sort((a,b)=>a.s-b.s);
-  document.getElementById("yJob").innerHTML = `<b>Make up the ${yd.job.train} train</b>
-    <div class="ysub ymore">The coaches are ready on the Platform road. Fetch ${need.map(v=>`<b>${v.label}</b> ${v.name}`).join(", then ")} from the shed, buffer up gently to the coaches and uncouple (U).</div>
-    <div class="ystrip"><span class="ystop"></span>${want.map(v=>yChip(v,"target")).join("")}<span class="ysub">→ points</span></div>
+  const job = yd.dmu ? `<b>Bring ${yd.sh.label} off shed for the ${yd.job.train}</b>
+    <div class="ysub ymore">You're in the cab facing the shed doors. Drive out onto the headshunt, clear of the points, change ends (E), set the points for the Platform road and draw up gently to the stop board at the end of the platform.</div>`
+    : `<b>Make up the ${yd.job.train} train</b>
+    <div class="ysub ymore">The coaches are ready on the Platform road. Fetch ${need.map(v=>`<b>${v.label}</b> ${v.name}`).join(", then ")} from the shed, buffer up gently to the coaches and uncouple (U).</div>`;
+  document.getElementById("yJob").innerHTML = `${job}
+    <div class="ystrip"><span class="ystop"></span>${yd.dmu ? `<span class="ysub">stop board ·</span>` : ""}${want.map(v=>yChip(v,"target")).join("")}<span class="ysub">→ points</span></div>
     <div class="ymore"><div class="ysub">On the Platform road now:</div>
     <div class="ystrip"><span class="ystop"></span>${P.length ? P.map((v,i)=>yChip(v, v.id===yd.targetIds[i]?"ok":"")).join("") : `<span class="ysub">empty</span>`}</div>
     ${[2,3].map(r=>`<div class="ysub">${ROUTE_NAMES[r-1]} (door end first):</div><div class="ystrip">${shed(r).length ? shed(r).map(v=>yChip(v, v.need?"target":"")).join("") : `<span class="ysub">empty</span>`}</div>`).join("")}</div>`;
   const foul = yFoul();
   document.getElementById("yPoints").innerHTML = `<b>Points</b> <span class="ysub">(keys 1 · 2 · 3)</span><div class="ysub" style="margin-top:3px"><span class="ylock ${foul?"on":""}"></span>${foul?"Locked: vehicle over the points":"Free to change"}</div>
     <div class="ypts">${[3,2,1].map(r=>`<button class="${yd.points===r?"on":""}" onclick="ySetPoints(${r})">${r} ${r===3?"◤◤":r===2?"◤":"▲"} ${ROUTE_NAMES[r-1]}</button>`).join("")}</div>`;
-  document.getElementById("yConsist").innerHTML = yd.string.map((v,i)=>
+  document.getElementById("yConsist").innerHTML = yd.dmu
+    ? yChip(yd.sh) + `<button class="ycut" title="Change ends" onclick="yChangeEnds()">⇄ Change ends</button><span class="ysub" style="margin-left:8px">E changes ends · facing ${yd.dir>0?"the station":"the shed"}</span>`
+    : yd.string.map((v,i)=>
       (i ? `<button class="ycut" title="Uncouple here" onclick="yUncouple(${i})">✂</button>` : "") + yChip(v)).join("")
     + `<span class="ysub" style="margin-left:8px">U uncouples the shunter</span>`;
   yInfo();
 }
 function yInfo(){
-  const mph = Math.abs(yd.v)*MPH;
-  document.getElementById("yInfo").innerHTML = `<div class="ysub">Class 08 shunter · ${yd.v>0.05?"forward ▲":yd.v<-0.05?"reverse ▼":"stopped"}</div>
+  const mph = Math.abs(yd.v)*MPH, v = yd.v*yd.dir;
+  document.getElementById("yInfo").innerHTML = `<div class="ysub">${yd.dmu ? yd.sh.name : "Class 08 shunter"} · ${v>0.05?"forward ▲":v<-0.05?"reverse ▼":"stopped"}</div>
     <div class="yspeed">${mph.toFixed(1)} <span style="font-size:.9rem">mph</span></div>
-    <div class="ysub">${mph > 2 ? "<b>Too fast to couple</b>" : "Couple at under 2 mph"}</div>
+    <div class="ysub">${yd.dmu ? (mph > 2 ? "<b>Too fast for the stop board</b>" : "Stop gently, under 2 mph") : mph > 2 ? "<b>Too fast to couple</b>" : "Couple at under 2 mph"}</div>
     <div style="margin-top:6px">⏱ ${Math.floor(yd.t/60)}:${String(Math.floor(yd.t%60)).padStart(2,"0")} · rough shunts <b>${yd.rough}</b></div>
-    <div class="ysub yhelp" style="margin:6px 0">↑/↓ or W/S drive · Space brake · ←/→ look · 1/2/3 points · U uncouple</div>
+    <div class="ysub yhelp" style="margin:6px 0">↑/↓ or W/S drive · Space brake · ←/→ look · 1/2/3 points · ${yd.dmu ? "E change ends" : "U uncouple"}</div>
     <button onclick="quitShunt()">✕ Leave the yard</button>`;
 }
 function yMap(){
@@ -3179,7 +3223,7 @@ function yMap(){
   [1,2,3].forEach(r=>{ const e = pathPos(r, zoneEnd(r) + 4); g.fillText(ROUTE_NAMES[r-1], u(e.z), v(e.x) + (r===1?24:-9)); });
   yd.all.forEach(x=>{
     const a = pathPos(x.route, x.s - x.len/2 + 0.6), b = pathPos(x.route, x.s + x.len/2 - 0.6);
-    g.strokeStyle = x.type==="shunter" ? "#ffd24a" : rgb(x.col); g.lineWidth = 12;
+    g.strokeStyle = x===yd.sh ? "#ffd24a" : rgb(x.col); g.lineWidth = 12;
     g.beginPath(); g.moveTo(u(a.z), v(a.x)); g.lineTo(u(b.z), v(b.x)); g.stroke();
     if(yd.targetIds.includes(x.id)){ g.strokeStyle = "#ffd24a"; g.lineWidth = 2; g.strokeRect(Math.min(u(a.z),u(b.z))-7, Math.min(v(a.x),v(b.x))-7, Math.abs(u(b.z)-u(a.z))+14, Math.abs(v(b.x)-v(a.x))+14); }
   });
@@ -3250,6 +3294,7 @@ function sceneryMesh(){
   const pz0 = zoneEnd(1)+2, pz1 = routeEnd(1)+4, pc = (pz0+pz1)/2;
   box(a, -5,0.47,pc, 6.9,0.94,pz1-pz0, [.6,.57,.52]); box(a, -1.72,0.95,pc, 0.3,0.02,pz1-pz0, [.95,.92,.8]); box(a, -8.28,0.95,pc, 0.3,0.02,pz1-pz0, [.95,.92,.8]);
   for(let z=pz0+6; z<pz0+50; z+=8) box(a, -5,2.6,z, 0.25,3.3,0.25, [.3,.12,.12]);
+  { const z = routeEnd(1) - 0.4 - YSTOP; box(a, -1.95,1.9,z, 0.1,1.9,0.1, dark); box(a, -1.95,3.0,z - 0.06, 0.75,0.75,0.05, cream); box(a, -1.95,3.0,z - 0.09, 0.5,0.18,0.02, [.75,.15,.12]); }   // the STOP board
   box(a, -5,4.35,pz0+27, 5.4,0.25,50, [.32,.3,.3]); box(a, -5,4.1,pz0+27, 5.6,0.2,50.4, cream);
   box(a, -5,2.6,pc+28, 4.2,3.3,14, brick); box(a, -5,4.5,pc+28, 4.8,0.5,14.6, slate);
   for(let z=pc+22; z<pc+35; z+=3) box(a, -2.88,2.4,z, 0.05,1.2,1.2, [.18,.22,.27]);
@@ -3623,7 +3668,8 @@ function doRepaint(){
 
 function locoModel(key, livery){
   const s0 = STEAM_MODELS[key]; if(s0){ const s = withLivery(s0, livery, "steam"); return {kind:"steam", len:s.eng + (s.tend||0), col:s.col, mesh:()=>steamMesh(s)}; }
-  const u0 = DMU_MODELS[key]; if(u0){ const u = withLivery(u0, livery, "dmu"); return {kind:"dmu", len:u.carLen*u.cars, col:u.col, mesh:()=>dmuMesh(u)}; }
+  const u0 = DMU_MODELS[key]; if(u0){ const u = withLivery(u0, livery, "dmu"); return {kind:"dmu", len:u.carLen*u.cars, col:u.col, mesh:()=>dmuMesh(u),
+    cars:()=>Array.from({length:u.cars}, (_,i)=>({off:(i - (u.cars-1)/2)*u.carLen, len:u.carLen, mesh:dmuCar(u, i===u.cars-1, u.cars===1 || i===0)}))}; }
   const d0 = DIESEL_MODELS[key]; if(d0){ const d = withLivery(d0, livery, "diesel"); return {kind:"diesel", len:d.len, col:d.col, mesh:()=>dieselMesh(d)}; }
   return {kind:"diesel", len:15.5, col:LV.brgreen, mesh:()=>dieselMesh({style:"cab", len:15.5, bogie:"Bo", col:LV.brgreen, yellow:"panel"})};
 }
@@ -4234,9 +4280,15 @@ function m4model(x, z, yaw){ const c = Math.cos(yaw), s = Math.sin(yaw); return 
 function yDraw(){
   const gl = YGL.gl, cv = gl.canvas;
   gl.clearColor(.62,.76,.88,1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  // the driver's seat: in the shunter's cab, looking along the bonnet
-  const p = vPose(yd.sh), fwd = [Math.sin(p.yaw), Math.cos(p.yaw)];
+  // the driver's seat: in the shunter's cab, looking along the bonnet, or at the leading cab window of a unit
+  let p = vPose(yd.sh), fwd = [Math.sin(p.yaw), Math.cos(p.yaw)];
   let eye = [p.x - fwd[0]*2.9, 3.55, p.z - fwd[1]*2.9];
+  if(yd.dmu){
+    const u = yd.sh, se = u.s + yd.dir*(u.len/2 + 0.2);
+    const a = pathPos(u.route, se), b = pathPos(u.route, se - yd.dir*4);
+    p = {yaw: Math.atan2(a.x - b.x, a.z - b.z)};
+    eye = [a.x, 3.05, a.z];
+  }
   const yaw = p.yaw + yd.look; let dir = [Math.sin(yaw)*Math.cos(yd.pitch), Math.sin(yd.pitch), Math.cos(yaw)*Math.cos(yd.pitch)];
   if(yd.cam){ eye = yd.cam.eye; dir = yd.cam.dir; }
   const vp = m4mul(m4persp((yd.cam && yd.cam.fov) || 1.2, cv.width/cv.height, 0.25, 900), m4look(eye, dir));
@@ -4244,7 +4296,11 @@ function yDraw(){
   gl.uniform3f(YGL.fog, .62,.76,.88);
   const draw = glDraw;
   draw(YGL.scene, m4model(0,0,0));
-  yd.all.forEach(v=>{ const q = vPose(v); draw(v.mesh, m4model(q.x, q.z, q.yaw + (v.flip ? Math.PI : 0))); });   // engines face the shunter
+  yd.all.forEach(v=>{   // engines face the shunter
+    const turn = v.flip ? Math.PI : 0;
+    if(v.parts) v.parts.forEach(c=>{ const q = vPose({route:v.route, s:v.s + (v.flip ? -c.off : c.off), len:c.len}); draw(c.mesh, m4model(q.x, q.z, q.yaw + turn)); });
+    else { const q = vPose(v); draw(v.mesh, m4model(q.x, q.z, q.yaw + turn)); }
+  });
   // name boards over each vehicle
   const lab = document.getElementById("ylab"), g = lab.getContext("2d");
   g.clearRect(0,0,lab.width,lab.height);
@@ -4282,6 +4338,7 @@ addEventListener("keydown", e=>{
   if(YKEYS[e.key]){ yd.keys[YKEYS[e.key]] = true; e.preventDefault(); return; }
   if(e.key==="1") ySetPoints(1); else if(e.key==="2") ySetPoints(2); else if(e.key==="3") ySetPoints(3);   // 1 Platform, 2 Siding A, 3 Siding B
   else if(e.key==="u" || e.key==="U") yUncouple();
+  else if(e.key==="e" || e.key==="E") yChangeEnds();
   else if(e.key==="Escape") quitShunt();
 });
 addEventListener("keyup", e=>{ if(yd && YKEYS[e.key]) yd.keys[YKEYS[e.key]] = false; });

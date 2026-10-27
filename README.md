@@ -67,6 +67,7 @@ three-window, Calder Valley four-window, Pacer, Wickham railbus).
 | Look round | ← / → or A / D, or drag (double-click to recentre) |
 | Points | 1 Platform road · 2 Shed road 1 · 3 Shed road 2 (locked while anything stands over them) |
 | Uncouple | U uncouples the shunter, or click ✂ between any two vehicles |
+| Change ends (DMU) | E, or click ⇄ Change ends (stopped only) |
 
 Buffer up at under 2 mph to couple (engines in the shed stand apart, so you
 pick up only the one you buffer up to); faster
@@ -74,6 +75,15 @@ is a rough shunt, and over 5 mph is a crash. A mini-map and the job card show
 progress. Finish quickly (under 6 minutes an engine) with no rough shunts for ★★★ (+2 reputation and a
 morale boost), or leave the yard at any time and the shed staff finish the job.
 Then the weekend runs as normal.
+
+**Driving a DMU off shed.** If the timetable has DMU services, every unit in
+it gets its own job too, offered alongside the shunter. There's no shunter
+and no coupling: you sit in the unit's own cab, facing the shed doors. Drive
+it out onto the headshunt clear of the points, change ends (E) and walk
+through to the other cab, set the points for the Platform road and draw up
+gently to the STOP board near the end of the platform (within 10 m of the
+buffer stops). Each car follows the track on its own, so a three-car 110
+bends round the points. Under 4 minutes with no bumps earns ★★★.
 
 ## Liveries
 
