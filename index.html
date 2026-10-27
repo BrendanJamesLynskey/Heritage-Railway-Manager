@@ -540,7 +540,7 @@
       <ul style="font-size:.9rem">
         <li><b>The laptop:</b> each part of the railway is an app on the desktop. Double-click an icon (or tap it on a touch screen) to open its window; drag windows by the title bar, resize them from the corner, and switch between them on the taskbar. The <b>Start</b> button (the R&amp;H roundel) lists every app.</li>
         <li><b>Mail:</b> railtour companies and other heritage railways email asking to hire your locomotives. Accept their offer, decline, or send a counter-offer: ask for more, but push too hard and they'll go elsewhere. A hired-out engine is away for the weeks agreed, and comes back a little more worn.</li>
-        <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to make up the first train: the laptop folds away and you're in the cab. The coaches are already on the Platform road; the train engine (and the pilot, for a double-header) is in the engine shed with the rest of the fleet, every engine facing the shunter. Set the points for the right shed road, buffer up to the engine, draw it out, set the points back to the Platform road and buffer it up to the coaches, then uncouple. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the shunter. Buffer up gently (under 2 mph) to couple. Every class of engine is modelled from its own wheel arrangement, size and livery. <b>Drive a service:</b> or take a train out on the line yourself. Pick a train and the trip to start from, and drive it from the cab for the rest of its day: every booked call, the passing loops (the starter stays at danger until your time and a clear section), Brackenby Viaduct and Highmoor Tunnel. ↑/↓ (or W/S) move the power and brake lever, Space is the emergency brake, C changes the view, T waits for the right away, H hands the train to another driver to finish the day. The line is drawn to the map but squeezed eight times and the clock runs six times as fast, so a round trip takes about a quarter of an hour. If the timetable runs DMUs, you can drive each unit yourself from its own cab instead: out of the shed onto the headshunt, change ends (E), then into the platform up to the STOP board. Or start in the shunter, climb down (F) and walk over to the unit (hold Shift or ⚡ Sprint to run). A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
+        <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to make up the first train: the laptop folds away and you're in the cab. The coaches are already on the Platform road; the train engine (and the pilot, for a double-header) is in the engine shed with the rest of the fleet, every engine facing the shunter. Set the points for the right shed road, buffer up to the engine, draw it out, set the points back to the Platform road and buffer it up to the coaches, then uncouple. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the shunter. Buffer up gently (under 2 mph) to couple. Every class of engine is modelled from its own wheel arrangement, size and livery. <b>Drive a service:</b> or take a train out on the line yourself. Pick a train and the trip to start from, and drive it from the cab for the rest of its day: every booked call, the passing loops (the starter stays at danger until your time and a clear section), Brackenby Viaduct and Highmoor Tunnel. ↑/↓ (or W/S) move the power and brake lever, Space is the emergency brake, C changes the view, T waits for the right away, Q (held) sounds the whistle or horn, M turns the sound off and on, H hands the train to another driver to finish the day. Every engine has its own synthesised sound: exhaust beats, diesel engines, whistles and horns. The line is drawn to the map but squeezed five times and the clock runs four times as fast, so a round trip takes about half an hour. If the timetable runs DMUs, you can drive each unit yourself from its own cab instead: out of the shed onto the headshunt, change ends (E), then into the platform up to the STOP board. Or start in the shunter, climb down (F) and walk over to the unit (hold Shift or ⚡ Sprint to run). A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
         <li><b>Each turn is one week.</b> Plan the weekend in the <b>Timetable</b> app, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week. The weekend then plays out live on the <b>Line Map</b>, all its days together in the time of one (change the speed there, or pause it). You can't start the next week until the last train is home, but you can carry on booking events, buying stock and recruiting while it runs. The takings arrive when the weekend ends.</li>
         <li><b>Timetabling:</b> every train is a round trip from Ravensgill Junction to Moorend and back, about two hours with turn-rounds. Give each loco a set of departure times. If a train isn't back in time, its next trip leaves late.</li>
         <li><b>The printed timetable:</b> the Up and Down tables at the top of the Timetable app are the public timetable, a column for each train. The times are worked out by the signallers' plan, so a train held at a loop shows its real, later time. <b>|</b> means the train runs through without stopping.</li>
@@ -585,7 +585,7 @@
   <div class="yh ybl" id="yPoints"></div>
   <div class="ybc"><div class="yh ycons" id="yConsist"></div>
     <div class="ydrive">
-      <button data-hold="rev">◀ Back</button><button class="brake" data-hold="brake">■ Brake</button><button data-hold="fwd">Forward ▶</button><button class="ysprint" data-hold="sprint">⚡ Sprint</button>
+      <button data-hold="rev">◀ Back</button><button class="brake" data-hold="brake">■ Brake</button><button data-hold="fwd">Forward ▶</button><button class="ysprint" data-hold="sprint">⚡ Sprint</button><button data-horn="y">📯 Horn</button><button class="sndbtn" onclick="sndToggle()">🔊 Sound</button>
     </div></div>
   <div class="yh ybr"><canvas id="ymap" width="660" height="272"></canvas></div>
   <div id="dHud">
@@ -593,7 +593,7 @@
     <div class="yh ytr" id="dJob"></div>
     <div class="ybc"><div class="ydrive">
       <button data-dhold="down">▼ Brake</button><button data-dhold="up">Power ▲</button><button class="brake" data-dhold="emerg">■ Emergency</button>
-      <button id="dSkip" onclick="dSkip()" hidden>⏩ Wait</button><button onclick="dv&&(dv.cam=1-dv.cam)">🎥 View</button><button onclick="dHandOver()">✋ Hand over</button>
+      <button data-horn="d">📯 Whistle / horn</button><button id="dSkip" onclick="dSkip()" hidden>⏩ Wait</button><button onclick="dv&&(dv.cam=1-dv.cam)">🎥 View</button><button onclick="dHandOver()">✋ Hand over</button><button class="sndbtn" onclick="sndToggle()">🔊 Sound</button>
     </div></div>
     <div class="yh ybr"><canvas id="dmap" width="560" height="300"></canvas></div>
     <div class="ydone" id="dDone" hidden></div>
@@ -757,7 +757,7 @@ const GUESTS = [
   {key:"g-c20",  kind:"diesel", name:"Class 20 pair", number:"20142+20189", fee:4000, draw:1.15, boost:0.12, reliability:0.90, maxHaul:9, runPerMile:9, pace:1.0},
   {key:"g-c47",  kind:"diesel", name:"Class 47", number:"47790", fee:4000, draw:1.12, boost:0.12, reliability:0.89, maxHaul:9, runPerMile:8, pace:1.0},
   {key:"g-tornado",kind:"steam", name:"LNER A1 'Tornado'", number:"60163", fee:18000, draw:1.80, boost:0.45, reliability:0.85, maxHaul:9, runPerMile:15, pace:1.0},
-  {key:"g-duchess",kind:"steam", name:"LMS 'Duchess of Sutherland'", number:"46233", fee:17000, draw:1.75, boost:0.42, reliability:0.79, maxHaul:9, runPerMile:16, pace:1.0},
+  {key:"g-duchess",kind:"steam", name:"LMS 'Duchess of Sutherland'", number:"6233", fee:17000, draw:1.75, boost:0.42, reliability:0.79, maxHaul:9, runPerMile:16, pace:1.0},
   {key:"g-royalscot",kind:"steam",name:"LMS 'Royal Scot'", number:"46100", fee:14000, draw:1.62, boost:0.35, reliability:0.80, maxHaul:9, runPerMile:15, pace:1.0},
   {key:"g-greenarrow",kind:"steam",name:"LNER V2 'Green Arrow'", number:"4771", fee:12000, draw:1.55, boost:0.32, reliability:0.80, maxHaul:9, runPerMile:14, pace:1.0},
   {key:"g-bahamas",kind:"steam", name:"LMS Jubilee 'Bahamas'", number:"45596", fee:11000, draw:1.50, boost:0.30, reliability:0.81, maxHaul:8, runPerMile:14, pace:1.0},
@@ -765,7 +765,7 @@ const GUESTS = [
   {key:"g-duke",  kind:"steam",  name:"BR 8P 'Duke of Gloucester'", number:"71000", fee:13000, draw:1.58, boost:0.33, reliability:0.78, maxHaul:9, runPerMile:15, pace:1.0},
   {key:"g-p3",    kind:"steam",  name:"NER J72 0-6-0T", number:"69023", fee:2500, draw:1.08, boost:0.06, reliability:0.88, maxHaul:4, runPerMile:7, pace:0.9},
   {key:"g-d213",  kind:"diesel", name:"Class 40 'Andania'", number:"D213", fee:6000, draw:1.30, boost:0.20, reliability:0.84, maxHaul:9, runPerMile:9, pace:1.0},
-  {key:"g-c56",   kind:"diesel", name:"Class 56 'Grid'", number:"56301", fee:5000, draw:1.18, boost:0.14, reliability:0.86, maxHaul:9, runPerMile:10, pace:1.0},
+  {key:"g-c56",   kind:"diesel", name:"Class 56 'Grid'", number:"56045", fee:5000, draw:1.18, boost:0.14, reliability:0.86, maxHaul:9, runPerMile:10, pace:1.0},
   {key:"g-c60",   kind:"diesel", name:"Class 60 'Tug'", number:"60009", fee:5000, draw:1.16, boost:0.13, reliability:0.88, maxHaul:9, runPerMile:10, pace:0.95},
   {key:"g-c26",   kind:"diesel", name:"Class 26 pair", number:"26007+26043", fee:4500, draw:1.17, boost:0.13, reliability:0.88, maxHaul:9, runPerMile:9, pace:1.0},
   {key:"g-hymek", kind:"diesel", name:"Class 35 'Hymek'", number:"D7017", fee:6500, draw:1.32, boost:0.22, reliability:0.80, maxHaul:8, runPerMile:9, pace:1.0}
@@ -3030,6 +3030,7 @@ function offerShunt(jobs){
 let pendingJobs = [], pendingPlan = null;
 
 function startShunt(job, via){
+  sndInit();
   const gl = yardGL();
   if(!gl){ alert("Your browser can't show the 3D yard (WebGL is turned off), so the shed staff will marshal the train."); advanceWeek({go:true}); return; }
   // the coaches stand buffered up to the stops on the Platform road, in order
@@ -3063,6 +3064,8 @@ function startShunt(job, via){
   if(unit){ const n = unit.parts.length;   // each driving car again with its cab cut open, for the view from the driver's seat
     unit.open = {1:{...unit.cars(1)[n-1]}, [-1]:{...unit.cars(-1)[0]}};
     for(const k of [1,-1]) unit.open[k].mesh = meshBuffer(gl, unit.open[k].mesh); }
+  yd.snd = {voice:sndVoiceStart(sndProfile(sh===shunter ? "c08" : sh.key)), key:sh===shunter ? "c08" : sh.key, run:sndRunStart([]), odo:0, step:0};
+  ySndAxles();
   // walls of the engine shed, to walk round on foot
   { const za = pathPos(2, routeEnd(2) - 50).z, zb = pathPos(2, routeEnd(2) + 3).z, xL = 2.3, xR = 13.3, xm = (xL+xR)/2;
     yd.walls = [[xL-0.4, xL+0.4, za-0.4, zb+0.4], [xR-0.4, xR+0.4, za-0.4, zb+0.4], [xL, xR, zb-0.4, zb+0.4],
@@ -3081,6 +3084,7 @@ function startShunt(job, via){
 }
 function endShunt(result){
   cancelAnimationFrame(yd.raf);
+  if(yd.snd){ sndVoiceStop(yd.snd.voice); sndRunStop(yd.snd.run); }
   const gl = yardGL(); yd.all.forEach(v=>[...(v.parts || [v]), ...(v.open ? [v.open[1], v.open[-1]] : [])].forEach(c=>gl.deleteBuffer(c.mesh.buf)));
   const job = yd.job; yd = null;
   const y = document.getElementById("yard");
@@ -3153,8 +3157,21 @@ function yBoard(){
     yd.dir = v.parts ? p.me*(v.flip ? -1 : 1) : 1;
     if(yd.dmu || yd.string[0]!==v) yd.string = [v];   // the shunter keeps whatever it had coupled
     yMsg(`You climb into ${v===yd.shunter ? "the shunter" : `the cab of ${v.label}`}`);
+    ySndVehicle(); ySndAxles();
   }
   yHud(); yInfo();
+}
+// the yard's sounds follow whatever you're driving: its engine, and the wheels of everything coupled to it
+function ySndAxles(){
+  const k = yd.snd; if(!k || !k.run || !yd.sh) return;
+  const st = [...yd.string].sort((a,b)=>b.s - a.s), front = st[0], back = yd.sh.s + (yd.sh===yd.shunter ? shunterEye()[2] : 0);
+  k.run.axles = sndAxles(st, 0).map(d=>d - (front.s + front.len/2 - back)); k.run.last = k.run.axles.map(()=>null);
+}
+function ySndVehicle(){
+  const k = yd.snd; if(!k || !yd.sh) return;
+  const key = yd.sh===yd.shunter ? "c08" : yd.sh.key;
+  if(k.key===key) return;
+  sndVoiceStop(k.voice); k.voice = sndVoiceStart(sndProfile(key)); k.key = key;
 }
 function yBlocked(x, z){
   if(x < -22 || x > 22 || z < -15 || z > routeEnd(1) + 30) return true;
@@ -3168,6 +3185,7 @@ function yWalk(dt){
   const k = yd.keys, f = yd.foot, pace = k.sprint ? 5.5 : 1.5, m = (k.fwd ? 1 : 0) - (k.rev ? 0.6 : 0);
   f.speed = Math.abs(m)*pace;
   if(!m) return;
+  if(yd.snd && (yd.snd.step -= dt) <= 0){ yd.snd.step = k.sprint ? 0.32 : 0.55; if(SND.ctx) sndStep(SND.ctx.currentTime, k.sprint); }
   const yaw = f.yaw + yd.look, nx = f.x + Math.sin(yaw)*m*pace*dt, nz = f.z + Math.cos(yaw)*m*pace*dt;
   if(!yBlocked(nx, f.z)) f.x = nx;   // slide along whatever's in the way
   if(!yBlocked(f.x, nz)) f.z = nz;
@@ -3178,7 +3196,7 @@ function yUncouple(keep){
   if(Math.abs(yd.v) > 0.05){ yMsg("Stop before uncoupling", true); return; }
   if(yd.string.length<2){ yMsg("Nothing coupled to the shunter", true); return; }
   if(keep===undefined) keep = 1;
-  const left = yd.string.splice(keep);
+  const left = yd.string.splice(keep); ySndAxles(); sndClank(0.25);
   yMsg(`Uncoupled ${left.map(v=>v.label).join(", ")}`);
   yHud();
 }
@@ -3209,6 +3227,7 @@ function yStep(dt){
 }
 function yImpact(v){
   const sp = Math.abs(yd.v); yd.v = 0;
+  if(sp > 0.1) sndClank(0.3 + sp/1.5);
   if(!v){ if(sp > COUPLE){ yd.rough++; yMsg("Bang! You hit the buffer stops", true); } return; }
   if(sp > CRASH){ yd.rough += 3; yMsg(`Crash! Far too fast into ${v.label}`, true); return; }
   if(yd.dmu){ if(sp > COUPLE){ yd.rough++; yMsg(`Bump! You ran into ${v.label}`, true); } else yMsg(v===yd.shunter ? "Buffered up to the shunter: it's in the way, so go back and move it" : `Buffered up to ${v.label}: back off and try another road`); return; }
@@ -3219,7 +3238,7 @@ function yImpact(v){
     const nx = yd.veh.find(w=>!yd.string.includes(w) && !cut.includes(w) && w.s > cur.s && yShares(r, w) && (w.s - w.len/2) - (cur.s + cur.len/2) < 0.2);
     if(!nx) break; cut.push(nx); cur = nx;
   }
-  yd.string.push(...cut);
+  yd.string.push(...cut); ySndAxles();
   if(sp > COUPLE){ yd.rough++; yMsg(`Rough shunt! Coupled to ${cut.length>1?cut.length+" vehicles":v.label}, but take it gently`, true); }
   else yMsg(`Coupled to ${cut.map(x=>x.label).join(", ")}`);
   yHud();
@@ -3525,27 +3544,28 @@ const STEAM_MODELS = {
   k1:       {arr:"2-6-0", type:"tender",  D:1.57, eng:10.9, tend:7.3, rp:2.18, pitch:2.72, R:.82, spipes:true, tender:"lner-gs", cab:"lner", col:LV.black, line:LV.red},
   "5mt":    {arr:"4-6-0", type:"tender",  D:1.88, eng:11.3, tend:7.8, rp:2.63, pitch:2.77, Rf:.80, R:.87, gear:"caprotti", cab:"br", tender:"br1", defl:"br", spipes:true, col:LV.black, line:LV.red},
   s160:     {arr:"2-8-0", type:"tender",  D:1.45, eng:11.4, tend:7.2, rp:2.13, pitch:2.7, Rf:.80, R:.89, sand:true, tender:"usa", cab:"br", col:LV.black},
-  "g-scot": {arr:"4-6-2", type:"tender",  D:2.03, eng:13.6, tend:7.9, rp:1.88, pitch:2.84, Rf:.88, R:.98, H:3.99, splash:"long", rpCurve:true, defl:"german", chimney:"double", dome:"banjo",
-             tender:"gresley8", wideFb:true, cab:"gresley", col:LV.brgreen, line:LV.orange},
-  "g-a4":   {arr:"4-6-2", type:"tender",  D:2.03, eng:13.75, tend:7.9, pitch:2.84, R:.98, H:3.99, stream:"a4", tender:"gresley8", wideFb:true, cab:"gresley", col:LV.brgreen},
-  "g-k4":   {arr:"2-6-0", type:"tender",  D:1.575, eng:11.0, tend:6.6, rp:2.18, pitch:2.75, R:.82, tender:"lner-gs", cab:"gresley", col:LV.black, line:LV.red},
-  "g-9f":   {arr:"2-10-0",type:"tender",  D:1.52, eng:12.2, tend:8.0, rp:2.38, pitch:2.80, Rf:.88, R:.93, wideFb:true, cab:"br", tender:"br1", defl:"br", spipes:true, col:LV.black},
-  "g-q6":   {arr:"0-8-0", type:"tender",  D:1.40, eng:10.3, tend:6.0, pitch:2.55, R:.80, cyl:"inside", tender:"ner", cab:"old", col:LV.black},
-  "g-ivatt4":{arr:"2-6-0",type:"tender",  D:1.60, eng:10.2, tend:6.8, rp:2.40, rpCab:1.95, pitch:2.70, Rf:.72, R:.80, belp:true, tender:"br3", col:LV.black},
-  "g-tornado":{arr:"4-6-2",type:"tender", D:2.03, eng:14.35, tend:7.9, rp:2.60, pitch:2.84, Rf:.88, R:.98, H:3.99, defl:"lner", chimney:"double", wideFb:true, tender:"lner-gs", cab:"lner",
+  // visiting engines, from their published dimensions (Dl, Dt: leading and trailing wheel diameters)
+  "g-scot": {arr:"4-6-2", type:"tender", D:2.032, Dl:.965, Dt:1.118, eng:13.6, tend:7.86, rp:1.88, pitch:2.84, Rf:.876, R:.978, H:3.99, splash:"long", rpCurve:true, defl:"german", chimney:"double", dome:"banjo",
+             tender:"gresley8", corridor:true, wideFb:true, cab:"gresley", col:LV.brgreen, line:LV.orange},
+  "g-a4":   {arr:"4-6-2", type:"tender", D:2.032, Dl:.965, Dt:1.118, eng:13.75, tend:7.9, rp:1.88, pitch:2.84, Rf:.876, R:.978, H:3.99, stream:"a4", tender:"gresley8", corridor:true, wideFb:true, cab:"gresley", col:LV.brgreen},
+  "g-k4":   {arr:"2-6-0", type:"tender", D:1.575, Dl:.965, eng:10.9, tend:6.4, rp:2.18, pitch:2.72, R:.84, H:3.94, tender:"lner-gs", cab:"gresley", col:LV.black, line:LV.red},
+  "g-9f":   {arr:"2-10-0",type:"tender", D:1.524, Dl:.914, eng:12.2, tend:7.97, rp:2.38, pitch:2.80, Rf:.876, R:.927, wideFb:true, fbLow:2.2, cplPitch:1.676, cab:"br", tender:"br1", defl:"br", spipes:true, col:LV.black},
+  "g-q6":   {arr:"0-8-0", type:"tender", D:1.410, eng:10.3, tend:6.0, rp:2.05, pitch:2.59, R:.84, H:3.92, gear:"none", tender:"ner", col:LV.black},
+  "g-ivatt4":{arr:"2-6-0",type:"tender", D:1.600, Dl:.914, eng:10.2, tend:6.84, rp:2.40, rpCab:1.95, pitch:2.70, Rf:.72, R:.80, belp:true, topfeed:true, spipes:true, cab:"br", tender:"br3", col:LV.black},
+  "g-tornado":{arr:"4-6-2",type:"tender",D:2.032, Dl:.965, Dt:1.118, eng:14.35, tend:7.9, rp:2.60, pitch:2.84, Rf:.876, R:.978, H:4.01, defl:"lner", chimney:"double", wideFb:true, tender:"lner-gs", tendTop:3.6, cab:"lner",
              col:LV.lner, line:LV.white},
-  "g-duchess":{arr:"4-6-2",type:"tender", D:2.06, eng:14.2, tend:8.3, rp:2.62, pitch:2.87, Rf:.87, R:.98, H:4.04, dome:"none", topfeed:true, chimney:"double", wideFb:true, belp:true,
+  "g-duchess":{arr:"4-6-2",type:"tender",D:2.057, Dl:.914, Dt:1.143, eng:14.2, tend:8.3, rp:2.62, pitch:2.87, Rf:.87, R:.985, H:4.04, dome:"none", topfeed:true, chimney:"double", defl:"lms", wideFb:true, belp:true,
              tender:"stanier", cab:"stanier", col:LV.crimson, line:LV.gold},
-  "g-royalscot":{arr:"4-6-0",type:"tender",D:2.06, eng:11.8, tend:7.6, rp:2.62, pitch:2.74, Rf:.78, R:.89, dome:"none", topfeed:true, chimney:"double", defl:"lms", belp:true,
+  "g-royalscot":{arr:"4-6-0",type:"tender",D:2.057, Dl:.914, eng:11.65, tend:7.56, rp:2.62, pitch:2.74, Rf:.78, R:.89, H:3.96, dome:"none", topfeed:true, chimney:"double", defl:"lms", belp:true,
              tender:"stanier", cab:"stanier", col:LV.brgreen, line:LV.orange},
-  "g-greenarrow":{arr:"2-6-2",type:"tender",D:1.88, eng:12.95, tend:7.3, rp:1.80, pitch:2.84, Rf:.88, R:.98, splash:"long", rpCurve:true, dome:"banjo", tender:"lner-gs", wideFb:true,
+  "g-greenarrow":{arr:"2-6-2",type:"tender",D:1.88, Dl:.965, Dt:1.118, eng:12.95, tend:7.3, rp:1.80, pitch:2.84, Rf:.876, R:.978, splash:"long", rpCurve:true, dome:"banjo", tender:"lner-gs", wideFb:true,
              cab:"gresley", col:LV.lner, line:LV.white},
-  "g-bahamas":{arr:"4-6-0",type:"tender", D:2.06, eng:12.1, tend:7.6, rp:2.62, pitch:2.72, Rf:.76, R:.87, chimney:"double", topfeed:true, belp:true, tender:"stanier", cab:"stanier",
+  "g-bahamas":{arr:"4-6-0",type:"tender",D:2.057, Dl:.914, eng:12.1, tend:7.63, rp:2.62, pitch:2.72, Rf:.76, R:.87, chimney:"double", topfeed:true, belp:true, tender:"stanier", cab:"stanier",
              col:LV.brgreen, line:LV.orange},
-  "g-braunton":{arr:"4-6-2",type:"tender",D:1.88, eng:13.0, tend:7.5, pitch:2.84, R:.9, stream:"bulleid", bfb:true, gear:"none", tender:"bulleid", col:LV.brgreen},
-  "g-duke": {arr:"4-6-2", type:"tender",  D:1.88, eng:12.6, tend:8.0, rp:2.63, pitch:2.84, Rf:.86, R:.94, H:3.97, gear:"caprotti", chimney:"double", defl:"br", cab:"br", tender:"br1",
+  "g-braunton":{arr:"4-6-2",type:"tender",D:1.88, Dl:.94, Dt:1.092, eng:13.0, tend:7.54, pitch:2.84, R:.9, H:3.99, stream:"bulleid", bfb:true, gear:"none", tender:"bulleid", col:LV.brgreen},
+  "g-duke": {arr:"4-6-2", type:"tender", D:1.88, Dl:.914, Dt:1.003, eng:12.6, tend:8.02, rp:2.63, pitch:2.84, Rf:.875, R:.98, H:3.97, gear:"caprotti", chimney:"double", defl:"br", cab:"br", tender:"br1",
              wideFb:true, spipes:true, col:LV.brgreen, line:LV.orange},
-  "g-p3":   {arr:"0-6-0", type:"tank",    D:1.25, eng:8.6,  pitch:2.15, R:.60, cyl:"inside", splash:true, col:LV.ner, line:LV.white}
+  "g-p3":   {arr:"0-6-0", type:"tank", D:1.251, eng:8.9, pitch:2.15, R:.62, cyl:"inside", col:LV.black, line:LV.red}
 };
 // Diesels, from photographs and published dimensions: body style (cab ends, nose ends, hood with a
 // single cab, the Western's curves), length, wheels (Bo-Bo, Co-Co, A1A-A1A, 1Co-Co1, or coupled rods
@@ -3573,23 +3593,29 @@ const DIESEL_MODELS = {
          head:"markers", grilles:[[0, 10.5, 3.35, 3.9]]},
   c46:  {style:"nose", len:20.70, nose:1.3, noseRound:true, bogie:"1Co", r:0.57, sp:1.98, col:LV.brgreen, yellow:"panel", head:"4char", screen:"two",
          grilles:[[1.5, 4.2, 3.35, 3.85]]},
-  "g-deltic": {style:"nose", len:21.18, nose:1.5, noseRound:true, bogie:"Co", r:0.55, sp:2.06, col:LV.railblue, yellow:"full", rim:[.9,.9,.86],
-         screen:"two", rake:0.35, head:"markers", grilles:[[0, 13, 3.2, 3.9]]},
-  "g-western":{style:"western", len:20.73, bogie:"Co", r:0.55, sp:1.85, col:LV.maroon, yellow:"panel", screen:"two", rake:0.35, tumble:0.12, head:"4char"},
-  "g-c50":    {style:"cab", len:20.88, bogie:"Co", r:0.55, sp:2.06, col:LV.railblue, yellow:"wrap", head:"dome", screen:"two", roof:[.5,.52,.53],
-         grilles:[[0, 9.0, 3.4, 3.88]]},
-  "g-c33":    {style:"cab", len:15.47, bogie:"Bo", r:0.55, sp:3.2, inset:3.7, col:LV.brgreen, yellow:"panel", screen:"twoHead", grilles:[[0, 6.0, 3.4, 3.85]]},
-  "g-c20":    {style:"hood", cab:"end", len:28.5, bogie:"Bo", r:0.55, sp:2.59, inset:3.9, col:LV.railblue, yellow:"full", hoodW:2.2, hoodTop:3.9, head:"discs", walk:1.72, pair:true},
-  "g-c47":    {style:"cab", len:19.38, bogie:"Co", r:0.57, sp:2.21, inset:4.0, col:LV.railblue, yellow:"full", screen:"two", head:"markers", grilles:[[0, 10.5, 3.35, 3.9]]},
-  "g-d213":   {style:"nose", len:21.18, nose:1.9, noseRound:true, bogie:"1Co", r:0.55, sp:1.98, col:LV.brgreen, yellow:"panel", head:"discs", screen:"two",
-         grilles:[[3.5, 1.8, 2.3, 3.6], [-1.0, 5.0, 3.4, 3.85]], portholes:4},
-  "g-c56":    {style:"cab", len:19.36, bogie:"Co", r:0.57, sp:2.06, col:LV.rfgrey, yellow:"wrap", stripe:LV.red, stripeY:2.0, stripeH:0.1, screen:"two", paneW:0.98, roofFlat:true,
-         grilles:[[0.5, 8.0, 3.35, 3.9]]},
-  "g-c60":    {style:"cab", len:21.34, bogie:"Co", r:0.56, sp:2.07, col:LV.ews, yellow:"full", stripe:LV.gold, stripeY:2.0, stripeH:0.25, screen:"two", paneW:1.1, lean:0.25, roofFlat:true,
-         grilles:[[4.5, 2.0, 2.2, 3.8]]},
-  "g-c26":    {style:"cab", len:30.94, bogie:"Bo", r:0.57, sp:2.59, inset:3.9, col:LV.brgreen, yellow:"panel", screen:"three", lean:0.14, head:"markers", grilles:[[0, 6.0, 3.4, 3.85]], pair:true},
-  "g-hymek":  {style:"cab", len:15.75, bogie:"Bo", r:0.57, sp:3.2, inset:3.9, col:LV.brgreen, col2:LV.ltgreen, band2:2.45, rim:[.9,.9,.86], yellow:"panel", screen:"three",
-         head:"4char", grilles:[[0, 2.2, 2.3, 3.6]]}
+  // visiting diesels, from their published dimensions and the liveries the preserved engines carry now
+  "g-deltic": {style:"nose", len:21.18, nose:1.3, noseRound:true, bogie:"Co", r:0.57, sp:2.06, inset:3.73, col:LV.railblue, yellow:"full", rim:[.92,.92,.88], screen:"two", rake:0.35,
+         head:"4char", grilles:[[0, 13, 3.2, 3.9]], cabBand:[.92,.92,.88], noseGrilles:true},
+  "g-western":{style:"western", len:20.73, bogie:"Co", r:0.546, sp:1.85, inset:3.89, col:LV.railblue, yellow:"full", screen:"two", rake:0.35, tumble:0.12, head:"4char",
+         frames:"outside", brow:true, valance:true, plates:true},
+  "g-c50":    {style:"cab", len:20.88, bogie:"Co", r:0.546, sp:2.06, inset:3.94, col:LV.railblue, yellow:"wrap", head:"dome", screen:"two", roof:[.5,.52,.53],
+         grilles:[[0, 9.0, 3.4, 3.88]], fans:[6.0, -6.0], headlight:true},
+  "g-c33":    {style:"cab", len:15.47, bogie:"Bo", r:0.546, sp:3.05, inset:3.32, col:LV.brgreen, yellow:"panel", stripe:LV.cream, stripeY:2.05, stripeH:0.04, screen:"twoHead",
+         grilles:[[0, 6.0, 3.4, 3.85]], jumpers:true},
+  "g-c20":    {style:"hood", cab:"end", len:28.51, bogie:"Bo", r:0.546, sp:2.59, inset:3.47, col:LV.maroon, yellow:"full", hoodW:2.2, hoodTop:3.9, walk:1.72, pair:true,
+         hoodBox:true, pairSet:{col:LV.railblue}},
+  "g-c47":    {style:"cab", len:19.38, bogie:"Co", r:0.57, sp:2.21, inset:4.05, col:LV.railblue, yellow:"full", screen:"two", head:"dome",
+         grilles:[[0, 12.5, 3.6, 3.9]], headlight:true},
+  "g-d213":   {style:"nose", len:21.18, nose:2.0, noseRound:true, bogie:"1Co", r:0.57, sp:2.2, inset:4.6, col:LV.brgreen, yellow:"panel", head:"discs", screen:"two",
+         grilles:[[3.5, 1.8, 2.3, 3.6], [-1.0, 5.0, 3.4, 3.85]], portholes:4, noseDoors:true},
+  "g-c56":    {style:"cab", len:19.36, bogie:"Co", r:0.57, sp:2.06, inset:4.44, col:LV.railblue, yellow:"full", screen:"two", paneW:0.98, roofFlat:true,
+         grilles:[[0.5, 8.0, 3.35, 3.9]], fans:[-6.5], winBlack:true},
+  "g-c60":    {style:"cab", len:21.34, bogie:"Co", r:0.56, sp:2.05, inset:5.07, col:LV.ews, yellow:"full", stripe:LV.gold, stripeY:2.0, stripeH:0.25, screen:"two", paneW:1.1, lean:0.25, roofFlat:true,
+         grilles:[[4.5, 2.0, 2.2, 3.8]], doors:[3, 6, -3, -6]},
+  "g-c26":    {style:"cab", len:30.94, bogie:"Bo", r:0.546, sp:3.05, inset:3.32, col:LV.railblue, yellow:"full", screen:"three", lean:0.14, grilles:[[0, 6.0, 3.4, 3.85]], pair:true,
+         pairSet:{col:LV.rfgrey, col2:[.3,.31,.33], band2:2.6}},
+  "g-hymek":  {style:"cab", len:15.76, bogie:"Bo", r:0.57, sp:3.2, inset:3.99, col:LV.railblue, rim:[.9,.9,.86], yellow:"panel", screen:"three", head:"4char",
+         grilles:[[0, 2.2, 2.3, 3.6]], cabBand:[.9,.9,.86], feature:2.45}
 };
 /* ---- liveries: the real colour schemes each class has carried, and repainting in the shed or the works ---- */
 // appeal is added to the engine's public draw: historic and famous liveries bring a few more people out.
@@ -3659,14 +3685,14 @@ const CLASS_LIVERIES = {
   s160:["brBlack","usaGrey"], "g-scot":["brGreen","lnerGreen","brBlue","lnerBlack"], "g-a4":["brGreen","garter","brBlue"], "g-k4":["brLinedBlack","lnerGreen"],
   "g-9f":["brBlack","brGreen"], "g-q6":["brBlack","nerBlack"], "g-ivatt4":["brBlack","lmsBlack"], "g-tornado":["lnerGreen","brGreen","brBlue","greyWorks"],
   "g-duchess":["lmsCrimson","brGreen","brBlue"], "g-royalscot":["brGreen","lmsCrimson"], "g-greenarrow":["lnerGreen","brGreen","lnerBlack"],
-  "g-bahamas":["brGreen","lmsCrimson"], "g-braunton":["brGreen","srGreen"], "g-duke":["brGreen"], "g-p3":["nerGreen","brBlack","lnerBlack"],
+  "g-bahamas":["brGreen","lmsCrimson"], "g-braunton":["brGreen","srGreen"], "g-duke":["brGreen"], "g-p3":["brBlack","nerGreen","lnerBlack"],
   c14:["dGreenPanel","dGreenPlain","dBlue"], c25:["dBlue","dTwoTone","dGreenPanel"], c31:["dBlue","dGreenPanel","dTriple","dEWS"],
   c37:["dBlue","dGreenPanel","dLargeLogo","dRfGrey","dTriple","dEWS"], c45:["dBlue","dGreenPanel"], c40:["dBlue","dGreenPanel","dGreenPlain"],
   c08:["d08Green","d08Blue"], c20:["dGreenPanel","dBlue","dRfGrey","dTriple"], c24:["dGreenStripe","dBlue"], c26:["dGreenPanel","dBlue","dRfGrey"],
   c33:["dGreenPanel","dBlue","dNSE","dTriple"], c47:["dTwoTone","dBlue","dLargeLogo","dIC","dNSE","dRfGrey"], c46:["dGreenPanel","dBlue"],
-  "g-deltic":["dDelticBlue","dDelticGreen"], "g-western":["dMaroon","dOchre","dDesert","dBlue"], "g-c50":["dLargeLogo","dBlue","dNSE"],
+  "g-deltic":["dDelticBlue","dDelticGreen"], "g-western":["dBlue","dMaroon","dOchre","dDesert"], "g-c50":["dLargeLogo","dBlue","dNSE"],
   "g-c33":["dGreenPanel","dBlue"], "g-c20":["dBlue","dGreenPanel"], "g-c47":["dBlue","dTwoTone","dLargeLogo"], "g-d213":["dGreenPanel","dBlue"],
-  "g-c56":["dRfGrey","dBlue","dTriple","dLoadhaul","dEWS"], "g-c60":["dEWS","dTriple","dDB"], "g-c26":["dGreenPanel","dBlue"], "g-hymek":["dHymek","dBlue"],
+  "g-c56":["dBlue","dRfGrey","dTriple","dLoadhaul","dEWS"], "g-c60":["dEWS","dTriple","dDB"], "g-c26":["dBlue","dGreenPanel"], "g-hymek":["dBlue","dHymek"],
   c101:["dmuGreen","dmuGreenPanel","dmuBlue","dmuBlueGrey","dmuWhite","dmuRegional"], c110:["dmuGreen","dmuGreenPanel","dmuBlue","dmuBlueGrey"],
   c108:["dmuGreen","dmuGreenPanel","dmuBlue","dmuBlueGrey","dmuNSE"], c104:["dmuGreen","dmuGreenPanel","dmuBlue","dmuBlueGrey"],
   c144:["dmuMetro","dmuRegional","dmuNSpirit","dmuNorthern"], railbus:["dmuGreen","dmuBlue"]
@@ -3818,16 +3844,17 @@ function steamMesh(m){
   const rail = 0.53, H = rail + (m.H || 3.96), yB = rail + (m.pitch || 2.5), R = m.R, Rf = m.Rf || R;
   const yRP = m.rp || Math.max(1.55, yB - R - 0.12), yBeam = 1.58;
   const [nl, nc, nt] = m.arr.split("-").map(n=>Number(n)/2);
-  const tank = m.type!=="tender", rC = m.D/2, rS = 0.46, inside = m.cyl==="inside";
+  const tank = m.type!=="tender", rC = m.D/2, rS = (m.Dl || 0.92)/2, rT = (m.Dt || 0.99)/2, inside = m.cyl==="inside";
   const cabT = m.cab || (tank ? "tank" : "std"), cl = cabT==="old" ? 1.9 : (Le > 12 ? 2.6 : 2.35);
   const zCabB = zr + (tank ? 1.6 : 0.05), zCabF = zCabB + cl, zs0 = zf - 0.7;
   // wheels, laid out from the front and squeezed into the wheelbase there is room for
   const ax = []; let z = zf - (nl ? 1.4 : rC + 0.8);
   for(let i=0;i<nl;i++){ ax.push({z, r:rS}); z -= 2.0; }
   if(nl) z -= rC - rS - 0.6;
-  for(let i=0;i<nc;i++){ ax.push({z, r:rC, cpl:true}); z -= m.D + 0.25; }
-  z += m.D + 0.25;
-  if(nt){ z -= rC + 1.0; for(let i=0;i<nt;i++){ ax.push({z, r:rS*1.08}); z -= 1.5; } z += 1.5; }
+  const cp = m.cplPitch || m.D + 0.25;
+  for(let i=0;i<nc;i++){ ax.push({z, r:rC, cpl:true}); z -= cp; }
+  z += cp;
+  if(nt){ z -= rC + 1.0; for(let i=0;i<nt;i++){ ax.push({z, r:rT}); z -= 1.5; } z += 1.5; }
   const room = ax[0].z - (zr + (tank ? 1.0 : 1.3)), span = ax[0].z - z;
   if(span > room){ const z0 = ax[0].z; ax.forEach(w=>w.z = z0 - (z0 - w.z)*room/span); }
   const cpl = ax.filter(w=>w.cpl), main = cpl[Math.ceil((cpl.length-1)/2)], yAx = rail + rC;
@@ -3962,7 +3989,8 @@ function steamMesh(m){
       box(a, 0, yB + R - 0.12, fbm, 2*R - 0.5, 0.36, fbl, col);
       for(const s of [1,-1]) quad(a, [s*(R-0.01),yB+R-0.3,zCabF],[s*(R-0.25),yB+R+0.06,zCabF],[s*(R-0.25),yB+R+0.06,zfb],[s*(R-0.01),yB+R-0.3,zfb], col, [s,1,0]);
     } else cyl(a,"z", 0, yB, fbm, R + 0.02, fbl, col, 22);
-    if(m.wideFb){ box(a, 0, (rail + 1.35 + yB)/2, fbm, 2.0, yB - rail - 1.35, fbl, col); box(a, 0, rail + 1.2, fbm, 1.6, 0.3, fbl - 0.3, B); }
+    if(m.wideFb){ const f0 = m.fbLow || rail + 1.35;   // the 9F's wide firebox sits up above its coupled wheels
+      box(a, 0, (f0 + yB)/2, fbm, 2.0, yB - f0, fbl, col); box(a, 0, f0 - 0.15, fbm, 1.6, 0.3, fbl - 0.3, B); }
     else box(a, 0, (yRP + yB - R)/2, fbm, 1.25, Math.max(0.1, yB - R - yRP + 0.2), fbl, B);
     // chimney
     const ch = Math.max(0.25, H - (yB + Rf)), zch = zs0 - 0.7;
@@ -3971,7 +3999,9 @@ function steamMesh(m){
     // dome, top feed, safety valves, whistle
     const zd = m.type==="saddle" ? zb0 - 0.5 : (zb0 + zfb)/2 + 0.3, Rd = Rf + (R - Rf)*0.5;
     const dh = Math.max(0.2, H - 0.12 - (yB + Rd));
-    if(m.dome==="banjo"){ cyl(a,"y", 0, yB + Rd + 0.05, zd, 0.38, 0.2, col, 18); box(a, 0, yB + Rd + 0.03, zd, 0.6, 0.12, 0.9, col); }
+    if(m.dome==="banjo"){   // the long streamlined steam collector over the firebox end of the barrel
+      for(let k=0;k<7;k++){ const f = (k - 3)/3.5, h = 0.25*Math.sqrt(1 - f*f), w = 0.62*(0.6 + 0.4*Math.sqrt(1 - f*f));
+        box(a, 0, yB + Rd - 0.02 + h/2, zd + f*0.8, w, h + 0.06, 0.24, col); } }
     else if(m.dome==="saddle"){ const st = yB + R + 0.4; cyl(a,"y", 0, st + 0.12, zd, 0.32, 0.32, m.brass ? BRASS : col, 16); }
     else if(m.dome!=="none") cyl(a,"y", 0, yB + Rd + dh/2 - 0.08, zd, 0.34, dh, m.brass ? BRASS : col, 18);
     if(m.sand) cyl(a,"y", 0, yB + Rd + dh/2 - 0.1, zd + 1.3, 0.3, dh*0.85, col, 14);
@@ -4015,7 +4045,9 @@ function steamMesh(m){
     for(const sx of [0.7,-0.7]) cyl(a,"z", sx, (by1 + yRoof)/2, zCabB - 0.05, 0.2, 0.02, GLASS, 14);
     if(m.line) for(const sx of [1.301,-1.301]) box(a, sx, (yRP + by1)/2, bz, 0.01, 0.05, zCabB - zr - 0.5, m.line);
   } else {
-    const T = TENDERS[m.tender || "stanier"], t1 = zr - 0.05, t0 = -L/2 + 0.25, tm = (t0 + t1)/2, tl = t1 - t0, hw = T.w/2, top = T.top;
+    const T = TENDERS[m.tender || "stanier"], t1 = zr - 0.05, t0 = -L/2 + 0.25, tm = (t0 + t1)/2, tl = t1 - t0, hw = T.w/2, top = m.tendTop || T.top;
+    if(m.corridor){ box(a, 0, (top + 1.75)/2, t0 - 0.02, 0.78, top - 1.75, 0.06, col); box(a, 0, (top + 1.85)/2, t0 - 0.06, 0.6, top - 1.95, 0.04, [.12,.12,.12]);   // the corridor through the tender
+      box(a, 0, (top + 1.75)/2, t0 - 0.16, 1.0, top - 1.65, 0.12, [.15,.15,.15]); }
     box(a, 0, 1.25, tm, 1.4, 0.5, tl, B);
     if(T.bogies){ for(const s of [1,-1]){ const bc = tm + s*(tl/2 - 1.6);
         for(const dz of [-0.75, 0.75]) for(const sx of [1,-1]) wheel(a, sx, rail + T.r, bc + dz, T.r, B, {});
@@ -4188,8 +4220,8 @@ function extrude(a, P, zA, zB, edgeCol, capA, capB){
 
 function dieselMesh(m){
   if(m.pair){   // two locos coupled as one, cabs outwards
-    const half = dieselMesh({...m, pair:false, len:m.len/2});
-    return [...placed(half, m.len/4, true), ...placed(half, -m.len/4, false)];
+    const half = dieselMesh({...m, pair:false, len:m.len/2}), other = m.pairSet ? dieselMesh({...m, pair:false, len:m.len/2, ...m.pairSet}) : half;
+    return [...placed(half, m.len/4, true), ...placed(other, -m.len/4, false)];
   }
   const a = [], L = m.len, h = L/2, col = m.col;
   const B = [.07,.07,.08], UF = [.13,.13,.13], BOG = [.21,.21,.22], AXB = [.27,.27,.28], STEEL = [.62,.62,.6];
@@ -4245,6 +4277,8 @@ function dieselMesh(m){
           for(const dz of [0.35,-0.35]) cyl(a,"y", sx, 1.2, z + dz, 0.09, 0.32, [.32,.32,.32], 8); }
         if(i < n-1) for(const sx of [1.22,-1.22]) box(a, sx, 1.28, z + sp/2, 0.12, 0.25, 0.25, B);
       }
+      if(m.frames==="outside") for(const sx of [1.27,-1.27]){ box(a, sx, 1.1, zc, 0.12, 0.72, wb + 1.0, BOG);
+        for(let i=0;i<n;i++) box(a, sx*1.04, 1.12, zc + (i - (n-1)/2)*sp, 0.1, 0.34, 0.46, AXB); }
       if(m.bogie==="1Co"){ const zp = zc + s*(wb/2 + 1.1); wheels(zp, 0.46); for(const sx of [1.14,-1.14]) box(a, sx, 1.0, zp, 0.1, 0.4, 1.0, BOG); }
       clear = h - inset - wb/2 - (m.bogie==="1Co" ? 1.7 : 0.9);
     }
@@ -4330,6 +4364,7 @@ function dieselMesh(m){
       else if(m.yellow==="wasp") wasp(-hw, hw, yb0, yb0 + 0.85, zAt, s, 0.016);
       lamps(zAt, s, yb0 + 0.25);
       if(m.head==="discs") discs(zAt, s, yb0 + 0.75);
+      if(m.hoodBox) headBox(0, top - 0.35, zAt, s, 0.9, 0.3);
     };
     hood(cz + cl/2, ze, 1); hood(-ze, cz - cl/2, -1);
     // the cab, with a domed roof
@@ -4418,6 +4453,12 @@ function dieselMesh(m){
       if(m.head==="4char") headBox(0, 2.75, zAt, s, 0.95, 0.3);
       if(m.head==="discs") discs(zAt, s, 2.2);
       if(m.head==="dome") roofDome(s*(bz - 0.5), s);
+      if(m.winBlack) onFace(-1.25, 1.25, ySill - 0.05, yb1 - 0.02, zAt, s, FR, 0.009);
+      if(m.cabBand) onFace(-W, W, ySill - 0.03, yb1 - 0.01, zAt, s, m.cabBand, 0.008), screens(zAt, s, ySill + 0.07, yb1 - 0.08);
+      if(m.headlight) cyl(a,"z", 0, 2.05, zAt(2.05) + s*0.03, 0.13, 0.05, [.95,.95,.85], 12);
+      if(m.jumpers) for(const sx of [0.55,-0.55]){ cyl(a,"y", sx, 2.15, zAt(2.15) + s*0.06, 0.04, 0.5, B, 6); box(a, sx, 2.42, zAt(2.42) + s*0.06, 0.16, 0.1, 0.1, B); }
+      if(m.brow){ const zb = zAt(yb1); box(a, 0, yb1 + 0.08, zb + s*0.05, 2.6, 0.16, 0.3, full ? Y : col); }
+      if(m.valance){ const zv = s*(ze - 0.02); box(a, 0, 1.43, zv, 2.72, 0.66, 0.12, full ? Y : col); }
     } else {
       // the nose: tapered in plan, falling slightly forward, with a chamfered top edge and a raked front
       const round = m.noseRound, w0 = 1.34, w2 = round ? 1.02 : 1.15, nl = m.noseLean || 0.15, chm = round ? 0.45 : 0.25;
@@ -4436,13 +4477,22 @@ function dieselMesh(m){
       lamps(frontAt, s, 2.0);
       if(m.head==="discs") discs(frontAt, s, 2.15);
       if(m.head==="4char") quad(a, [-0.48,yT+0.02,zt],[0.48,yT+0.02,zt],[0.48,yC+0.02,zfr - s*0.01],[-0.48,yC+0.02,zfr - s*0.01], FR, [0,1,s]);
+      if(m.noseDoors) for(const sx of [-0.36, 0.36]){ onFace(Math.min(sx, 0), Math.max(sx, 0), 2.0, 3.2, frontAt, s, FR, 0.018); onFace(Math.min(sx, 0) + 0.03, Math.max(sx, 0) - 0.03, 2.03, 3.17, frontAt, s, col, 0.022); }
+      if(m.noseGrilles) for(const sx of [0.62,-0.62]) onFace(sx - 0.16, sx + 0.16, 2.5, 2.7, frontAt, s, GR, 0.02);
       if(m.head==="split") for(const sx of [0.62,-0.62]) quad(a, [sx-0.27,yT+0.02,zt],[sx+0.27,yT+0.02,zt],[sx+0.27,yC+0.02,zfr - s*0.01],[sx-0.27,yC+0.02,zfr - s*0.01], FR, [0,1,s]);
       // cab front above the nose
       const cabAt = y => s*(bz - fz(y));
       if(full) onFace(-W, W, yN - 0.02, yN + 0.12, cabAt, s, Y, 0.006);
+      if(m.cabBand) onFace(-W, W, yN + 0.12, yb1 - 0.01, cabAt, s, m.cabBand, 0.008);
       screens(cabAt, s, yN + 0.14, yb1 - 0.08);
     }
   }
+  // bodyside details: the white cab window bands carried round the sides, feature lines, nameplates, roof fans, doors
+  if(m.cabBand) for(const s of [1,-1]) for(const sx of [1,-1]) box(a, sx*(W + 0.011), (3.3 + yb1)/2, s*(bz - 0.6), 0.02, yb1 - 3.3, 1.2, m.cabBand);
+  if(m.feature) for(const sx of [1,-1]) box(a, sx*(W + 0.013), m.feature, 0, 0.02, 0.05, 2*bz - 1.2, [.9,.9,.86]);
+  if(m.plates) for(const sx of [1,-1]) for(const z of [2.5,-2.5]){ box(a, sx*(W + 0.02), 2.6, z, 0.03, 0.22, 1.5, [.55,.45,.2]); box(a, sx*(W + 0.03), 2.6, z, 0.02, 0.16, 1.4, [.12,.1,.1]); }
+  if(m.fans) for(const z of m.fans){ cyl(a,"y", 0, 4.42, z, 0.5, 0.06, [.2,.21,.22], 18); for(let k=0;k<6;k++) box(a, 0, 4.46, z, 0.9, 0.02, 0.06, [.33,.34,.35], k*Math.PI/6); }
+  if(m.doors) for(const z of m.doors) for(const sx of [1,-1]){ for(const dz of [-0.4, 0.4]) box(a, sx*(W + 0.012), 2.65, z + dz, 0.02, 1.85, 0.03, FR); box(a, sx*(W + 0.012), 3.58, z, 0.02, 0.03, 0.83, FR); }
   return a;
 }
 
@@ -4519,6 +4569,10 @@ function yCab(){
 function yardFrame(ts){
   if(!yd) return;
   const dt = yd.last ? Math.min(0.05, (ts - yd.last)/1000) : 0; yd.last = ts;
+  if(yd.snd && yd.sh){ yd.snd.odo += Math.abs(yd.v)*dt;
+    sndVoiceUpdate(yd.snd.voice, Math.abs(yd.v), yd.keys.fwd || yd.keys.rev ? 0.75 : yd.keys.brake ? -0.6 : 0, dt);
+    sndRunUpdate(yd.snd.run, yd.snd.odo, Math.abs(yd.v), 0, yd.keys.brake ? 0.7 : 0, false, 1); }
+  else if(yd.snd){ sndVoiceUpdate(yd.snd.voice, 0, 0, dt); sndRunUpdate(yd.snd.run, yd.snd.odo, 0, 0, 0, false, 1); }
   if(!yd.done){
     yStep(dt);
     const L = yd.keys.left, R = yd.keys.right;
@@ -4541,9 +4595,11 @@ addEventListener("keydown", e=>{
   else if(e.key==="u" || e.key==="U") yUncouple();
   else if(e.key==="e" || e.key==="E") yChangeEnds();
   else if(e.key==="f" || e.key==="F") yBoard();
+  else if((e.key==="q" || e.key==="Q") && !e.repeat && yd.snd) sndSignal(yd.snd.voice, true);
+  else if(e.key==="m" || e.key==="M") sndToggle();
   else if(e.key==="Escape") quitShunt();
 });
-addEventListener("keyup", e=>{ if(yd && YKEYS[e.key]) yd.keys[YKEYS[e.key]] = false; });
+addEventListener("keyup", e=>{ if(yd && YKEYS[e.key]) yd.keys[YKEYS[e.key]] = false; if(yd && yd.snd && (e.key==="q" || e.key==="Q")) sndSignal(yd.snd.voice, false); });
 (()=>{
   const cv = document.getElementById("ygl"); let drag = null;
   cv.addEventListener("pointerdown", e=>{ const o = yd || dv; drag = {x:e.clientX, y:e.clientY, look:o?o.look:0, pitch:o?o.pitch:0}; cv.setPointerCapture(e.pointerId); });
@@ -4552,6 +4608,11 @@ addEventListener("keyup", e=>{ if(yd && YKEYS[e.key]) yd.keys[YKEYS[e.key]] = fa
     o.pitch = Math.max(-0.6, Math.min(0.4, drag.pitch - (e.clientY - drag.y)*0.004)); });
   cv.addEventListener("pointerup", ()=>drag = null);
   cv.addEventListener("dblclick", ()=>{ const o = yd || dv; if(o){ o.look = 0; o.pitch = -0.06; } });
+  document.querySelectorAll("[data-horn]").forEach(b=>{   // hold to sound the whistle or horn
+    const set = on => { const o = b.dataset.horn==="d" ? dv : yd; if(o && o.snd) sndSignal(o.snd.voice, on); };
+    b.addEventListener("pointerdown", e=>{ e.preventDefault(); sndInit(); set(true); });
+    for(const ev of ["pointerup","pointerleave","pointercancel"]) b.addEventListener(ev, ()=>set(false));
+  });
   document.querySelectorAll("[data-dhold]").forEach(b=>{
     const k = b.dataset.dhold, set = on => { if(!dv) return; if(k==="emerg"){ dv.emerg = on; if(on) dv.ctl = -1; } else dv.keys[k] = on; };
     b.addEventListener("pointerdown", e=>{ e.preventDefault(); set(true); });
@@ -4564,12 +4625,317 @@ addEventListener("keyup", e=>{ if(yd && YKEYS[e.key]) yd.keys[YKEYS[e.key]] = fa
   });
 })();
 
+/* ============================ SOUND ============================ */
+// Everything is synthesised with the Web Audio API: no recordings. The mixer has a dry path and a reverb send
+// (for the tunnel and the engine shed); engine voices, whistles and horns are built per class in SND_PROFILE.
+const SND = {ctx:null, on:true, vol:1.0};
+try{ SND.on = localStorage.getItem("hrm-sound")!=="off"; }catch(e){}
+function sndInit(){   // called from a click, so browsers let it start
+  if(SND.ctx){ if(SND.ctx.state==="suspended") SND.ctx.resume(); return SND.ctx; }
+  const AC = window.AudioContext || window.webkitAudioContext; if(!AC) return null;
+  const c = SND.ctx = new AC();
+  SND.master = c.createGain(); SND.master.gain.value = SND.on ? SND.vol : 0;
+  const comp = c.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 4; comp.attack.value = 0.004; comp.release.value = 0.25;
+  SND.master.connect(comp).connect(c.destination);
+  SND.dry = c.createGain(); SND.dry.connect(SND.master);
+  // a reverb made from decaying noise: short and boomy in the tunnel, longer under the shed roof
+  SND.verb = c.createConvolver(); SND.verb.buffer = sndImpulse(c, 1.6, 2.2);
+  SND.wet = c.createGain(); SND.wet.gain.value = 0.08; SND.wet.connect(SND.verb).connect(SND.master);
+  SND.bus = c.createGain(); SND.bus.connect(SND.dry); SND.bus.connect(SND.wet);
+  SND.noise = sndNoiseBuffer(c, 3, "white"); SND.brown = sndNoiseBuffer(c, 3, "brown"); SND.pink = sndNoiseBuffer(c, 3, "pink");
+  return c;
+}
+function sndNoiseBuffer(c, secs, kind){
+  const n = Math.floor(c.sampleRate*secs), b = c.createBuffer(1, n, c.sampleRate), d = b.getChannelData(0);
+  let l = 0, b0 = 0, b1 = 0, b2 = 0;
+  for(let i=0;i<n;i++){ const w = Math.random()*2 - 1;
+    if(kind==="brown"){ l = (l + 0.02*w)/1.02; d[i] = l*3.5; }
+    else if(kind==="pink"){ b0 = 0.997*b0 + 0.029591*w; b1 = 0.985*b1 + 0.032534*w; b2 = 0.95*b2 + 0.048056*w; d[i] = (b0 + b1 + b2 + 0.1848*w)*0.5; }
+    else d[i] = w; }
+  return b;
+}
+function sndImpulse(c, secs, decay){
+  const n = Math.floor(c.sampleRate*secs), b = c.createBuffer(2, n, c.sampleRate);
+  for(let ch=0;ch<2;ch++){ const d = b.getChannelData(ch); for(let i=0;i<n;i++) d[i] = (Math.random()*2 - 1)*Math.pow(1 - i/n, decay); }
+  return b;
+}
+function sndToggle(){
+  SND.on = !SND.on; try{ localStorage.setItem("hrm-sound", SND.on ? "on" : "off"); }catch(e){}
+  if(SND.ctx) SND.master.gain.setTargetAtTime(SND.on ? SND.vol : 0, SND.ctx.currentTime, 0.05);
+  document.querySelectorAll(".sndbtn").forEach(b=>b.textContent = SND.on ? "🔊 Sound" : "🔇 Sound");
+}
+// a looping noise source through a filter and a gain, for steady sounds (rumble, wind, hiss)
+function sndLoop(buf, type, freq, q, out){
+  const c = SND.ctx, src = c.createBufferSource(); src.buffer = buf; src.loop = true; src.loopStart = Math.random();
+  const f = c.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q || 0.7;
+  const g = c.createGain(); g.gain.value = 0;
+  src.connect(f).connect(g).connect(out || SND.bus); src.start();
+  return {src, f, g};
+}
+// a one-shot burst of filtered noise with an envelope
+function sndBurst(t, buf, type, freq, q, peak, att, dec, out, rate){
+  const c = SND.ctx, src = c.createBufferSource(); src.buffer = buf; src.playbackRate.value = rate || 1;
+  const f = c.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q;
+  const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak), t + att); g.gain.exponentialRampToValueAtTime(0.0001, t + att + dec);
+  src.connect(f).connect(g).connect(out || SND.bus); src.start(t, Math.random()*2); src.stop(t + att + dec + 0.05);
+  return f;
+}
+function sndTone(t, freq, type, peak, att, hold, rel, out, glide){
+  const c = SND.ctx, o = c.createOscillator(); o.type = type; o.frequency.setValueAtTime(freq*(glide || 1), t); if(glide) o.frequency.exponentialRampToValueAtTime(freq, t + att*2);
+  const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + att); g.gain.setValueAtTime(peak, t + att + hold); g.gain.exponentialRampToValueAtTime(0.0001, t + att + hold + rel);
+  o.connect(g).connect(out || SND.bus); o.start(t); o.stop(t + att + hold + rel + 0.05);
+}
+
+// ---- the train on the move: wheels over the rail joints, rumble, wind, flange squeal and the brakes
+const RAIL_LEN = 18.29;   // 60 ft jointed rail
+function sndRunStart(axles){   // axles: distances of each axle behind the listener (the cab), in metres
+  const c = sndInit(); if(!c) return null;
+  const r = {axles, last:axles.map(()=>null),
+    rumble:sndLoop(SND.brown, "lowpass", 160, 0.8), roar:sndLoop(SND.pink, "bandpass", 420, 0.6),
+    wind:sndLoop(SND.pink, "bandpass", 900, 0.5), squeal:null, brakeHiss:sndLoop(SND.noise, "highpass", 2600, 0.7),
+    flange:(()=>{ const o = c.createOscillator(), o2 = c.createOscillator(), g = c.createGain(); o.type = "sine"; o2.type = "sine"; o.frequency.value = 3150; o2.frequency.value = 4720; g.gain.value = 0;
+      const lfo = c.createOscillator(), lg = c.createGain(); lfo.frequency.value = 5.5; lg.gain.value = 60; lfo.connect(lg).connect(o.frequency);
+      o.connect(g); o2.connect(g); g.connect(SND.bus); o.start(); o2.start(); lfo.start(); return {o, o2, g, lfo}; })(),
+    blockSq:(()=>{ const o = c.createOscillator(), wob = c.createGain(), g = c.createGain(); o.type = "triangle"; o.frequency.value = 2380; g.gain.value = 0; wob.gain.value = 0.5;
+      const lfo = c.createOscillator(), lg = c.createGain(); lfo.frequency.value = 9; lg.gain.value = 0.5; lfo.connect(lg).connect(wob.gain);   // the wobble, before the level
+      o.connect(wob).connect(g).connect(SND.bus); o.start(); lfo.start(); return {o, g, lfo, lg}; })()};
+  return r;
+}
+// s: position along the line of the listener; v m/s; curve: rad/m; brake 0..1; tunnel: bool; heavy: train weight factor
+function sndRunUpdate(r, s, v, curve, brake, tunnel, heavy){
+  if(!r || !SND.ctx) return;
+  const c = SND.ctx, t = c.currentTime, k = Math.min(1, v/12);
+  r.rumble.g.gain.setTargetAtTime(0.22*Math.sqrt(k)*(heavy || 1), t, 0.15); r.rumble.f.frequency.setTargetAtTime(90 + 140*k, t, 0.2);
+  r.roar.g.gain.setTargetAtTime(0.06*k*k*(tunnel ? 2.4 : 1), t, 0.15); r.roar.f.frequency.setTargetAtTime(300 + 500*k, t, 0.2);
+  r.wind.g.gain.setTargetAtTime(tunnel ? 0.02 : 0.045*k*k, t, 0.3);
+  // flange squeal on the tighter curves at low and moderate speed
+  const sq = Math.max(0, Math.abs(curve) - 0.0025)*180*Math.min(1, v/3)*(v < 9 ? 1 : 0.4);
+  r.flange.g.gain.setTargetAtTime(Math.min(0.025, sq*0.02), t, 0.25);
+  // the brakes: a hiss as they go on, and the blocks squealing as the train comes to a stand
+  r.brakeHiss.g.gain.setTargetAtTime(brake > 0.05 && r.lastBrake!=null && brake > r.lastBrake + 0.002 ? 0.035 : 0, t, 0.12);
+  r.blockSq.g.gain.setTargetAtTime(brake > 0.2 && v > 0.15 && v < 3.2 ? 0.012*brake : 0, t, 0.08);
+  r.blockSq.o.frequency.setTargetAtTime(2100 + 500*v/3, t, 0.2);
+  r.lastBrake = brake;
+  SND.wet.gain.setTargetAtTime(tunnel ? 0.55 : 0.08, t, 0.3);
+  // every axle over every rail joint: a sharp click with a dull thump under it, quieter further back along the train
+  if(v > 0.3) r.axles.forEach((d, i)=>{ const j = Math.floor((s - d)/RAIL_LEN);
+    if(r.last[i]!=null && j!==r.last[i]){ const fall = 1/(1 + d/18), amp = Math.min(1, 0.25 + v/10)*fall*(heavy || 1);
+      sndBurst(t, SND.noise, "bandpass", 1800 + Math.random()*500, 2.2, 0.16*amp, 0.002, 0.045, null, 1);
+      sndBurst(t, SND.brown, "lowpass", 220, 1, 0.5*amp, 0.003, 0.09); }
+    r.last[i] = j; });
+}
+function sndRunStop(r){
+  if(!r) return;
+  for(const n of [r.rumble, r.roar, r.wind, r.brakeHiss]){ n.g.gain.setTargetAtTime(0, SND.ctx.currentTime, 0.1); n.src.stop(SND.ctx.currentTime + 0.6); }
+  for(const n of [r.flange, r.blockSq]){ n.g.gain.setTargetAtTime(0, SND.ctx.currentTime, 0.1); n.o.stop(SND.ctx.currentTime + 0.6); if(n.o2) n.o2.stop(SND.ctx.currentTime + 0.6); n.lfo.stop(SND.ctx.currentTime + 0.6); }
+}
+// the axles of a train behind its front: two-axle bogies (or the engine's own wheelbase) under every vehicle
+function sndAxles(vehicles, eyeBack){
+  const out = []; let d = 0;
+  for(const v of vehicles){ const L = v.len, b = Math.min(7.3, L*0.36);
+    for(const z of [-b, b]) for(const dz of [-1.3, 1.3]) out.push(d + L/2 + z + dz - eyeBack);
+    d += L; }
+  return out.filter(x=>x > -3);
+}
+// station sounds: doors slamming along the train while passengers board, then the guard's whistle
+function sndDoors(n){
+  const c = sndInit(); if(!c) return;
+  for(let i=0;i<n;i++){ const t = c.currentTime + 0.3 + Math.random()*3.5, fall = 0.4 + Math.random()*0.6;
+    sndBurst(t, SND.brown, "lowpass", 380, 1.2, 0.5*fall, 0.002, 0.12); sndBurst(t, SND.noise, "bandpass", 1300, 3, 0.05*fall, 0.001, 0.03); }
+}
+function sndGuard(){   // a pea whistle: a high note warbled by the pea, two blasts
+  const c = sndInit(); if(!c) return;
+  for(const [st, len] of [[0, 0.45], [0.6, 0.9]]){ const t = c.currentTime + 0.05 + st, o = c.createOscillator(), g = c.createGain(), lfo = c.createOscillator(), lg = c.createGain();
+    o.type = "sine"; o.frequency.value = 2850; lfo.type = "square"; lfo.frequency.value = 26; lg.gain.value = 220; lfo.connect(lg).connect(o.frequency);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.06, t + 0.03); g.gain.setValueAtTime(0.06, t + len); g.gain.exponentialRampToValueAtTime(0.0001, t + len + 0.08);
+    o.connect(g).connect(SND.bus); o.start(t); lfo.start(t); o.stop(t + len + 0.1); lfo.stop(t + len + 0.1);
+    sndBurst(t, SND.noise, "bandpass", 3000, 1.5, 0.012, 0.02, len, null); }
+}
+function sndClank(force){   // buffers meeting, couplings taking up
+  const c = sndInit(); if(!c) return; const t = c.currentTime, a = Math.min(1, force);
+  sndBurst(t, SND.brown, "lowpass", 300, 1, 0.9*a, 0.002, 0.2); sndBurst(t, SND.noise, "bandpass", 900, 4, 0.12*a, 0.001, 0.12); sndBurst(t + 0.05, SND.noise, "bandpass", 2400, 6, 0.06*a, 0.001, 0.18);
+}
+function sndStep(t, run){   // a footstep on ballast
+  sndBurst(t, SND.noise, "bandpass", 1200 + Math.random()*900, 0.9, run ? 0.07 : 0.045, 0.004, 0.07); sndBurst(t, SND.brown, "lowpass", 250, 1, run ? 0.2 : 0.12, 0.004, 0.06);
+}
+
+// ---- engine voices: which sound each class makes
+// Steam: exhaust beats per driving-wheel turn (4 for two or four cylinders, 6 for three) and the whistle.
+// Diesel: cylinders, two- or four-stroke, idle and full rpm, turbo whine, and the horn.
+// Pitches of whistles and horns are estimates (no measured figures exist); the beat counts and rpm are the real ones.
+const WHISTLES = {
+  gwr:{notes:[880], parts:[1,.32,.16,.06], breath:.18}, lms:{notes:[300], parts:[1,.15,.08,.03], breath:.34}, lms8f:{notes:[262], parts:[1,.15,.08,.03], breath:.36},
+  midland:{notes:[520], parts:[1,.3,.14,.05], breath:.22}, chime:{notes:[392, 523, 622], parts:[1,.25,.1,.03], breath:.22, detune:4},
+  lner:{notes:[600], parts:[1,.3,.15,.05], breath:.2}, br:{notes:[450], parts:[1,.3,.15,.05], breath:.22}, sr:{notes:[650], parts:[1,.34,.18,.07], breath:.2},
+  ner:{notes:[700], parts:[1,.3,.15,.05], breath:.2}, ly:{notes:[800], parts:[1,.3,.15,.05], breath:.22},
+  tank:{notes:[1350], parts:[1,.25,.1,.03], breath:.35}, wd:{notes:[1050], parts:[1,.28,.12,.04], breath:.32}, usa:{notes:[330, 415], parts:[1,.2,.08,.02], breath:.3, detune:3}
+};
+const STEAM_SOUND = {   // key: [whistle, cylinders]
+  wd:["wd",2], pannier:["gwr",2], ivatt:["lms",2], j27:["ner",2], "4mt":["br",2], "8f":["lms8f",2], b1:["lner",2], black5:["lms",2], hunslet:["tank",2],
+  jinty:["midland",2], ly27:["ly",2], "2mt78":["br",2], crab:["lms",2], k1:["lner",2], "5mt":["br",2], s160:["usa",2],
+  "g-scot":["chime",3], "g-a4":["chime",3], "g-k4":["lner",3], "g-9f":["br",2], "g-q6":["ner",2], "g-ivatt4":["lms",2], "g-tornado":["chime",3],
+  "g-duchess":["lms",4], "g-royalscot":["lms",3], "g-greenarrow":["lner",3], "g-bahamas":["lms",3], "g-braunton":["sr",3], "g-duke":["br",3], "g-p3":["ner",2]
+};
+const DIESEL_SOUND = {   // key: [cylinders, stroke, idle rpm, full rpm, turbo, engines, horn high, horn low, horn style]
+  c08:[6,4,300,680,0,1,622,466], c14:[6,4,600,1500,.1,1,622,494], c20:[8,4,450,850,.25,1,660,554], "g-c20":[8,4,450,850,.25,1,660,554],
+  c24:[6,4,350,750,.08,1,587,466], c25:[6,4,350,750,.08,1,587,466], c26:[6,4,350,750,.06,1,587,466], "g-c26":[6,4,350,750,.06,1,587,466],
+  c33:[6,4,350,750,.06,1,587,466], "g-c33":[6,4,350,750,.06,1,587,466], c31:[12,4,450,850,.15,1,587,466], c37:[12,4,450,850,.25,1,660,554],
+  c40:[16,4,450,850,.3,1,587,466], "g-d213":[16,4,450,850,.3,1,587,466], c45:[12,4,350,750,.08,1,587,466], c46:[12,4,350,750,.08,1,587,466],
+  c47:[12,4,350,750,.07,1,523,440,"dark"], "g-c47":[12,4,350,750,.07,1,523,440,"dark"], "g-c50":[16,4,450,850,.2,1,587,494],
+  "g-deltic":[18,2,700,1500,.12,2,554,440,"rasp"], "g-western":[12,4,650,1500,.1,2,700,560], "g-hymek":[16,4,650,1500,.1,1,622,494],
+  "g-c56":[16,4,450,900,.12,1,494,392], "g-c60":[8,4,500,1000,.1,1,494,392]
+};
+function sndProfile(key){
+  if(STEAM_MODELS[key]){ const [w, cyl] = STEAM_SOUND[key] || ["br", 2]; return {type:"steam", whistle:WHISTLES[w], beats:cyl===3 ? 6 : 4, gresley:cyl===3 && /g-(scot|a4|k4|tornado|greenarrow)/.test(key), D:STEAM_MODELS[key].D || 1.6}; }
+  if(DMU_MODELS[key]) return {type:"dmu", eng:[6,4,500,1800,0,2], horn:[587,440]};
+  const d = DIESEL_SOUND[key] || [12,4,450,850,.12,1,587,466];
+  return {type:"diesel", eng:d.slice(0,6), horn:[d[6], d[7]], style:d[8]};
+}
+
+// steam: a beat for every exhaust, made of a thump, the bark and a hiss; drain cocks after starting; the blower and safety valves at a stand
+function sndSteamStart(p){
+  if(!sndInit()) return null;
+  return {p, kind:"steam", phase:0, n:0, drain:0, stand:0, lift:0,
+    roar:sndLoop(SND.pink, "bandpass", 800, 0.7), blower:sndLoop(SND.pink, "bandpass", 300, 0.7), drainL:sndLoop(SND.noise, "bandpass", 3800, 1),
+    safety:sndLoop(SND.noise, "bandpass", 2500, 0.5), safetyLo:sndLoop(SND.brown, "lowpass", 220, 0.7), wasMoving:false};
+}
+function sndSteamUpdate(r, v, ctl, dt){
+  if(!r) return;
+  const c = SND.ctx, t = c.currentTime, p = r.p, rev = v/(Math.PI*p.D), bps = p.beats*rev, reg = Math.max(0, ctl);
+  const cut = 1 - Math.min(1, v/10);   // long cut-off when starting, linked up as she gets going
+  if(v < 0.05){ r.stand += dt; r.wasMoving = false; } else { if(!r.wasMoving && reg > 0.05 && r.stand > 3) r.drain = 6*p.beats; r.wasMoving = true; r.stand = 0; }
+  if(reg > 0.02 && v > 0.02){
+    r.phase += bps*dt;
+    while(r.phase >= 1){ r.phase -= 1; r.n++;
+      const mid = p.gresley && r.n%3===0, odd = r.n%2 ? 1 : 0.9, blur = Math.max(0, 1 - Math.max(0, bps - 11)/8);
+      const g = reg*(0.28 + 0.72*cut)*odd*(mid ? 1 + 0.3*cut : 1)*blur, when = t + (mid ? 0.08*cut/bps : 0) + Math.random()*0.004;
+      const dec = Math.min(0.25, 0.4/Math.max(1, bps));
+      if(g > 0.01){
+        sndBurst(when, SND.brown, "bandpass", 110, 1, 1.9*g, 0.005, dec*1.2);
+        sndBurst(when, SND.pink, "bandpass", 450 + 450*(1 - cut), 0.8, 1.4*g, 0.004, dec);
+        sndBurst(when, SND.noise, "highpass", 2500, 0.7, 0.18*g*(1.4 - cut), 0.003, dec*0.8); }
+      if(r.drain > 0){ r.drain--; sndBurst(when, SND.noise, "bandpass", 3800, 1, 0.16*Math.min(1, r.drain/8 + 0.3), 0.01, Math.min(0.3, 0.6/Math.max(1, bps))); }
+    }
+  }
+  const blurAll = Math.max(0, Math.min(1, (bps - 9)/8));
+  r.roar.g.gain.setTargetAtTime(reg*blurAll*0.08, t, 0.2); r.roar.f.frequency.setTargetAtTime(700 + 300*(1 - cut), t, 0.3);
+  r.drainL.g.gain.setTargetAtTime(r.drain > 0 ? 0.03 : 0, t, 0.5);
+  r.blower.g.gain.setTargetAtTime(v < 0.5 ? 0.025 : reg < 0.02 ? 0.015 : 0, t, 0.5);
+  // the safety valves lift now and then when she's been standing a while, with a flutter as they go
+  if(r.stand > 25 && !r.lift && Math.random() < dt/20){ r.lift = 4 + Math.random()*8;
+    r.safety.g.gain.setValueAtTime(0, t); for(let k=0;k<5;k++) r.safety.g.gain.linearRampToValueAtTime(k%2 ? 0.02 : 0.07, t + 0.06*(k+1)); r.safetyLo.g.gain.setTargetAtTime(0.06, t, 0.2); }
+  if(r.lift){ r.lift -= dt; if(r.lift <= 0 || v > 0.5){ r.lift = 0; r.safety.g.gain.setTargetAtTime(0, t, 0.25); r.safetyLo.g.gain.setTargetAtTime(0, t, 0.25); } }
+}
+// a whistle: steam breathes through first, then the note comes in rising to pitch; it droops a little as it closes
+function sndWhistle(r, on){
+  if(!r || !SND.ctx) return;
+  const c = SND.ctx, t = c.currentTime, w = r.p.whistle;
+  if(on && !r.wh){
+    const out = c.createGain(); out.gain.value = 0.22/Math.sqrt(w.notes.length); out.connect(SND.bus);
+    const hiss = sndLoop(SND.noise, "highpass", 2000, 0.7, out); hiss.g.gain.setTargetAtTime(w.breath*0.6, t, 0.03);
+    const oscs = [], gains = [];
+    w.notes.forEach((f0, ni)=>{ const det = w.detune ? (ni - 1)*w.detune : 0, f = f0*Math.pow(2, det/1200);
+      const g = c.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0, t + 0.09); g.gain.linearRampToValueAtTime(1, t + 0.3); g.connect(out); gains.push(g);
+      w.parts.forEach((a, k)=>{ const o = c.createOscillator(); o.type = "sine"; o.frequency.setValueAtTime(f*(k+1)*Math.pow(2, -150/1200), t); o.frequency.exponentialRampToValueAtTime(f*(k+1), t + 0.28);
+        const og = c.createGain(); og.gain.value = a*0.5; o.connect(og).connect(g); o.start(t); oscs.push(o); });
+      const band = sndLoop(SND.noise, "bandpass", f, 25, g); band.g.gain.value = w.breath*3; oscs.push(band.src);
+      const vib = c.createOscillator(), vg = c.createGain(); vib.frequency.value = 4 + Math.random()*2; vg.gain.value = f*0.003; vib.connect(vg); oscs.forEach(o=>{ if(o.frequency) vg.connect(o.frequency); }); vib.start(t); oscs.push(vib); });
+    r.wh = {out, hiss, oscs, gains};
+  } else if(!on && r.wh){
+    const {out, hiss, oscs} = r.wh; r.wh = null;
+    oscs.forEach(o=>{ if(o.frequency) o.frequency.setTargetAtTime(o.frequency.value*0.94, t, 0.15); });
+    out.gain.setTargetAtTime(0, t, 0.12); hiss.g.gain.setTargetAtTime(0, t + 0.05, 0.1);
+    oscs.forEach(o=>o.stop(t + 0.9)); hiss.src.stop(t + 0.9);
+  }
+}
+
+// diesel (and DMU) engines: a pulse at the firing frequency through a filter that opens with load, a chug of noise
+// beating with it, the turbo spooling up behind the throttle; a Deltic's two engines beat against each other
+function sndDieselStart(p){
+  const c = sndInit(); if(!c) return null;
+  const [cyl, stroke, idle, full, turbo, engines] = p.eng;
+  const N = 28, re = new Float32Array(N), im = new Float32Array(N); for(let k=1;k<N;k++){ im[k] = 1/Math.pow(k, 0.85); }
+  const wave = c.createPeriodicWave(re, im);
+  const r = {p, kind:p.type, rpm:idle, spool:0, cut:0, gear:1, eng:[]};
+  for(let e=0;e<engines;e++){
+    const o = c.createOscillator(); o.setPeriodicWave(wave);
+    const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.Q.value = 1.5;
+    const g = c.createGain(); g.gain.value = 0;
+    const chug = sndLoop(SND.brown, "bandpass", 180, 0.8, g);   // (the chug's own gain beats with the firing)
+    const am = c.createOscillator(), amg = c.createGain(); am.type = "sawtooth"; amg.gain.value = 0.6; am.connect(amg).connect(chug.g.gain); chug.g.gain.value = 0.7;
+    const mod = c.createGain(); mod.gain.value = 1;
+    const rock = c.createOscillator(), rockg = c.createGain(); rock.frequency.value = 4; rockg.gain.value = 0.2; rock.connect(rockg).connect(mod.gain);   // half-order rocking
+    o.connect(lp).connect(mod).connect(g); g.connect(SND.bus); o.start(); am.start(); rock.start();
+    r.eng.push({o, lp, g, chug, am, rock, det:1 + e*(p.style==="rasp" ? 0.011 : 0.006)});
+  }
+  const tw = c.createOscillator(), tg = c.createGain(); tw.type = "sine"; tg.gain.value = 0; tw.connect(tg).connect(SND.bus); tw.start();
+  const tn = sndLoop(SND.noise, "bandpass", 3200, 12);
+  r.turbo = {tw, tg, tn, amt:turbo};
+  return r;
+}
+function sndDieselUpdate(r, v, ctl, dt){
+  if(!r) return;
+  const c = SND.ctx, t = c.currentTime, [cyl, stroke, idle, full] = r.p.eng, load = Math.max(0, ctl);
+  let target = idle + (full - idle)*load;
+  if(r.kind==="dmu"){   // a four-speed gearbox: the revs climb in each gear, drop at the change, and the band goes in with a clunk
+    const mph = v*MPH, gear = mph < 15 ? 1 : mph < 27 ? 2 : mph < 41 ? 3 : 4, lo = [0, 0, 15, 27, 41][gear], hi = [0, 15, 27, 41, 60][gear];
+    if(gear!==r.gear){ if(gear > r.gear && load > 0.05){ r.cut = 0.6; sndBurst(t + 0.55, SND.brown, "lowpass", 100, 1, 0.6, 0.002, 0.15); sndBurst(t + 0.55, SND.noise, "bandpass", 600, 3, 0.08, 0.002, 0.08); } r.gear = gear; }
+    target = load > 0.05 ? 1100 + 700*Math.min(1, (mph - lo)/(hi - lo))*load + (gear===1 ? 300*load : 0) : idle;
+    if(r.cut > 0){ r.cut -= dt; target = 1100; }
+  }
+  const slew = (r.p.style==="rasp" || full > 1200 ? 400 : 160)*dt;
+  r.rpm += Math.max(-slew, Math.min(slew, target - r.rpm));
+  const ff = r.rpm/60*cyl/(stroke===4 ? 2 : 1), lr = (r.rpm - idle)/(full - idle);
+  r.eng.forEach(e=>{ const f = ff*e.det;
+    e.o.frequency.setTargetAtTime(f, t, 0.05); e.lp.frequency.setTargetAtTime(f*(4 + 5*load), t, 0.1);
+    e.g.gain.setTargetAtTime((0.05 + 0.09*lr + 0.06*load)/Math.sqrt(r.eng.length), t, 0.12);
+    e.am.frequency.setTargetAtTime(f, t, 0.05); e.chug.f.frequency.setTargetAtTime(120 + f*2, t, 0.1);
+    e.rock.frequency.setTargetAtTime(r.rpm/120, t, 0.2); });
+  // the turbo lags the engine: slow to spool up, slower to run down
+  const tk = load > r.spool ? dt/3 : dt/6; r.spool += (load*lr - r.spool)*Math.min(1, tk*3);
+  r.turbo.tw.frequency.setTargetAtTime(1800 + 3400*r.spool, t, 0.2); r.turbo.tg.gain.setTargetAtTime(r.turbo.amt*0.08*r.spool, t, 0.2);
+  r.turbo.tn.f.frequency.setTargetAtTime(1800 + 3400*r.spool, t, 0.2); r.turbo.tn.g.gain.setTargetAtTime(r.turbo.amt*0.05*r.spool, t, 0.2);
+}
+// two-tone horn: high then low while it's held, a short toot if it's just tapped
+function sndHorn(r, on){
+  if(!r || !SND.ctx) return;
+  const c = SND.ctx, t = c.currentTime, [hi, lo] = r.p.horn, style = r.p.style;
+  if(on && !r.hn){
+    const out = c.createGain(); out.gain.value = 0; out.gain.setTargetAtTime(0.09, t, 0.012);
+    const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = style==="dark" ? 2500 : 3500; lp.connect(out).connect(SND.bus);
+    const voice = f => { const bell = c.createBiquadFilter(); bell.type = "peaking"; bell.frequency.value = f*2; bell.Q.value = 2; bell.gain.value = 8; bell.connect(lp);
+      const g = c.createGain(); g.gain.value = 0; g.connect(bell);
+      const os = ["sawtooth", "square"].map((type, i)=>{ const o = c.createOscillator(); o.type = type; o.frequency.setValueAtTime(f*Math.pow(2, -80/1200), t); o.frequency.exponentialRampToValueAtTime(f, t + 0.08);
+        const og = c.createGain(); og.gain.value = i ? 0.4 : 0.6; o.connect(og).connect(g); o.start(t); return o; });
+      return {g, os}; };
+    const H = voice(hi), L = voice(lo);
+    H.g.gain.setValueAtTime(0, t); H.g.gain.linearRampToValueAtTime(1, t + 0.03); H.g.gain.setValueAtTime(1, t + 0.55); H.g.gain.linearRampToValueAtTime(0, t + 0.6);
+    L.g.gain.setValueAtTime(0, t + 0.6); L.g.gain.linearRampToValueAtTime(1, t + 0.63);
+    let rasp = null; if(style==="rasp"){ rasp = c.createOscillator(); const rg = c.createGain(); rasp.frequency.value = 40; rg.gain.value = 0.3; rasp.connect(rg).connect(out.gain); rasp.start(t); }
+    r.hn = {out, os:[...H.os, ...L.os, ...(rasp ? [rasp] : [])], t0:t};
+  } else if(!on && r.hn){
+    const {out, os, t0} = r.hn, end = Math.max(t, t0 + 0.25); r.hn = null;
+    out.gain.setTargetAtTime(0, end, 0.02); os.forEach(o=>o.stop(end + 0.3));
+  }
+}
+document.querySelectorAll(".sndbtn").forEach(b=>b.textContent = SND.on ? "🔊 Sound" : "🔇 Sound");
+function sndVoiceStart(p){ return p.type==="steam" ? sndSteamStart(p) : sndDieselStart(p); }
+function sndVoiceUpdate(r, v, ctl, dt){ if(!r) return; if(r.kind==="steam") sndSteamUpdate(r, v, ctl, dt); else sndDieselUpdate(r, v, ctl, dt); }
+function sndSignal(r, on){ if(!r) return; if(r.kind==="steam") sndWhistle(r, on); else sndHorn(r, on); }
+function sndVoiceStop(r){
+  if(!r || !SND.ctx) return; const t = SND.ctx.currentTime;
+  sndSignal(r, false);
+  if(r.kind==="steam") for(const n of [r.roar, r.blower, r.drainL, r.safety, r.safetyLo]){ n.g.gain.setTargetAtTime(0, t, 0.1); n.src.stop(t + 0.6); }
+  else { r.eng.forEach(e=>{ e.g.gain.setTargetAtTime(0, t, 0.1); for(const o of [e.o, e.am, e.rock, e.chug.src]) o.stop(t + 0.6); });
+    r.turbo.tg.gain.setTargetAtTime(0, t, 0.1); r.turbo.tw.stop(t + 0.6); r.turbo.tn.src.stop(t + 0.6); }
+}
+
 /* ============================ DRIVING A SERVICE ============================ */
-// The 3D line is the map's own track (LINE_PTS), squeezed eight times so a round trip takes minutes, not hours.
+// The 3D line is the map's own track (LINE_PTS), squeezed five times so a round trip takes minutes, not hours.
 // The clock runs faster while you drive (a little less than the squeeze, as starting and stopping take
 // as long as ever), so the booked timetable still fits.
-const DRV = {squeeze:8, clock:6, step:4, plat:150, lim:25};
-const STN_H = [0, 4, 9, 13, 19, 42, 37];   // each station's height above Ravensgill in the squeezed world, metres
+const DRV = {squeeze:5, clock:4, step:4, plat:150, lim:25};
+const STN_H = [0, 6, 13, 19, 28, 60, 53];   // each station's height above Ravensgill in the squeezed world, metres
 const RIVER_PTS = [[845,94],[750,192],[612,298],[487,404],[360,478],[190,560],[70,620]];
 const ROAD_PTS = [[0,492],[120,478],[240,500],[360,462],[480,440],[600,385],[700,300],[760,262],[860,190],[960,120]];
 const smooth01 = t => { t = Math.max(0, Math.min(1, t)); return t*t*(3 - 2*t); };
@@ -4771,22 +5137,29 @@ function driveChoice(){
       <span style="min-width:180px"><b>${s.label}</b><br><span class="sub" style="margin:0">${s.lcat.name}${s.pcat ? " + " + s.pcat.name : ""}${s.rcat ? " · " + s.rcat.name : ""}</span></span>
       <span style="display:flex;gap:6px;flex-wrap:wrap">${s.deps.map((d,i)=>`<button class="act greenbtn" style="width:auto;padding:5px 9px" onclick="closeModal();startDrive(${k},${i})">${i ? "From" : "Whole day from"} ${ttTime(d)}</button>`).join("")}</span></div>`).join("");
   openModal("Drive a Service", `<p>Pick a train and the trip to start from. You'll drive it from the cab, calling at its booked stations, through the passing loops, over Brackenby Viaduct and up through Highmoor Tunnel, for the rest of its day. Hand over to another driver whenever you've had enough.</p>
-    <p class="sub">The line is drawn to the map but squeezed eight times, and the clock runs six times as fast, so a round trip takes about a quarter of an hour, not two hours.</p>
+    <p class="sub">The line is drawn to the map but squeezed five times, and the clock runs four times as fast, so a round trip takes about half an hour (less if you wait out the layovers with ⏩), not two hours.</p>
     ${rows}
     <div class="toolbar" style="margin-bottom:0"><button class="act" style="width:auto" onclick="closeModal();${pendingJobs.length ? "offerShunt(pendingJobs)" : "advanceWeek({go:true})"}">◂ Back</button></div>`, true);
 }
 function startDrive(k, from){
+  sndInit();
   const gl = yardGL();
   if(!gl){ alert("Your browser can't show the 3D line (WebGL is turned off)."); advanceWeek({go:true}); return; }
   const plan = pendingPlan || currentPlan(), work = driveWorking(plan, k, from);
   if(!work){ alert("That train doesn't run that trip today."); advanceWeek({go:true}); return; }
   const G = line3();
-  if(!G.mesh){ G.mesh = meshBuffer(gl, lineSceneMesh(G)); }
+  if(!G.mesh){   // building the line takes a moment the first time
+    openModal("Laying the Track", `<p>Building the line from Ravensgill to Moorend…</p>`, true);
+    setTimeout(()=>{ G.mesh = meshBuffer(gl, lineSceneMesh(G)); closeModal(); startDrive(k, from); }, 80);
+    return;
+  }
   const set = work.set, train = driveConsist(gl, set), first = work.calls[0];
   dv = {plan, k, work, G, set, train, ci:0, phase:"stand", boarded:1, T:(first.dep || 0) - 1.5, dir:first.dirOut || 1,
         v:0, ctl:0, emerg:false, look:0, pitch:-0.04, cam:0, keys:{}, raf:0, last:0, msgT:0, log:[], spad:0, over:0, early:0, overrun:0, done:false};
   dv.s = dv.standS = G.stopAt(first.st, dv.dir);
   dv.others = work.sim.agents.filter(a=>a.k!==k).map(a=>({a, train:driveConsist(gl, plan.sets[a.k])}));
+  { const lead = dv.train[0], eye = lead.eye || [0, 0, lead.len/2 - 1.7], key = set.pilot ? set.pcat.key : set.lcat.key;
+    dv.snd = {voice:sndVoiceStart(sndProfile(key)), run:sndRunStart(sndAxles(dv.train, lead.len/2 - eye[2])), odo:0}; }
   dv.sigMesh = {r:meshBuffer(gl, (()=>{ const m = []; box(m, 0,0,0, 0.22,0.22,0.06, [1,.12,.08]); return m; })()), g:meshBuffer(gl, (()=>{ const m = []; box(m, 0,0,0, 0.22,0.22,0.06, [.2,1,.35]); return m; })())};
   document.querySelector(".laptop").classList.add("away");
   const y = document.getElementById("yard"); y.classList.add("drv");
@@ -4892,6 +5265,10 @@ function dStep(dt){
     }
   }
 }
+function dRightAway(){   // the guard can give the right away: time, passengers aboard and (at a loop) the starter off
+  const c = dv.work.calls[dv.ci]; if(c.dep==null) return false;
+  const sig = dSignal(); return sig.here ? sig.clear : dv.T >= c.dep - 0.01 && dv.boarded >= 1;
+}
 function dRough(text){ dv.overrun++; dMsg(text, true); }
 function dSkip(){
   if(!dv || dv.phase!=="stand") return;
@@ -4926,6 +5303,7 @@ function endDrive(result){
   const gl = yardGL(), seen = new Set();
   [dv.train, ...dv.others.map(o=>o.train)].forEach(t=>t.forEach(v=>{ for(const m of [v.mesh, v.plain]) if(m && !seen.has(m)){ seen.add(m); gl.deleteBuffer(m.buf); } }));
   for(const m of Object.values(dv.sigMesh)) gl.deleteBuffer(m.buf);
+  if(dv.snd){ sndVoiceStop(dv.snd.voice); sndRunStop(dv.snd.run); }
   dv = null;
   const y = document.getElementById("yard"); y.classList.remove("show");
   setTimeout(()=>{ y.hidden = true; y.classList.remove("drv"); document.querySelector(".laptop").classList.remove("away"); }, 450);
@@ -5015,7 +5393,7 @@ function dInfo(){
     <div class="dlever"><span style="width:${Math.abs(dv.ctl)*50}%;${dv.ctl >= 0 ? "left:50%;background:#5fbf6a" : `right:50%;background:#e0604f`}"></span></div>
     <div class="ysub">${dv.emerg ? "<b>Emergency brake</b>" : dv.ctl > 0.02 ? `Power ${Math.round(dv.ctl*100)}%` : dv.ctl < -0.02 ? `Brake ${Math.round(-dv.ctl*100)}%` : "Coasting"}</div>
     <div style="margin-top:6px">🕰 ${dTime(dv.T)} · ${next}</div>
-    <div class="ysub yhelp" style="margin:6px 0">↑/↓ or W/S power and brake · Space emergency · ←/→ look · C camera · T wait · H hand over</div>`;
+    <div class="ysub yhelp" style="margin:6px 0">↑/↓ or W/S power and brake · Space emergency · Q ${dv.snd && dv.snd.voice && dv.snd.voice.kind==="steam" ? "whistle" : "horn"} · ←/→ look · C camera · T wait · H hand over · M sound</div>`;
   document.getElementById("dSkip").hidden = !(dv.phase==="stand" && c.dep!=null && dv.T < c.dep - 0.5);
 }
 function driveFrame(ts){
@@ -5024,6 +5402,17 @@ function driveFrame(ts){
   if(!dv.done){ dStep(dt);
     const L = dv.keys.left, R = dv.keys.right; if(L || R) dv.look = Math.max(-2.8, Math.min(2.8, dv.look + (L?1:-1)*1.6*dt)); }
   if(!dv) return;
+  if(dv.snd){   // the engine, the wheels and the brakes
+    const G = dv.G, k = dv.snd, ready = dv.phase==="stand" && dRightAway();
+    k.odo += dv.v*dt;
+    sndVoiceUpdate(k.voice, dv.v, dv.emerg ? -1 : dv.ctl, dt);
+    let cv = G.at(dv.s + 6).yaw - G.at(dv.s - 6).yaw; cv = Math.atan2(Math.sin(cv), Math.cos(cv))/12;
+    sndRunUpdate(k.run, k.odo, dv.v, cv, dv.emerg ? 1 : Math.max(0, -dv.ctl), dv.s > G.tun[0] && dv.s < G.tun[1], 1.2);
+    if(ready && !k.ready) sndGuard();
+    k.ready = ready;
+    if(dv.phase==="stand" && dv.boarded < 0.05 && !k.doors){ k.doors = true; sndDoors(6 + (dv.set.rcat ? dv.set.rcat.cars*2 : 4)); }
+    if(dv.phase==="run") k.doors = false;
+  }
   driveDraw();
   if(Math.floor(dv.T*20) !== dv.hudTick){ dv.hudTick = Math.floor(dv.T*20); dInfo(); dMap(); }
   dv.raf = requestAnimationFrame(driveFrame);
@@ -5036,8 +5425,11 @@ addEventListener("keydown", e=>{
   else if(e.key==="c" || e.key==="C") dv.cam = 1 - dv.cam;
   else if(e.key==="t" || e.key==="T") dSkip();
   else if(e.key==="h" || e.key==="H" || e.key==="Escape") dHandOver();
+  else if((e.key==="q" || e.key==="Q") && !e.repeat && dv.snd) sndSignal(dv.snd.voice, true);
+  else if(e.key==="m" || e.key==="M") sndToggle();
 });
-addEventListener("keyup", e=>{ if(!dv) return; if(DKEYS[e.key]) dv.keys[DKEYS[e.key]] = false; if(e.key===" ") dv.emerg = false; });
+addEventListener("keyup", e=>{ if(!dv) return; if(DKEYS[e.key]) dv.keys[DKEYS[e.key]] = false; if(e.key===" ") dv.emerg = false;
+  if((e.key==="q" || e.key==="Q") && dv.snd) sndSignal(dv.snd.voice, false); });
 
 /* ============================ MODAL / BOOT ============================ */
 function openModal(head, body, noClose){

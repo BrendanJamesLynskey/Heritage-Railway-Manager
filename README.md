@@ -39,9 +39,10 @@ a DMU's driving seat) for the rest of its day.
 The 3D line is built from the map's own alignment: all seven stations with
 their platforms and nameboards, the passing loops, Brackenby Viaduct's twelve
 arches over the River Raven, Highmoor Tunnel through the fell, the climb to the
-summit, the B6481 and Highmoor Reservoir. It is squeezed eight times (about
-2.8 km end to end) and the clock runs six times as fast, so a round trip takes
-about a quarter of an hour instead of two, and the booked timetable still fits.
+summit, the B6481 and Highmoor Reservoir. It is squeezed five times (about
+4.5 km end to end, with the stations 600 m to 1 km apart) and the clock runs
+four times as fast, so a round trip takes about half an hour instead of two
+(less if you wait out the layovers with ⏩), and the booked timetable still fits.
 Each engine's best speed on each section is the one the timetable was worked
 out from, for its load, its pace and the climb; downhill the train will run
 away with you if you let it.
@@ -54,6 +55,8 @@ away with you if you let it.
 | Change view | C, or 🎥 View (cab or lineside chase) |
 | Wait for the right away | T, or ⏩ Wait |
 | Hand over | H or Esc, or ✋ Hand over |
+| Whistle or horn | Q (hold), or hold 📯 |
+| Sound on or off | M, or 🔊 Sound |
 
 Stop with the front of the train near the stop board at each booked call; the
 passengers board, and you get the right away at the booked time. At the loops
@@ -62,6 +65,37 @@ the section ahead. At the end of the line the engine runs round its train (or
 you change ends of a DMU). Arrive on time on average, with no signal passed at
 danger, no overruns and no long spells over the 25 mph limit, for ★★★ (+2
 reputation). Hand over at any time and another driver finishes the day.
+
+## Sound
+
+Everything you hear is synthesised in the browser with the Web Audio API, from
+published figures rather than recordings:
+
+- **Steam:** an exhaust beat for every cylinder stroke (four per turn of the
+  driving wheels for two- and four-cylinder engines, six for three-cylinder ones,
+  with the Gresley engines' uneven middle-cylinder beat), sharp and loud at long
+  cut-off when starting, softer and faster as the engine is linked up, blurring
+  into a roar at speed. Cylinder drain cocks hiss for the first few turns after a
+  stand, the blower roars at a stand, and the safety valves lift if you wait long
+  enough. Whistles by company: the GWR's high note, the deep Stanier hooter, the
+  A4's three-note chime, LNER, Southern, BR Standard, NER, L&Y and the little
+  industrial tanks.
+- **Diesels:** each engine's real cylinder count and idle-to-full rpm (the
+  Class 08's slow chug, the English Electric "whistlers" with their turbos, the
+  Sulzers, the two buzzing Deltic engines beating against each other, the
+  Western's Maybachs), and two-tone horns, high then low.
+- **DMUs:** two underfloor engines revving through a four-speed gearbox, with
+  the drop in revs and the clunk at each change.
+- **On the move:** the wheels over every 60 ft rail joint (the "diddly-dum"
+  of each bogie), rumble that rises with speed, flange squeal on curves, the
+  brakes going on and the blocks squealing as you stop, and the tunnel's echo.
+- **At stations:** doors slamming as passengers board, then the guard's whistle
+  for the right away. In the yard: buffers and couplings clanking, and your
+  footsteps on the ballast.
+
+The pitches of whistles and horns are estimates from descriptions of them,
+since no measured figures are published; the beat counts and engine speeds are
+the real ones.
 
 ## The Yard: Drive the Shunter
 
@@ -90,7 +124,7 @@ style (cab ends with raked windscreens, noses, hood and single cab, the
 Western), bogies with axleboxes and springs (Bo-Bo, Co-Co, A1A, 1Co-Co1,
 coupled rods), headcode boxes, discs or roof domes, grilles, cab doors,
 warning panels and livery bands, with the Class 20 and 26 pairs as two locos;
-the Class 08 with its stepped radiator end, diagonal wasp stripes on the ends and buffer beams, outside coupling rods on quartered crankpins with balance weights, cab doors with steps, exhaust and horn (the yard shunter is the same model with its cab open, so you drive from the seat behind the control desk); DMUs from their car length and count, bogies or four-wheel axles, window and
+the visiting engines from their published dimensions and current liveries (the A3 and V2 banjo domes, Gresley corridor tenders, the 9F's wheel spacing and high firebox, real bogie and trailing wheel sizes; the Deltic's white cab band and nose headcode box, the Western's outside-frame bogies, brow and valance, the Class 40's nose doors, roof fans on the 50 and 56, the Hymek's window band, and the Class 20 and 26 pairs in two liveries); the Class 08 with its stepped radiator end, diagonal wasp stripes on the ends and buffer beams, outside coupling rods on quartered crankpins with balance weights, cab doors with steps, exhaust and horn (the yard shunter is the same model with its cab open, so you drive from the seat behind the control desk); DMUs from their car length and count, bogies or four-wheel axles, window and
 door layout, underfloor engines and their front ends (Metro-Cammell, Derby
 three-window, Calder Valley four-window, Pacer, Wickham railbus).
 
