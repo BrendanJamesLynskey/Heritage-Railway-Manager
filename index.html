@@ -3032,7 +3032,7 @@ function startShunt(job, via){
   for(let i=veh.length-1;i>=0;i--) if(veh[i].gone) veh.splice(i,1);
   veh.forEach((v,i)=>{ const t = targetIds.indexOf(v.id); v.id = i; if(t>=0) targetIds[t] = i; });
   const dmu = job.mode==="dmu", unit = dmu ? veh[targetIds[0]] : null;
-  const shunter = !dmu || via ? {id:-1, type:"shunter", label:"08 773", len:9, col:[.1,.36,.22], s:6.5, route:null} : null;
+  const shunter = !dmu || via ? {id:-1, type:"shunter", label:"08 773", len:DIESEL_MODELS.c08.len, col:[.1,.36,.22], s:6.5, route:null} : null;
   const sh = unit && !via ? unit : shunter;
   yd = {job, dmu, via:!!via, unit, shunter, veh, sh, string:[sh], targetIds, points:1, v:0, dir:sh===unit?-1:1, foot:null,
         look:0, pitch:-0.06, t:0, rough:0, keys:{}, done:false, raf:0, last:0, msgT:0};
@@ -3444,24 +3444,9 @@ function vehicleMesh(v){
   }
   return a;
 }
-function shunterMesh(){
-  // Class 08, cab at the back (where the driver sits) and the long bonnet ahead
-  const a = [], g = [.1,.36,.22], dark = [.1,.1,.11], yel = [.95,.78,.1];
-  box(a, 0,1.15,0, 2.5,0.5,8.6, dark);
-  for(const sx of [1.0,-1.0]) for(const z of [-2.6,-0.2,2.2]) box(a, sx,0.95,z, 0.3,1.4,1.4, dark);
-  box(a, 0,1.95,1.35, 1.8,1.4,5.9, g); box(a, 0,2.7,1.35, 1.6,0.1,5.7, [.08,.28,.17]);
-  box(a, 0,2.95,3.2, 0.25,0.45,0.25, dark);
-  box(a, 0,1.65,4.3, 2.6,0.5,0.12, yel);
-  for(const sx of [0.9,-0.9]) box(a, sx,1.5,4.45, 0.4,0.4,0.3, dark);
-  // cab: roof, corner pillars, sills and a desk; no walls in front so the driver can see
-  box(a, 0,4.05,-2.9, 2.75,0.14,3.2, g);
-  for(const sx of [1.3,-1.3]){ box(a, sx,3.15,-1.45, 0.12,1.7,0.12, g); box(a, sx,3.15,-4.35, 0.12,1.7,0.12, g); box(a, sx,1.95,-2.9, 0.12,1.1,2.9, g); }
-  box(a, 0,2.05,-1.45, 2.6,1.0,0.12, g);
-  box(a, 0,3.95,-1.45, 2.6,0.1,0.1, g);
-  box(a, 0,2.42,-1.7, 1.9,0.22,0.4, [.2,.2,.22]);
-  box(a, -0.35,2.58,-1.7, 0.07,0.12,0.07, [.8,.1,.1]); box(a, 0.35,2.58,-1.7, 0.07,0.12,0.07, [.85,.85,.85]);
-  return a;
-}
+// the yard's Class 08: the full model, with the cab open so you can sit in it; shunterEye() is the driver's seat
+const shunterEye = () => [-0.85, 3.92, -(DIESEL_MODELS.c08.len/2 - 0.62) + 1.3 + 0.55];
+function shunterMesh(){ return dieselMesh({...DIESEL_MODELS.c08, open:true}); }
 /* ---- locomotive models: every class built from its own dimensions ---- */
 // Shapes in a vehicle's own frame: x across (left +), y up from the ground, z along (front +).
 // Rail top is at y 0.53. A model's front is drawn facing the shunter (see LOCO flip in yDraw).
@@ -4142,7 +4127,7 @@ function dmuCar(m, cabFront, cabBack, open){
     const IN = [.32,.32,.31];   // the inside of the cab front
     face(-W, W, yb0, wy0);
     const top = [[W, wy1], ...P.filter(p=>p[1] > wy1), [-W, wy1]], cx = 0, cy = (wy1 + crown)/2;
-    for(let i=0;i<top.length-1;i++){ const p = top[i], q = top[i+1]; quad(a, [cx,cy,zAt(cy)],[p[0],p[1],zAt(p[1])],[q[0],q[1],zAt(q[1])],[q[0],q[1],zAt(q[1])], IN, [0,0,s]); }
+    for(let i=0;i<top.length;i++){ const p = top[i], q = top[(i+1)%top.length]; quad(a, [cx,cy,zAt(cy)],[p[0],p[1],zAt(p[1])],[q[0],q[1],zAt(q[1])],[q[0],q[1],zAt(q[1])], IN, [0,0,s]); }
     panes.sort((p,q)=>p[0]-q[0]);
     let x = -W;
     for(const [x0, x1, y0, y1] of panes){ face(x, x0, wy0, wy1); face(x0, x1, wy0, y0); face(x0, x1, y1, wy1); x = x1; }
@@ -4207,7 +4192,19 @@ function dieselMesh(m){
   const r = m.r || 0.55;
   const wheels = (z, rr)=>{ for(const sx of [0.76,-0.76]){ cyl(a,"x", sx, 0.53 + rr, z, rr, 0.13, B, 18); cyl(a,"x", sx*1.08, 0.53 + rr, z, rr*0.25, 0.06, [.2,.2,.2], 10); } };
   let clear = 0;
-  if(m.bogie==="rod"){
+  if(m.bogie==="rod" && m.radStep){
+    const sp = m.sp || 1.75, zc = m.wz || 0, yA = 0.53 + r, cr = 0.3;
+    for(let i=-1;i<=1;i++) wheels(zc + i*sp, r);
+    for(const sx of [0.62,-0.62]) box(a, sx, 1.2, zc, 0.06, 0.55, 2*sp + 2.2, B);          // inside frames
+    for(const [sx, th] of [[1, 0.6], [-1, 0.6 + Math.PI/2]]){                                // cranks quartered side to side
+      const dz = cr*Math.cos(th), dy = cr*Math.sin(th), x = sx*0.92;
+      box(a, x, yA + dy, zc + dz, 0.06, 0.12, 2*sp + 0.3, m.rods || STEEL);
+      for(let i=-1;i<=1;i++){ const z = zc + i*sp;
+        cyl(a,"x", x - sx*0.05, yA + dy, z + dz, 0.075, 0.1, STEEL, 10);
+        box(a, sx*0.84, yA - 0.36*Math.sin(th), z - 0.36*Math.cos(th), 0.03, 0.22, 0.3, [.12,.12,.12]);   // balance weight
+        box(a, sx*0.84, yA, z, 0.03, 0.16, 0.16, [.18,.18,.18]); }
+    }
+  } else if(m.bogie==="rod"){
     const sp = m.sp || 1.75, zc = m.wz || 0;
     for(let i=-1;i<=1;i++) wheels(zc + i*sp, r);
     for(const sx of [0.9,-0.9]) box(a, sx, 0.53 + r, zc, 0.06, 0.11, 2*sp + 0.24, m.rods || STEEL);
@@ -4260,9 +4257,14 @@ function dieselMesh(m){
   const headBox = (x, y, zAt, s, w, hh)=>{ onFace(x - w/2, x + w/2, y - hh/2, y + hh/2, zAt, s, FR, 0.025);
     for(let k=0;k<4;k++){ const dx = x - w/2 + w*(k+0.5)/4; onFace(dx - 0.05, dx + 0.05, y - 0.08, y + 0.08, zAt, s, WH, 0.03); } };
   const lamps = (zAt, s, y)=>{ for(const sx of [0.72,-0.72]) onFace(sx - 0.09, sx + 0.09, y - 0.07, y + 0.07, zAt, s, WH, 0.03); };
+  // black and yellow wasp stripes at 45 degrees, built up in thin rows
+  const wasp = (x0, x1, y0, y1, zAt, s, off)=>{ const o = off || 0.014, n = Math.max(3, Math.round((y1 - y0)/0.045)), dh = (y1 - y0)/n, P = 0.56;
+    onFace(x0, x1, y0, y1, zAt, s, B, o);
+    for(let i=0;i<n;i++){ const ya = y0 + i*dh, sh = ((ya + dh/2 - y0) % P + P) % P;
+      for(let x = x0 - P + sh; x < x1; x += P){ const u0 = Math.max(x0, x), u1 = Math.min(x1, x + P/2); if(u1 > u0) onFace(u0, u1, ya, ya + dh, zAt, s, Y, o + 0.003); } } };
   const warn = (zAt, s, x0, x1, y0, y1)=>{
     if(m.yellow==="panel") onFace(-0.75, 0.75, 2.0, 2.75, zAt, s, Y);
-    else if(m.yellow==="wasp") for(let k=0;k<5;k++) onFace(x0, x1, y0 + k*(y1-y0)/5, y0 + (k+1)*(y1-y0)/5, zAt, s, k%2 ? B : Y);
+    else if(m.yellow==="wasp") wasp(x0, x1, y0, y1, zAt, s);
   };
   const discs = (zAt, s, y)=>{ for(const [dx,dy] of [[-0.75,0],[0.75,0],[0,0],[0,0.62]]){ const zz = zAt(y + dy) + s*0.03; cyl(a,"z", dx, y + dy, zz, 0.16, 0.04, WH, 12); } };
   const sideDoor = (zFront, s)=>{   // droplight window and door just behind each cab front, both sides
@@ -4301,24 +4303,72 @@ function dieselMesh(m){
       for(let zz = z0 + 0.8; zz < z1 - 0.7; zz += 1.2) for(const sx of [1,-1]){ box(a, sx*(hw + 0.01), (yb0 + ht)/2 + 0.15, zz, 0.02, (ht - yb0)*0.55, 0.9, GR);
         for(let y = (yb0+ht)/2 - 0.3; y < (yb0+ht)/2 + 0.55; y += 0.09) box(a, sx*(hw + 0.015), y, zz, 0.02, 0.02, 0.85, SLAT); }
       const zAt = ()=>zEnd, top = m.radStep ? ht - 0.4 : ht;
-      onFace(-hw*0.7, hw*0.7, yb0 + 0.5, top - 0.2, zAt, s, GR, 0.012);                // radiator grille
+      const gy0 = m.yellow==="wasp" ? yb0 + 0.95 : yb0 + 0.5;
+      onFace(-hw*0.7, hw*0.7, gy0, top - 0.2, zAt, s, GR, 0.012);                       // radiator grille
+      if(m.radStep) for(let y = gy0 + 0.07; y < top - 0.24; y += 0.09) onFace(-hw*0.68, hw*0.68, y, y + 0.025, zAt, s, SLAT, 0.018);
       if(m.yellow==="panel") onFace(-hw*0.8, hw*0.8, yb0 + 0.35, yb0 + 1.1, zAt, s, Y);
       else if(m.yellow==="full") onFace(-hw, hw, yb0, top - ch, zAt, s, Y, 0.008);
-      else if(m.yellow==="wasp") for(let k=0;k<6;k++) onFace(-hw, hw, yb0 + k*0.3, yb0 + (k+1)*0.3, zAt, s, k%2 ? B : Y, 0.016);
+      else if(m.yellow==="wasp") wasp(-hw, hw, yb0, yb0 + 0.85, zAt, s, 0.016);
       lamps(zAt, s, yb0 + 0.25);
       if(m.head==="discs") discs(zAt, s, yb0 + 0.75);
     };
     hood(cz + cl/2, ze, 1); hood(-ze, cz - cl/2, -1);
     // the cab, with a domed roof
     const cabP = section(yb0).map(([x,y])=>[x, y + 0.0]);
-    extrude(a, cabP, ()=>cz - cl/2, ()=>cz + cl/2, edge, col, col);
+    extrude(a, cabP, ()=>cz - cl/2, ()=>cz + cl/2, edge, m.open ? null : col, m.open ? null : col);
     bands(cz - cl/2, cz + cl/2);
+    const lowest = ht + 0.12, wTop = m.radStep ? 4.12 : 3.95, IN = [.36,.37,.35];
+    // the cab section's half-width at height y, for the end faces of an open cab
+    const halfAt = y => { const R = cabP.filter(p=>p[0] >= 0).sort((p,q)=>p[1]-q[1]);
+      for(let i=0;i<R.length-1;i++) if(y >= R[i][1] && y <= R[i+1][1]) return R[i][0] + (R[i+1][0] - R[i][0])*(y - R[i][1])/((R[i+1][1] - R[i][1]) || 1);
+      return 0; };
     for(const s of [1,-1]){ const zf = cz + s*cl/2, zAt = ()=>zf;
-      const lowest = ht + 0.12;
-      for(const sx of [1,-1]) onFace(Math.min(sx*0.45, sx*1.22), Math.max(sx*0.45, sx*1.22), lowest, 3.95, zAt, s, FR, 0.01),
-                              onFace(Math.min(sx*0.5, sx*1.17), Math.max(sx*0.5, sx*1.17), lowest + 0.05, 3.9, zAt, s, G, 0.02);
+      if(m.open){   // window holes, painted outside and lined inside
+        const both = (x0, x1, y0, y1)=>{ if(x1 - x0 > 0.005 && y1 - y0 > 0.005){ onFace(x0, x1, y0, y1, zAt, s, col, 0.004); onFace(x0, x1, y0, y1, zAt, s, IN, -0.004); } };
+        both(-W, W, yb0, lowest); both(-W, -1.22, lowest, wTop); both(-0.45, 0.45, lowest, wTop); both(1.22, W, lowest, wTop);
+        const top = [[halfAt(wTop), wTop], ...cabP.filter(p=>p[1] > wTop && p[0] >= 0), ...cabP.filter(p=>p[1] > wTop && p[0] < 0), [-halfAt(wTop), wTop]], cy = (wTop + 4.43)/2;
+        for(const [c, o] of [[col, 0.004], [IN, -0.004]]) for(let i=0;i<top.length;i++){ const p = top[i], q = top[(i+1)%top.length];
+          quad(a, [0,cy,zf + s*o],[p[0],p[1],zf + s*o],[q[0],q[1],zf + s*o],[q[0],q[1],zf + s*o], c, [0,0,s]); }
+        for(const sx of [1,-1]) for(const [u0,u1,v0,v1] of [[0.45,0.49,lowest,wTop],[1.18,1.22,lowest,wTop],[0.45,1.22,lowest,lowest+0.04],[0.45,1.22,wTop-0.04,wTop]])
+          onFace(Math.min(sx*u0, sx*u1), Math.max(sx*u0, sx*u1), v0, v1, zAt, s, FR, 0.008);
+      } else for(const sx of [1,-1]) onFace(Math.min(sx*0.45, sx*1.22), Math.max(sx*0.45, sx*1.22), lowest, wTop, zAt, s, FR, 0.01),
+                              onFace(Math.min(sx*0.5, sx*1.17), Math.max(sx*0.5, sx*1.17), lowest + 0.05, wTop - 0.05, zAt, s, G, 0.02);
       if(m.cab==="end" && s<0){ warn(zAt, s, -W, W, yb0, ht); if(m.yellow==="full") onFace(-W, W, yb0, 3.0, zAt, s, Y, 0.008); lamps(zAt, s, yb0 + 0.3); if(m.head==="discs") discs(zAt, s, 2.4); }
-      for(const sx of [1,-1]){ box(a, sx*(W + 0.012), 3.4, cz + s*0.55, 0.02, 0.7, 0.8, FR); box(a, sx*(W + 0.017), 3.4, cz + s*0.55, 0.02, 0.62, 0.72, G); }
+      if(m.radStep) for(const sx of [1,-1]){ const x = sx*(W + 0.012);
+        if(s>0){ box(a, x, 3.55, cz + 0.6, 0.02, 0.75, 0.75, FR); box(a, x*1.004, 3.55, cz + 0.6, 0.02, 0.67, 0.67, G); }   // fixed side window
+        else {   // the cab door: outline, droplight, grab rails and steps down to the rail
+          const zd = cz - 0.5;
+          for(const dz of [-0.36, 0.36]) box(a, x, (yb0 + 4.0)/2, zd + dz, 0.02, 4.0 - yb0, 0.03, FR);
+          box(a, x, 4.0, zd, 0.02, 0.03, 0.75, FR);
+          box(a, x, 3.55, zd, 0.02, 0.62, 0.55, FR); box(a, x*1.004, 3.55, zd, 0.02, 0.55, 0.48, G);
+          for(const dz of [-0.48, 0.48]) cyl(a,"y", sx*(W + 0.07), 2.55, zd + dz, 0.02, 1.5, STEEL, 6);
+          for(const y of [0.85, 1.2]) box(a, sx*(W - 0.05), y, zd, 0.04, 0.04, 0.55, B), box(a, sx*(W - 0.05), y - 0.02, zd, 0.3, 0.03, 0.5, B);
+          for(const dz of [-0.27, 0.27]) box(a, sx*(W - 0.05), 1.15, zd + dz, 0.04, 0.75, 0.04, B);
+        } }
+      else for(const sx of [1,-1]){ box(a, sx*(W + 0.012), 3.4, cz + s*0.55, 0.02, 0.7, 0.8, FR); box(a, sx*(W + 0.017), 3.4, cz + s*0.55, 0.02, 0.62, 0.72, G); }
+    }
+    if(m.radStep){
+      const zh = ze - 0.6 - 0.9;
+      cyl(a,"y", 0, ht + 0.18, zh, 0.13, 0.36, [.12,.12,.12], 12); cyl(a,"y", 0, ht + 0.37, zh, 0.15, 0.04, B, 12);   // exhaust stack
+      for(const z of [cz + cl/2 + 0.6, ze - 1.9]) for(const sx of [0.55,-0.55]) box(a, sx, ht + 0.06, z, 0.06, 0.12, 0.16, B);   // lifting lugs
+      cyl(a,"z", 0.35, 4.5, cz + cl/2 - 0.35, 0.06, 0.45, [.15,.15,.15], 8);                // horn on the cab roof
+      for(const s of [1,-1]) for(const sx of [1,-1]) box(a, sx*1.2, 1.05, s*(ze - 0.5), 0.45, 0.04, 0.35, B);   // corner steps
+      for(const s of [1,-1]) wasp(-1.36, 1.36, 1.25, 1.85, ()=>s*(ze + 0.02), s, 0.004);   // buffer beams
+    }
+    if(m.open){   // inside the cab: floor, lining, a control desk each side, gauges and seats
+      const DESK = [.22,.23,.22], SEAT = [.2,.17,.14], zF = cz + cl/2;
+      box(a, 0, yb0 + 0.03, cz, 2.6, 0.05, cl - 0.1, [.2,.2,.19]);
+      for(const sx of [1,-1]){
+        box(a, sx*(W - 0.04), (yb0 + yb1)/2, cz, 0.03, yb1 - yb0, cl - 0.1, [.44,.43,.39]);
+        box(a, sx*(W - 0.06), 3.55, cz + 0.6, 0.02, 0.67, 0.67, [.55,.65,.72]); box(a, sx*(W - 0.06), 3.55, cz - 0.5, 0.02, 0.55, 0.48, [.55,.65,.72]);
+        box(a, sx*0.85, ht - 0.25, zF - 0.32, 0.8, 0.5, 0.5, DESK);
+        box(a, sx*0.85, ht + 0.0, zF - 0.4, 0.75, 0.06, 0.4, [.15,.16,.16]);
+        for(const dx of [-0.18, 0.18]){ box(a, sx*0.85 + dx, ht - 0.03, zF - 0.12, 0.14, 0.14, 0.04, [.12,.12,.12]); box(a, sx*0.85 + dx, ht - 0.03, zF - 0.145, 0.1, 0.1, 0.02, [.9,.9,.85]); }
+        box(a, sx*0.55, ht + 0.0, zF - 0.5, 0.05, 0.22, 0.05, [.75,.12,.1]);                 // power controller
+        box(a, sx*1.1, ht + 0.0, zF - 0.5, 0.05, 0.2, 0.05, [.1,.1,.1]);                     // brake valve
+        box(a, sx*0.85, yb0 + 1.05, cz - 0.15, 0.48, 0.1, 0.45, SEAT); box(a, sx*0.85, yb0 + 0.55, cz - 0.15, 0.1, 1.0, 0.1, [.15,.15,.15]);
+        box(a, sx*0.85, yb0 + 1.4, cz - 0.42, 0.48, 0.6, 0.08, SEAT);
+      }
     }
     return a;
   }
@@ -4407,8 +4457,8 @@ function yDraw(){
     const {q, Y, e} = cab, c = Math.cos(Y), sn = Math.sin(Y);
     eye = [q.x + c*e[0] + sn*e[2], e[1], q.z - sn*e[0] + c*e[2]]; head = Y + (cab.me<0 ? Math.PI : 0);
   } else {
-    const p = vPose(yd.sh), fwd = [Math.sin(p.yaw), Math.cos(p.yaw)];
-    eye = [p.x - fwd[0]*2.9, 3.55, p.z - fwd[1]*2.9]; head = p.yaw;
+    const p = vPose(yd.sh), c = Math.cos(p.yaw), sn = Math.sin(p.yaw), [ex, ey, ez] = shunterEye();
+    eye = [p.x + c*ex + sn*ez, ey, p.z - sn*ex + c*ez]; head = p.yaw;
   }
   const yaw = head + yd.look; let dir = [Math.sin(yaw)*Math.cos(yd.pitch), Math.sin(yd.pitch), Math.cos(yaw)*Math.cos(yd.pitch)];
   if(yd.cam){ eye = yd.cam.eye; dir = yd.cam.dir; }

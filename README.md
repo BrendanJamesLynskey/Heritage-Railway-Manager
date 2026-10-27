@@ -56,7 +56,7 @@ style (cab ends with raked windscreens, noses, hood and single cab, the
 Western), bogies with axleboxes and springs (Bo-Bo, Co-Co, A1A, 1Co-Co1,
 coupled rods), headcode boxes, discs or roof domes, grilles, cab doors,
 warning panels and livery bands, with the Class 20 and 26 pairs as two locos;
-DMUs from their car length and count, bogies or four-wheel axles, window and
+the Class 08 with its stepped radiator end, diagonal wasp stripes on the ends and buffer beams, outside coupling rods on quartered crankpins with balance weights, cab doors with steps, exhaust and horn (the yard shunter is the same model with its cab open, so you drive from the seat behind the control desk); DMUs from their car length and count, bogies or four-wheel axles, window and
 door layout, underfloor engines and their front ends (Metro-Cammell, Derby
 three-window, Calder Valley four-window, Pacer, Wickham railbus).
 
