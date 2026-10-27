@@ -72,6 +72,22 @@ progress. Finish quickly (under 6 minutes an engine) with no rough shunts for â˜
 morale boost), or leave the yard at any time and the shed staff finish the job.
 Then the weekend runs as normal.
 
+## Liveries
+
+Every engine arrives in a real livery its class carried and can be repainted
+in any other it really wore: BR lined black or green, BR express blue, LMS
+crimson lake, LNER apple green and garter blue (with red wheels), GWR green,
+SR malachite, NER and L&Y lined liveries, London Transport maroon, industrial
+colours, and for the diesels BR green (plain, small panel or two-tone), BR blue,
+large logo, Railfreight grey and triple grey, InterCity, Network SouthEast,
+EWS, Loadhaul and DB, plus the Western's maroon, golden ochre and desert sand.
+
+Repaint in the **Ravensgill Shed** (the volunteer painting gang: cheaper, two
+weeks) or at the **Works** (a contract paint shop: dearer, one week, with a
+lined works finish that draws a little more). The repaint window shows the
+engine in each livery in 3D. Historic and famous liveries bring more visitors,
+and the yard shows each engine in its current colours.
+
 ## Mail: Hiring Out Your Locomotives
 
 Railtour companies and other heritage railways (all fictional) email asking

@@ -244,6 +244,16 @@
   .b-rake{background:var(--gwr-green)}
   .b-guest{background:#7a4a12}
   .b-shuttle{background:#8a6d1c}
+  .lvsw{display:inline-flex;flex-direction:column;justify-content:flex-end;width:30px;height:20px;border-radius:3px;border:1px solid rgba(0,0,0,.35);overflow:hidden;vertical-align:middle;flex:0 0 auto;position:relative}
+  .lvsw i{display:block;height:5px}
+  .lvsw b{position:absolute;right:0;top:0;bottom:0;width:7px}
+  .lvrow{display:flex;align-items:center;gap:8px;font-size:.8rem;margin:6px 0}
+  .lvprev{display:block;width:100%;border-radius:6px;margin:4px 0 8px;border:1px solid #d7cdb8}
+  .lvlist{display:grid;gap:6px;max-height:42vh;overflow:auto}
+  .lvopt{display:flex;gap:9px;align-items:flex-start;padding:7px 9px;border:1px solid #ddd3bd;border-radius:6px;cursor:pointer;font-size:.82rem;background:#fff}
+  .lvopt.on{border-color:#1f4d2e;background:#e7f0e2}
+  .lvopt input{margin-top:3px}
+  .lvopt small{color:#6a7480}
   .b-event{background:#5b2a86}
   .sub{color:#6a7480;font-size:.8rem;margin:0 0 8px;font-style:italic}
   .specs{list-style:none;padding:0;margin:8px 0;font-size:.82rem}
@@ -527,6 +537,7 @@
         <li><b>Timetabling:</b> every train is a round trip from Ravensgill Junction to Moorend and back, about two hours with turn-rounds. Give each loco a set of departure times. If a train isn't back in time, its next trip leaves late.</li>
         <li><b>The printed timetable:</b> the Up and Down tables at the top of the Timetable app are the public timetable, a column for each train. The times are worked out by the signallers' plan, so a train held at a loop shows its real, later time. <b>|</b> means the train runs through without stopping.</li>
         <li><b>Shuttles and non-stop trains:</b> each train working has a row of stations it calls at. Untick a station in the middle and the train runs straight through it: quicker, but nobody can get on there. Untick the ends to make a shuttle, say Fellside–Moorend: it can only start and turn back at a passing loop (⇄), runs out empty from the shed in the morning and back at night, and its shorter rides sell cheaper tickets. Each station's passengers wait for a train that calls there; most people join at Ravensgill, where the car park is.</li>
+        <li><b>Liveries:</b> every engine comes in a real livery its class carried, and can be repainted in any other it really wore: BR lined black, LNER apple green, LMS crimson lake, garter blue, BR blue, large logo, Railfreight, InterCity and more. Repaint in the <b>Ravensgill Shed</b> (volunteers, cheaper, two weeks) or at the <b>Works</b> (a contract paint shop, dearer, one week, with a lined works finish that draws a little more). Historic and famous liveries bring more visitors; the repaint window shows the engine in each one.</li>
         <li><b>Double-heading:</b> press <b>🚂🚂 Double-head</b> on a diagram to couple a pilot engine on the front. The two engines' loads add together (a 4-coach and a 5-coach engine can take 9 coaches up the bank), so small engines can work long trains and climb faster. The crowd likes the sight, and a double-header counts as two engines for a gala, but it needs two crews, burns both engines' coal and wears both engines, and the train goes at the slower engine's pace.</li>
         <li><b>Single line:</b> trains can only pass at the loops (Lowerdale and Fellside, plus Brackenby and Highmoor Summit once built), and only one train may be on each single-line section. The train graph shows where trains are held. Each loop has one road for each direction (Moorend holds two trains), so too many trains with too few loops means trains are held and run late.</li>
         <li><b>Passengers</b> arrive through the day (mostly late morning and lunchtime) and take the next train. A gap of more than two hours loses them; a full train turns them away. Steam draws more people than diesel, and both draw more than a DMU.</li>
@@ -896,6 +907,9 @@ function repTier(){
 }
 function condColour(c){ return c>0.6?"var(--good)":c>0.3?"var(--warn)":"var(--danger)"; }
 function isBusy(item){ return (item.busyUntil||0) > state.week; }
+// why an item is out of traffic: being repainted, or in the works for repairs
+const busyText = it => it.busyWhy==="paint" ? `being repainted until week ${woy(it.busyUntil)}` : `in the works until week ${woy(it.busyUntil)}`;
+const busyTag = it => `<div class="busy-tag">${it.busyWhy==="paint" ? "🎨 Being repainted" : "🔧 In the works"} until week ${woy(it.busyUntil)}</div>`;
 // a loco hired out to another railway: away from h.from until (not including) h.until
 function isAway(l){ return !!l.hire && state.week >= l.hire.from && state.week < l.hire.until; }
 function hirePending(l){ return !!l.hire && l.hire.until > state.week; }
@@ -972,12 +986,12 @@ function currentPlan(){
     usedLoco.add(String(d.loco));
     if(pilot) usedLoco.add(String(d.pilot));
     const crewOf = k => k==="steam"?3:2;
-    let draw = lcat.draw, pace = lcat.pace||1, runPerMile = lcat.runPerMile, reliability = lcat.reliability, condition = loco.condition;
+    let draw = lcat.draw + (main.appeal||0), pace = lcat.pace||1, runPerMile = lcat.runPerMile, reliability = lcat.reliability, condition = loco.condition;
     let crew = crewOf(kind), boost = guest ? lcat.boost : 0;
     if(pilot){
       // the crowd comes for the better engine, and a double-header is a sight in itself;
       // the train goes at the slower engine's pace, burns both engines' coal, and either can fail
-      draw = Math.max(draw, pilot.lcat.draw) + 0.08;
+      draw = Math.max(draw, pilot.lcat.draw + (pilot.appeal||0)) + 0.08;
       pace = Math.min(pace, pilot.lcat.pace||1);
       runPerMile += pilot.lcat.runPerMile;
       reliability = Math.min(reliability, pilot.lcat.reliability) * 0.92;
@@ -1018,10 +1032,10 @@ function engineFor(ref, ev){
   }
   const loco = state.locos.find(l=>l.id===ref);
   if(!loco) return {err:"No locomotive chosen."};
-  if(isBusy(loco)) return {err:`${loco.number} is in the works until week ${woy(loco.busyUntil)} — diagram skipped.`};
+  if(isBusy(loco)) return {err:`${loco.number} is ${busyText(loco)} — diagram skipped.`};
   if(isAway(loco)) return {err:`${loco.number} is away on hire to ${loco.hire.org} until week ${woy(loco.hire.until)} — diagram skipped.`};
   if(loco.condition<0.15) return {err:`${loco.number} is too run-down to run: send it to the works.`};
-  return {loco, lcat:catOf("loco", loco.cat), kind:loco.kind, guest:false};
+  return {loco, lcat:catOf("loco", loco.cat), kind:loco.kind, guest:false, appeal:liveryAppeal(loco)};
 }
 function volunteersAvailable(){
   return Math.floor(state.vol.count * 0.55 * (0.55 + 0.45*state.vol.morale));
@@ -1751,16 +1765,18 @@ function renderDepot(){
     return `<div class="card">
       <h3>${kindBadge(l.kind)}${l.number}</h3>
       <p class="sub">${c.name}</p>
-      ${isBusy(l)?`<div class="busy-tag">🔧 In the works until week ${woy(l.busyUntil)}</div>`:""}
+      ${isBusy(l)?busyTag(l):""}
       ${hirePending(l)?`<div class="busy-tag">${hireNote(l)}</div>`:""}
       <div class="cond-lbl"><span>Condition</span><span>${Math.round(l.condition*100)}%</span></div>
       <div class="bar"><i style="width:${l.condition*100}%;background:${condColour(l.condition)}"></i></div>
+      ${liveryOf(l) ? `<div class="lvrow">${lvSwatch(liveryOf(l))}<span>${LIVERIES[liveryOf(l)].name}${l.finish==="works"?" · works finish":""}</span></div>` : ""}
       <ul class="specs">
-        <li><span>Public draw</span><span>${c.draw.toFixed(2)}×</span></li>
+        <li><span>Public draw</span><span>${(c.draw + liveryAppeal(l)).toFixed(2)}×</span></li>
         <li><span>Reliability</span><span>${Math.round(c.reliability*100)}%</span></li>
         <li><span>${l.kind==="dmu"?"Seats":"Max load on the bank"}</span><span>${l.kind==="dmu"?c.seats:c.maxHaul+" coaches"}</span></li>
         <li><span>Coal / fuel</span><span>${money(c.runPerMile)}/mi</span></li>
       </ul>
+      ${liveryOf(l) ? `<button class="act small" style="margin-bottom:6px" ${busy||onLine(l)?"disabled":""} onclick="openRepaint(${l.id},'shed')">🎨 Repaint in the shed · ${money(repaintCost(l,"shed").cost)}</button>` : ""}
       <button class="act small warnbtn" ${busy||onLine(l)?"disabled":""} onclick="sellItem('loco',${l.id})">${isBusy(l)?"In the works":hirePending(l)?"Hired out":onLine(l)?"Out on the line":`Sell · ${money(sellValue("loco",l))}`}</button>
     </div>`;
   }).join("") : `<div class="empty">No locomotives. Visit the Motive Power market.</div>`;
@@ -1795,6 +1811,7 @@ function locoCard(c, kind){
       <li><span>${kind==="dmu"?"Seats":"Max load on the bank"}</span><span>${kind==="dmu"?c.seats:c.maxHaul+" coaches"}</span></li>
       <li><span>Coal / fuel</span><span>${money(c.runPerMile)}/mi</span></li>
       <li><span>Crew</span><span>${kind==="steam"?3:2}</span></li>
+      ${liveriesOf(c.key).length ? `<li><span>Arrives in</span><span>${LIVERIES[liveriesOf(c.key)[0]].name}</span></li><li><span>Other liveries</span><span>${liveriesOf(c.key).length-1}</span></li>` : ""}
     </ul>
     <div class="price">${money(c.cost)}</div>
     <button class="act" ${state.cash<c.cost?"disabled":""} onclick="buyLoco('${c.key}')">${state.cash<c.cost?"Insufficient funds":"Purchase"}</button>
@@ -1835,12 +1852,14 @@ function renderWorks(){
     const busy = isBusy(it) || onLine(it) || (kind==="loco" && isAway(it)), w = worksCosts(kind, it);
     return `<div class="card">
       <h3>${badge}${title}</h3>
-      ${isBusy(it)?`<div class="busy-tag">🔧 In the works until week ${woy(it.busyUntil)}</div>`:onLine(it)?`<div class="busy-tag">🚂 Out on the line this weekend</div>`:""}
+      ${isBusy(it)?busyTag(it):onLine(it)?`<div class="busy-tag">🚂 Out on the line this weekend</div>`:""}
       ${kind==="loco" && hirePending(it)?`<div class="busy-tag">${hireNote(it)}</div>`:""}
       <div class="cond-lbl"><span>Condition</span><span>${Math.round(it.condition*100)}%</span></div>
       <div class="bar"><i style="width:${it.condition*100}%;background:${condColour(it.condition)}"></i></div>
       <button class="act small" ${busy||it.condition>=0.95||state.cash<w.repair?"disabled":""} onclick="works('${kind}',${it.id},'repair')">Running repair (+25%, 1 week) · ${money(w.repair)}</button>
       <button class="act small warnbtn" style="margin-top:6px" ${busy||it.condition>=0.99||state.cash<w.heavy?"disabled":""} onclick="works('${kind}',${it.id},'heavy')">${kind==="rake"?"Refurbish":"Heavy overhaul"} to as-new (${w.weeks} weeks) · ${money(w.heavy)}</button>
+      ${kind==="loco" && liveryOf(it) ? `<div class="lvrow">${lvSwatch(liveryOf(it))}<span>${LIVERIES[liveryOf(it)].name}${it.finish==="works"?" · works finish":""}</span></div>
+      <button class="act small" ${busy||hirePending(it)?"disabled":""} onclick="openRepaint(${it.id},'works')">🎨 Repaint at the works · ${money(repaintCost(it,"works").cost)}</button>` : ""}
     </div>`;
   };
   state.locos.forEach(l=>items.push(card("loco", l, l.number+" <small style='font-weight:400'>"+catOf("loco",l.cat).name+"</small>", kindBadge(l.kind))));
@@ -2025,6 +2044,7 @@ function works(kind, id, what){
   if(state.cash<cost) return;
   state.cash -= cost;
   const label = item.number||catOf(kind,item.cat).name;
+  item.busyWhy = "works";
   if(what==="repair"){ item.condition = Math.min(1, item.condition+0.25); item.busyUntil = state.week+1; }
   else { item.condition = 1; item.busyUntil = state.week + w.weeks; }
   logEntry(`${label} into the works for a ${what==="repair"?"running repair":"heavy overhaul"}; back in traffic week ${woy(item.busyUntil)}.`, -cost);
@@ -2945,13 +2965,13 @@ function shuntJob(plan){
   const num = () => String(10000 + Math.floor(Math.random()*89999));
   const types = shuffle(["BSK","SK","TSO","RMB","CK","BCK"]);
   const coach = (t) => ({type:"coach", label:`${t} ${num()}`, len:20, col:liv[0], win:liv[1]});
-  const engine = (key, number, name) => { const md = locoModel(key); return {type:md.kind, label:number, name, len:md.len, col:md.col, key, flip:true}; };
-  const need = [engine(set.lcat.key, set.loco.number, set.lcat.name)];
-  if(set.pilot) need.push(engine(set.pcat.key, set.pilot.number, set.pcat.name));
+  const engine = (key, number, name, livery) => { const md = locoModel(key, livery); return {type:md.kind, label:number, name, len:md.len, col:md.col, key, livery, flip:true}; };
+  const need = [engine(set.lcat.key, set.loco.number, set.lcat.name, set.trainGuest ? null : liveryOf(set.loco))];
+  if(set.pilot) need.push(engine(set.pcat.key, set.pilot.number, set.pcat.name, set.pilotGuest ? null : liveryOf(set.pilot)));
   need.forEach(v=>v.need = true);
   // the rest of the fleet is on shed too
   const decoys = shuffle(state.locos.filter(l=>l.kind!=="dmu" && l!==set.loco && l!==set.pilot && !isAway(l))).slice(0, 4)
-    .map(l=>engine(l.cat, l.number, catOf("loco", l.cat).name));
+    .map(l=>engine(l.cat, l.number, catOf("loco", l.cat).name, liveryOf(l)));
   return {train:`${fmtT(set.deps[0])} ${set.label}`, time:fmtT(set.deps[0]), set:set.label,
           coaches:[coach(types[0]), coach(types[1]), coach(types[2])], need, decoys};
 }
@@ -3293,7 +3313,7 @@ function vehicleMesh(v){
     for(const z of [-L*0.3, L*0.3]) box(a, 0,0.75,z, 0.3,1.0,1.0, dark);
     for(const z of [-h, h]) box(a, 0,1.15,z-Math.sign(z)*0.15, 2.4,0.35,0.3, red);
   } else if(v.type==="steam" || v.type==="diesel"){
-    return locoModel(v.key).mesh();
+    return locoModel(v.key, v.livery).mesh();
   }
   return a;
 }
@@ -3440,9 +3460,155 @@ const DIESEL_MODELS = {
   "g-hymek":  {style:"cab", len:15.75, bogie:"Bo", r:0.57, sp:3.2, inset:3.9, col:LV.brgreen, col2:LV.ltgreen, band2:2.45, rim:[.9,.9,.86], yellow:"panel", screen:"three",
          head:"4char", grilles:[[0, 2.2, 2.3, 3.6]]}
 };
-function locoModel(key){
-  const s = STEAM_MODELS[key]; if(s) return {kind:"steam", len:s.eng + (s.tend||0), col:s.col, mesh:()=>steamMesh(s)};
-  const d = DIESEL_MODELS[key]; if(d) return {kind:"diesel", len:d.len, col:d.col, mesh:()=>dieselMesh(d)};
+/* ---- liveries: the real colour schemes each class has carried, and repainting in the shed or the works ---- */
+// appeal is added to the engine's public draw: historic and famous liveries bring a few more people out.
+const LIVERIES = {
+  // steam
+  brLinedBlack:{name:"BR lined black", era:"British Railways mixed-traffic livery, 1949–68: red, cream and grey lining", appeal:0.02, set:{col:LV.black, line:LV.red}},
+  brBlack:     {name:"BR plain black", era:"British Railways goods livery, 1948–68", appeal:0, set:{col:LV.black}},
+  brGreen:     {name:"BR lined green", era:"British Railways express passenger livery, 1949–68: orange and black lining", appeal:0.04, set:{col:LV.brgreen, line:LV.orange}},
+  brBlue:      {name:"BR express blue", era:"Carried by the top express engines, 1949–51", appeal:0.05, set:{col:[.2,.36,.6], line:LV.white}},
+  lmsBlack:    {name:"LMS lined black", era:"London Midland & Scottish, 1928–47: vermilion lining", appeal:0.03, set:{col:LV.black, line:LV.red}},
+  lmsCrimson:  {name:"LMS crimson lake", era:"London Midland & Scottish passenger livery, 1923–47: gold and black lining", appeal:0.06, set:{col:LV.crimson, line:LV.gold}},
+  lnerGreen:   {name:"LNER apple green", era:"London & North Eastern passenger livery, 1923–47: black and white lining", appeal:0.06, set:{col:LV.lner, line:LV.white}},
+  lnerBlack:   {name:"LNER black", era:"London & North Eastern goods and wartime livery, 1923–47", appeal:0.01, set:{col:LV.black}},
+  garter:      {name:"LNER garter blue", era:"The A4s' streamlined livery, 1937–47, with red wheels", appeal:0.08, set:{col:LV.garter, line:LV.white, wheel:LV.red}},
+  gwrGreen:    {name:"GWR green", era:"Great Western Railway, to 1947, with copper-capped chimney", appeal:0.05, set:{col:LV.gwr}},
+  ltMaroon:    {name:"London Transport maroon", era:"Panniers sold to London Transport, 1956–71", appeal:0.05, set:{col:[.42,.09,.1], line:LV.gold}},
+  nerGreen:    {name:"NER lined green", era:"North Eastern Railway, to 1922", appeal:0.06, set:{col:LV.ner, line:LV.white}},
+  nerBlack:    {name:"NER lined black", era:"North Eastern Railway goods livery, to 1922", appeal:0.02, set:{col:LV.black, line:LV.red}},
+  lyBlack:     {name:"L&YR lined black", era:"Lancashire & Yorkshire Railway, to 1921", appeal:0.03, set:{col:LV.black, line:LV.red}},
+  srGreen:     {name:"SR malachite green", era:"Southern Railway, 1938–49, with sunshine lettering", appeal:0.06, set:{col:[.1,.45,.32], line:[.95,.85,.3]}},
+  usaGrey:     {name:"USATC grey", era:"US Army Transportation Corps, 1942–45", appeal:0.03, set:{col:[.45,.47,.48]}},
+  indGreen:    {name:"Industrial green", era:"Colliery and steelworks lines, lined in yellow", appeal:0.03, set:{col:[.15,.4,.2], line:[.85,.7,.2]}},
+  indBlue:     {name:"Industrial blue", era:"Colliery lines, lined in cream", appeal:0.03, set:{col:LV.hunslet, line:LV.cream}},
+  indMaroon:   {name:"Industrial maroon", era:"Colliery lines, lined in yellow and black", appeal:0.03, set:{col:[.52,.1,.12], line:[.85,.7,.2]}},
+  kwvr:        {name:"Worth Valley maroon", era:"The lined maroon 41241 wore on the line's reopening in 1968", appeal:0.06, set:{col:[.45,.09,.12], line:[.85,.7,.2]}},
+  greyWorks:   {name:"Photographic grey", era:"Works grey, as Tornado was turned out in 2008", appeal:0.05, set:{col:[.55,.56,.57], line:LV.white}},
+  // diesels
+  dGreenPlain: {name:"BR green", era:"As built, before warning panels, 1957–62", appeal:0.05, set:{col:LV.brgreen, yellow:"none"}},
+  dGreenPanel: {name:"BR green, small yellow panel", era:"BR green with a warning panel, 1962–67", appeal:0.04, set:{col:LV.brgreen, yellow:"panel"}},
+  dGreenStripe:{name:"BR green with grey band", era:"BR green with a light grey body band and warning panel", appeal:0.04, set:{col:LV.brgreen, stripe:[.7,.72,.7], stripeY:1.8, stripeH:0.06, yellow:"panel"}},
+  dTwoTone:    {name:"BR two-tone green", era:"Dark green with a light green lower band, 1962–67", appeal:0.05, set:{col:LV.brgreen, col2:LV.ltgreen, band2:2.6, yellow:"panel"}},
+  dBlue:       {name:"BR blue", era:"British Rail corporate blue, full yellow ends, 1967–87", appeal:0.02, set:{col:LV.railblue, yellow:"full"}},
+  dLargeLogo:  {name:"BR large logo", era:"Blue with wrap-round yellow cabs and a grey roof, 1978–87", appeal:0.04, set:{col:LV.railblue, yellow:"wrap", roof:[.5,.52,.53]}},
+  dRfGrey:     {name:"Railfreight grey", era:"Grey with a red solebar stripe, 1983–87", appeal:0.03, set:{col:LV.rfgrey, yellow:"wrap", stripe:LV.red, stripeY:2.0, stripeH:0.1}},
+  dTriple:     {name:"Railfreight triple grey", era:"Sector livery, 1987–94", appeal:0.03, set:{col:[.66,.68,.69], col2:[.33,.35,.37], band2:2.55, yellow:"full", roof:[.33,.35,.37]}},
+  dEWS:        {name:"EWS maroon and gold", era:"English Welsh & Scottish, 1996–2009", appeal:0.02, set:{col:LV.ews, yellow:"full", stripe:LV.gold, stripeY:2.0, stripeH:0.25}},
+  dIC:         {name:"InterCity", era:"Dark grey over beige, red and white stripes, 1985–96", appeal:0.03, set:{col:[.22,.22,.26], col2:[.86,.8,.66], band2:2.75, stripe:LV.red, stripeY:2.8, stripeH:0.08, yellow:"full", roof:[.22,.22,.26]}},
+  dNSE:        {name:"Network SouthEast", era:"Blue, white, red and grey, 1986–94", appeal:0.03, set:{col:[.14,.2,.5], col2:[.62,.64,.66], band2:2.5, stripe:[.85,.15,.15], stripeY:2.58, stripeH:0.09, yellow:"full"}},
+  dLoadhaul:   {name:"Loadhaul", era:"Black and orange, 1994–98", appeal:0.02, set:{col:[.1,.1,.11], col2:[.9,.45,.12], band2:2.4, yellow:"full"}},
+  dDB:         {name:"DB Cargo red", era:"Deutsche Bahn red, from 2009", appeal:0.01, set:{col:[.72,.08,.1], yellow:"full", roof:[.3,.3,.3]}},
+  dMaroon:     {name:"BR maroon", era:"The Westerns' maroon, 1962–67", appeal:0.05, set:{col:LV.maroon, yellow:"panel"}},
+  dOchre:      {name:"Golden ochre", era:"D1015's unique 1962 livery, restored in 2014", appeal:0.07, set:{col:[.72,.55,.2], yellow:"none"}},
+  dDesert:     {name:"Desert sand", era:"The first Western, D1000, as built in 1961", appeal:0.06, set:{col:[.74,.6,.4], yellow:"none"}},
+  dDelticBlue: {name:"BR blue, white window surrounds", era:"The Deltics' blue era, 1967–82", appeal:0.04, set:{col:LV.railblue, yellow:"full", rim:[.9,.9,.86]}},
+  dDelticGreen:{name:"Two-tone green, lime band", era:"The Deltics as built, 1961–67", appeal:0.06, set:{col:LV.brgreen, col2:LV.lime, band2:2.45, yellow:"panel"}},
+  dHymek:      {name:"BR two-tone green, white surrounds", era:"The Hymeks as built, 1961–67", appeal:0.05, set:{col:LV.brgreen, col2:LV.ltgreen, band2:2.45, rim:[.9,.9,.86], yellow:"panel"}},
+  d08Green:    {name:"BR green, wasp ends", era:"Shunters in BR green with black and yellow ends", appeal:0.03, set:{col:LV.brgreen, yellow:"wasp"}},
+  d08Blue:     {name:"BR blue, wasp ends", era:"Shunters in BR blue, 1967–90s", appeal:0.02, set:{col:LV.railblue, yellow:"wasp"}}
+};
+// The liveries each class really carried; the first is how it arrives.
+const CLASS_LIVERIES = {
+  wd:["brBlack","indGreen","indMaroon"], pannier:["gwrGreen","brBlack","ltMaroon"], ivatt:["brLinedBlack","lmsBlack","kwvr"],
+  j27:["brBlack","nerBlack","lnerBlack"], "4mt":["brLinedBlack","brGreen"], "8f":["brBlack","lmsBlack"], b1:["brLinedBlack","lnerGreen"],
+  black5:["brLinedBlack","lmsBlack"], hunslet:["indMaroon","indBlue","indGreen"], jinty:["brBlack","lmsBlack"], ly27:["brBlack","lyBlack","lmsBlack"],
+  "2mt78":["brLinedBlack","brGreen"], crab:["brBlack","lmsCrimson","lmsBlack"], k1:["brLinedBlack","lnerGreen"], "5mt":["brLinedBlack","brGreen"],
+  s160:["brBlack","usaGrey"], "g-scot":["brGreen","lnerGreen","brBlue","lnerBlack"], "g-a4":["brGreen","garter","brBlue"], "g-k4":["brLinedBlack","lnerGreen"],
+  "g-9f":["brBlack","brGreen"], "g-q6":["brBlack","nerBlack"], "g-ivatt4":["brBlack","lmsBlack"], "g-tornado":["lnerGreen","brGreen","brBlue","greyWorks"],
+  "g-duchess":["lmsCrimson","brGreen","brBlue"], "g-royalscot":["brGreen","lmsCrimson"], "g-greenarrow":["lnerGreen","brGreen","lnerBlack"],
+  "g-bahamas":["brGreen","lmsCrimson"], "g-braunton":["brGreen","srGreen"], "g-duke":["brGreen"], "g-p3":["nerGreen","brBlack","lnerBlack"],
+  c14:["dGreenPanel","dGreenPlain","dBlue"], c25:["dBlue","dTwoTone","dGreenPanel"], c31:["dBlue","dGreenPanel","dTriple","dEWS"],
+  c37:["dBlue","dGreenPanel","dLargeLogo","dRfGrey","dTriple","dEWS"], c45:["dBlue","dGreenPanel"], c40:["dBlue","dGreenPanel","dGreenPlain"],
+  c08:["d08Green","d08Blue"], c20:["dGreenPanel","dBlue","dRfGrey","dTriple"], c24:["dGreenStripe","dBlue"], c26:["dGreenPanel","dBlue","dRfGrey"],
+  c33:["dGreenPanel","dBlue","dNSE","dTriple"], c47:["dTwoTone","dBlue","dLargeLogo","dIC","dNSE","dRfGrey"], c46:["dGreenPanel","dBlue"],
+  "g-deltic":["dDelticBlue","dDelticGreen"], "g-western":["dMaroon","dOchre","dDesert","dBlue"], "g-c50":["dLargeLogo","dBlue","dNSE"],
+  "g-c33":["dGreenPanel","dBlue"], "g-c20":["dBlue","dGreenPanel"], "g-c47":["dBlue","dTwoTone","dLargeLogo"], "g-d213":["dGreenPanel","dBlue"],
+  "g-c56":["dRfGrey","dBlue","dTriple","dLoadhaul","dEWS"], "g-c60":["dEWS","dTriple","dDB"], "g-c26":["dGreenPanel","dBlue"], "g-hymek":["dHymek","dBlue"]
+};
+const liveriesOf = key => CLASS_LIVERIES[key] || [];
+const liveryOf = l => l && l.livery && liveriesOf(l.cat).includes(l.livery) ? l.livery : liveriesOf(l && l.cat)[0] || null;
+// draw bonus for one of our engines: its livery, plus a little for a works finish
+const liveryAppeal = l => { const id = liveryOf(l); return id ? LIVERIES[id].appeal + (l.finish==="works" ? 0.015 : 0) : 0; };
+// a model spec repainted: the livery's colours replace the class's own (steam lining, or diesel bands and ends)
+function withLivery(spec, id, steam){
+  const L = id && LIVERIES[id]; if(!L) return spec;
+  return steam ? {...spec, line:null, wheel:null, ...L.set}
+               : {...spec, col2:null, band2:null, stripe:null, stripeY:null, stripeH:null, roof:null, rim:null, ...L.set};
+}
+function repaintCost(l, where){
+  const shop = state.upgrades.workshop ? 0.7 : 1, steam = l.kind==="steam";
+  return where==="works" ? {cost:Math.round((steam ? 4200 : 3000)*shop), weeks:1} : {cost:steam ? 1500 : 1000, weeks:2};
+}
+const lvSwatch = id => { const s = LIVERIES[id].set, c = s.col, b = s.col2 || s.line || s.stripe, y = s.yellow && s.yellow!=="none" ? [.96,.8,.12] : null;
+  return `<span class="lvsw" style="background:${rgb(c)}">${b?`<i style="background:${rgb(b)}"></i>`:""}${y?`<b style="background:${rgb(y)}"></b>`:""}</span>`; };
+
+// a 3D picture of a class in a livery, rendered with the yard's own renderer (null without WebGL)
+const PREVIEWS = {};
+function liveryPreview(key, id){
+  const k = key + "|" + id; if(PREVIEWS[k]) return PREVIEWS[k];
+  const gl = yardGL(); if(!gl || yd) return null;
+  const cv = gl.canvas, ow = cv.width, oh = cv.height, W = 560, Hh = 250;
+  cv.width = W; cv.height = Hh; gl.viewport(0, 0, W, Hh);
+  const md = locoModel(key, id), mesh = meshBuffer(gl, md.mesh()), zc = 32, zf = zc - md.len/2;
+  gl.clearColor(.62,.76,.88,1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  const eye = [-8.5, 3.9, zf - 7.5], at = [0, 2.3, zc - md.len*0.12], d = at.map((x,i)=>x - eye[i]), dl = Math.hypot(...d);
+  gl.uniformMatrix4fv(YGL.vp, false, m4mul(m4persp(0.62, W/Hh, 0.25, 900), m4look(eye, d.map(x=>x/dl))));
+  gl.uniform3f(YGL.fog, .62,.76,.88);
+  for(const [m, model] of [[YGL.scene, m4model(0,0,0)], [mesh, m4model(0, zc, Math.PI)]]) glDraw(m, model);
+  const url = cv.toDataURL("image/jpeg", 0.85);
+  gl.deleteBuffer(mesh.buf); cv.width = ow; cv.height = oh;
+  return PREVIEWS[k] = url;
+}
+function glDraw(mesh, model){
+  const gl = YGL.gl;
+  gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buf);
+  gl.enableVertexAttribArray(YGL.ap); gl.vertexAttribPointer(YGL.ap, 3, gl.FLOAT, false, 36, 0);
+  gl.enableVertexAttribArray(YGL.an); gl.vertexAttribPointer(YGL.an, 3, gl.FLOAT, false, 36, 12);
+  gl.enableVertexAttribArray(YGL.ac); gl.vertexAttribPointer(YGL.ac, 3, gl.FLOAT, false, 36, 24);
+  gl.uniformMatrix4fv(YGL.m, false, model);
+  gl.drawArrays(gl.TRIANGLES, 0, mesh.count);
+}
+
+let repaint = null;   // the repaint being chosen: {id, where, pick}
+function openRepaint(id, where){
+  const l = state.locos.find(x=>x.id===id); if(!l || !liveriesOf(l.cat).length) return;
+  repaint = {id, where, pick: liveryOf(l)};
+  renderRepaint();
+}
+function renderRepaint(){
+  const l = state.locos.find(x=>x.id===repaint.id), c = catOf("loco", l.cat), cur = liveryOf(l), R = repaintCost(l, repaint.where);
+  const pick = repaint.pick, L = LIVERIES[pick], img = liveryPreview(l.cat, pick);
+  const same = pick===cur && (repaint.where!=="works" || l.finish==="works");
+  const blocked = isBusy(l) ? busyText(l) : onLine(l) ? "out on the line this weekend" : hirePending(l) || isAway(l) ? "promised or away on hire" : null;
+  const where = repaint.where==="works"
+    ? `<b>At the works:</b> a contract paint shop strips it to bare metal and lines it out by hand. ${R.weeks} week, ${money(R.cost)}. A works finish adds a little extra draw.`
+    : `<b>In the shed:</b> the volunteer painting gang do it over ${R.weeks} weekends, ${money(R.cost)} for paint and transfers.`;
+  openModal(`Repaint ${l.number}`, `
+    <p class="sub" style="margin-top:0">${c.name}. Now in <b>${LIVERIES[cur].name}</b>${l.finish==="works"?" (works finish)":""}.</p>
+    ${img ? `<img class="lvprev" src="${img}" alt="${l.number} in ${L.name}">` : ""}
+    <div class="lvlist">${liveriesOf(l.cat).map(id=>`<label class="lvopt ${id===pick?"on":""}"><input type="radio" name="lv" ${id===pick?"checked":""} onchange="repaint.pick='${id}';renderRepaint()">
+      ${lvSwatch(id)}<span><b>${LIVERIES[id].name}</b>${id===cur?" <small>(now)</small>":""}<br><small>${LIVERIES[id].era} · crowd +${Math.round(LIVERIES[id].appeal*100)}%</small></span></label>`).join("")}</div>
+    <p style="font-size:.85rem">${where}</p>
+    ${blocked ? `<div class="event bad">${l.number} is ${blocked}, so it can't be painted now.</div>` : ""}
+    <div class="toolbar" style="margin-bottom:0">
+      <button class="act greenbtn" style="width:auto" ${blocked || same || state.cash < R.cost ? "disabled" : ""} onclick="doRepaint()">🎨 Repaint in ${L.name} · ${money(R.cost)}</button>
+    </div>`);
+}
+function doRepaint(){
+  const l = state.locos.find(x=>x.id===repaint.id), R = repaintCost(l, repaint.where);
+  if(isBusy(l) || onLine(l) || hirePending(l) || isAway(l) || state.cash < R.cost) return;
+  state.cash -= R.cost;
+  l.livery = repaint.pick; l.finish = repaint.where==="works" ? "works" : "shed";
+  l.busyUntil = state.week + R.weeks; l.busyWhy = "paint";
+  logEntry(`Repainted ${l.number} in ${LIVERIES[l.livery].name} (${repaint.where==="works" ? "at the works" : "in the shed"}).`, -R.cost);
+  closeModal(); repaint = null;
+  render();
+}
+
+function locoModel(key, livery){
+  const s0 = STEAM_MODELS[key]; if(s0){ const s = withLivery(s0, livery, true); return {kind:"steam", len:s.eng + (s.tend||0), col:s.col, mesh:()=>steamMesh(s)}; }
+  const d0 = DIESEL_MODELS[key]; if(d0){ const d = withLivery(d0, livery, false); return {kind:"diesel", len:d.len, col:d.col, mesh:()=>dieselMesh(d)}; }
   return {kind:"diesel", len:15.5, col:LV.brgreen, mesh:()=>dieselMesh({style:"cab", len:15.5, bogie:"Bo", col:LV.brgreen, yellow:"panel"})};
 }
 
@@ -3966,14 +4132,7 @@ function yDraw(){
   const vp = m4mul(m4persp((yd.cam && yd.cam.fov) || 1.2, cv.width/cv.height, 0.25, 900), m4look(eye, dir));
   gl.uniformMatrix4fv(YGL.vp, false, vp);
   gl.uniform3f(YGL.fog, .62,.76,.88);
-  const draw = (mesh, model)=>{
-    gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buf);
-    gl.enableVertexAttribArray(YGL.ap); gl.vertexAttribPointer(YGL.ap, 3, gl.FLOAT, false, 36, 0);
-    gl.enableVertexAttribArray(YGL.an); gl.vertexAttribPointer(YGL.an, 3, gl.FLOAT, false, 36, 12);
-    gl.enableVertexAttribArray(YGL.ac); gl.vertexAttribPointer(YGL.ac, 3, gl.FLOAT, false, 36, 24);
-    gl.uniformMatrix4fv(YGL.m, false, model);
-    gl.drawArrays(gl.TRIANGLES, 0, mesh.count);
-  };
+  const draw = glDraw;
   draw(YGL.scene, m4model(0,0,0));
   yd.all.forEach(v=>{ const q = vPose(v); draw(v.mesh, m4model(q.x, q.z, q.yaw + (v.flip ? Math.PI : 0))); });   // engines face the shunter
   // name boards over each vehicle
