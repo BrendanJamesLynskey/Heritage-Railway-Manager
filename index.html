@@ -495,6 +495,7 @@
         <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to marshal the first train: the laptop folds away and you're in the cab. Form the train on the Platform road in the order shown, using the headshunt and Sidings A and B. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the far vehicle. Buffer up gently (under 2 mph) to couple. A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
         <li><b>Each turn is one week.</b> Plan the weekend in the <b>Timetable</b> app, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week. The weekend then plays out live on the <b>Line Map</b>, all its days together in the time of one (change the speed there, or pause it). You can't start the next week until the last train is home, but you can carry on booking events, buying stock and recruiting while it runs. The takings arrive when the weekend ends.</li>
         <li><b>Timetabling:</b> every train is a round trip from Ravensgill Junction to Moorend and back, about two hours with turn-rounds. Give each loco a set of departure times. If a train isn't back in time, its next trip leaves late.</li>
+        <li><b>Double-heading:</b> press <b>🚂🚂 Double-head</b> on a diagram to couple a pilot engine on the front. The two engines' loads add together (a 4-coach and a 5-coach engine can take 9 coaches up the bank), so small engines can work long trains and climb faster. The crowd likes the sight, and a double-header counts as two engines for a gala, but it needs two crews, burns both engines' coal and wears both engines, and the train goes at the slower engine's pace.</li>
         <li><b>Single line:</b> trains can only pass at the loops (Lowerdale and Fellside, plus Brackenby and Highmoor Summit once built), and only one train may be on each single-line section. The train graph shows where trains are held. Each loop has one road for each direction (Moorend holds two trains), so too many trains with too few loops means trains are held and run late.</li>
         <li><b>Passengers</b> arrive through the day (mostly late morning and lunchtime) and take the next train. A gap of more than two hours loses them; a full train turns them away. Steam draws more people than diesel, and both draw more than a DMU.</li>
         <li><b>Visiting stock:</b> any event can bring visiting engines (up to 3) and visiting carriages (up to 2) on hire. For no gala at all, book <b>Visiting Engine Running Days</b>: ordinary running days with guests, on as many days as you like.</li>
@@ -898,21 +899,18 @@ function currentPlan(){
   state.tt.forEach((d, i)=>{
     const err = m => issues.push({i, msg:m});
     if(!d.deps.length) return;
-    let loco = null, lcat = null, kind = null, guest = false;
-    if(typeof d.loco==="string"){
-      lcat = catOf("guest", d.loco);
-      if(!lcat || !ev || !ev.guests.includes(d.loco)){ err("Guest engine is not on hire this week — diagram skipped."); return; }
-      kind = lcat.kind; guest = true;
-      loco = {id:d.loco, number:lcat.number, condition:0.92};
-    } else {
-      loco = state.locos.find(l=>l.id===d.loco);
-      if(!loco){ err("No locomotive chosen."); return; }
-      if(isBusy(loco)){ err(`${loco.number} is in the works until week ${woy(loco.busyUntil)} — diagram skipped.`); return; }
-      if(isAway(loco)){ err(`${loco.number} is away on hire to ${loco.hire.org} until week ${woy(loco.hire.until)} — diagram skipped.`); return; }
-      if(loco.condition<0.15){ err(`${loco.number} is too run-down to run: send it to the works.`); return; }
-      lcat = catOf("loco", loco.cat); kind = loco.kind;
-    }
+    const main = engineFor(d.loco, ev);
+    if(main.err){ err(main.err); return; }
+    let {loco, lcat, kind, guest} = main;
     if(usedLoco.has(String(d.loco))){ err(`${loco.number} is already working another diagram.`); return; }
+    // double-heading: a pilot engine coupled ahead of the train engine
+    let pilot = null;
+    if(d.pilot!=null && kind!=="dmu"){
+      pilot = engineFor(d.pilot, ev);
+      if(pilot.err){ err("Pilot: "+pilot.err); return; }
+      if(pilot.kind==="dmu"){ err("A DMU can't pilot a loco-hauled train."); return; }
+      if(String(d.pilot)===String(d.loco) || usedLoco.has(String(d.pilot))){ err(`${pilot.loco.number} is already working another diagram.`); return; }
+    }
     let rake = null, rcat = null, cars, cap, comfort, maxHaul;
     if(kind==="dmu"){
       cars = lcat.seats/70; cap = lcat.seats; comfort = 0.95; maxHaul = 99;
@@ -927,22 +925,55 @@ function currentPlan(){
         rcat = catOf("rake", rake.cat);
       }
       if(usedRake.has(String(d.rake))){ err(`The ${rcat.name} is already in another diagram.`); return; }
-      if(rcat.cars > lcat.maxHaul){ err(`${loco.number} can only take ${lcat.maxHaul} coaches up the bank; the ${rcat.name} has ${rcat.cars}.`); return; }
-      cars = rcat.cars; cap = rcat.capacity; comfort = rcat.comfort; maxHaul = lcat.maxHaul;
+      maxHaul = lcat.maxHaul + (pilot ? pilot.lcat.maxHaul : 0);   // two engines: their loads add up
+      if(rcat.cars > maxHaul){ err(pilot
+        ? `${pilot.loco.number} and ${loco.number} together can only take ${maxHaul} coaches up the bank; the ${rcat.name} has ${rcat.cars}.`
+        : `${loco.number} can only take ${lcat.maxHaul} coaches up the bank; the ${rcat.name} has ${rcat.cars}. Add a pilot engine to double-head it.`); return; }
+      cars = rcat.cars; cap = rcat.capacity; comfort = rcat.comfort;
       usedRake.add(String(d.rake));
     }
     usedLoco.add(String(d.loco));
-    let draw = lcat.draw;
+    if(pilot) usedLoco.add(String(d.pilot));
+    const crewOf = k => k==="steam"?3:2;
+    let draw = lcat.draw, pace = lcat.pace||1, runPerMile = lcat.runPerMile, reliability = lcat.reliability, condition = loco.condition;
+    let crew = crewOf(kind), boost = guest ? lcat.boost : 0;
+    if(pilot){
+      // the crowd comes for the better engine, and a double-header is a sight in itself;
+      // the train goes at the slower engine's pace, burns both engines' coal, and either can fail
+      draw = Math.max(draw, pilot.lcat.draw) + 0.08;
+      pace = Math.min(pace, pilot.lcat.pace||1);
+      runPerMile += pilot.lcat.runPerMile;
+      reliability = Math.min(reliability, pilot.lcat.reliability) * 0.92;
+      condition = Math.min(condition, pilot.loco.condition);
+      crew += crewOf(pilot.kind);
+      if(pilot.guest) boost += pilot.lcat.boost;
+      if(pilot.kind==="steam") kind = "steam";   // steam sets the turn-round: water and coal
+    }
     if(kind==="steam" && state.upgrades.turntable) draw += 0.03;
-    sets.push({diag:i, label:loco.number, colour:SET_COLOURS[i%SET_COLOURS.length], kind, guest,
-      loco, rake, lcat, rcat, cars, maxHaul, cap, comfort, draw, pace:lcat.pace||1,
-      runPerMile:lcat.runPerMile, reliability:lcat.reliability, condition:loco.condition,
-      crew: kind==="steam"?3:2, deps:[...d.deps].sort((a,b)=>a-b)});
+    sets.push({diag:i, label:pilot ? `${pilot.loco.number}+${loco.number}` : loco.number, colour:SET_COLOURS[i%SET_COLOURS.length], kind,
+      guest: guest || !!(pilot && pilot.guest), boost, engines: pilot ? [main.kind, pilot.kind] : [kind],
+      loco, lcat, pilot: pilot ? pilot.loco : null, pcat: pilot ? pilot.lcat : null, pilotGuest: !!(pilot && pilot.guest), trainGuest: guest,
+      rake, rcat, cars, maxHaul, cap, comfort, draw, pace,
+      runPerMile, reliability, condition, crew, deps:[...d.deps].sort((a,b)=>a-b)});
   });
   const kinds = {steam:0, diesel:0, dmu:0};
-  sets.forEach(s=>kinds[s.kind]++);
+  sets.forEach(s=>s.engines.forEach(k=>kinds[k]++));   // a double-header counts both engines
   const volNeed = sets.length ? 8 + sets.reduce((a,s)=>a+s.crew,0) + (def?def.staff:0) : 0;
   return {ev, def, sets, issues, kinds, volNeed, volAvail: volunteersAvailable()};
+}
+// Look up a diagram's engine (one of ours by id, or a guest by key) and check it can run.
+function engineFor(ref, ev){
+  if(typeof ref==="string"){
+    const lcat = catOf("guest", ref);
+    if(!lcat || !ev || !ev.guests.includes(ref)) return {err:"Guest engine is not on hire this week — diagram skipped."};
+    return {loco:{id:ref, number:lcat.number, condition:0.92}, lcat, kind:lcat.kind, guest:true};
+  }
+  const loco = state.locos.find(l=>l.id===ref);
+  if(!loco) return {err:"No locomotive chosen."};
+  if(isBusy(loco)) return {err:`${loco.number} is in the works until week ${woy(loco.busyUntil)} — diagram skipped.`};
+  if(isAway(loco)) return {err:`${loco.number} is away on hire to ${loco.hire.org} until week ${woy(loco.hire.until)} — diagram skipped.`};
+  if(loco.condition<0.15) return {err:`${loco.number} is too run-down to run: send it to the works.`};
+  return {loco, lcat:catOf("loco", loco.cat), kind:loco.kind, guest:false};
 }
 function volunteersAvailable(){
   return Math.floor(state.vol.count * 0.55 * (0.55 + 0.45*state.vol.morale));
@@ -1076,14 +1107,14 @@ function dayDemand(plan, noise){
         m = 1.1;
         notes.push({cls:"bad", text:`😠 <b>A gala with only ${n} ${def.need.kind} engine${n===1?"":"s"}.</b> Visitors were promised at least ${def.need.n}. Many went home early.`});
       } else {
-        const boost = plan.sets.filter(s=>s.guest).reduce((a,s)=>a+s.lcat.boost,0);
+        const boost = plan.sets.reduce((a,s)=>a+s.boost,0);
         m = def.demand * (1 + 0.1*(Math.min(n,7)-def.need.n)) * (1+boost);
         const trips = plan.sets.reduce((a,s)=>a+s.deps.length,0);
         m *= 0.6 + 0.4*Math.min(1, trips/10);          // a gala needs an intensive service
       }
     }
     if(!def.need){
-      const boost = plan.sets.filter(s=>s.guest).reduce((a,s)=>a+s.lcat.boost,0)*0.6;
+      const boost = plan.sets.reduce((a,s)=>a+s.boost,0)*0.6;
       m *= 1 + boost;
     }
     const rboost = plan.sets.filter(s=>s.rcat && s.rcat.fee).reduce((a,s)=>a+s.rcat.boost,0);
@@ -1163,7 +1194,7 @@ function evaluateDay(plan, sim, noise){
 // (speeded-up) real time. The books are settled only when the last train is home,
 // so the player can carry on booking events and buying stock while it runs.
 let live = null;   // the weekend in progress: {plan, report, mk, day, t0, endT}
-function onLine(item){ return !!live && live.plan.sets.some(s=>s.loco===item || s.rake===item); }
+function onLine(item){ return !!live && live.plan.sets.some(s=>s.loco===item || s.pilot===item || s.rake===item); }
 function advanceWeek(opt={}){
   if(state.over || live) return;
   const plan = currentPlan();
@@ -1254,10 +1285,12 @@ function settleWeek(plan, report, mk){
       // wear on the stock that ran
       plan.sets.forEach(s=>{
         const miles = sim.trips.filter(t=>t.set===s && !t.cancelled).length * LINE_MILES * 2;
-        if(!s.guest){
-          const lw = miles/2600 * s.lcat.wear * (s.kind==="steam"?1.25:1) * (1 + 0.3*Math.min(1,s.cars/s.maxHaul));
-          s.loco.condition = Math.max(0.03, s.loco.condition - lw - (sim.trips.some(t=>t.set===s && t.failed)?0.1:0));
-        }
+        const failed = sim.trips.some(t=>t.set===s && t.failed);
+        const wearOn = (loco, cat, guest, k) => { if(guest) return;
+          const lw = miles/2600 * cat.wear * (k==="steam"?1.25:1) * (1 + 0.3*Math.min(1,s.cars/s.maxHaul));
+          loco.condition = Math.max(0.03, loco.condition - lw - (failed?0.1:0)); };
+        wearOn(s.loco, s.lcat, s.trainGuest, s.loco.kind);
+        if(s.pilot) wearOn(s.pilot, s.pcat, s.pilotGuest, s.pilot.kind);
         if(s.rake) s.rake.condition = Math.max(0.05, s.rake.condition - miles/5200*(state.upgrades.cshed?0.5:1));
       });
     }
@@ -1285,6 +1318,7 @@ function settleWeek(plan, report, mk){
     }
     delete state.events[state.week];
     state.tt = state.tt.filter(d=>typeof d.loco!=="string");   // guest engines go home
+    state.tt.forEach(d=>{ if(typeof d.pilot==="string") d.pilot = null; });
     state.tt.forEach(d=>{ if(typeof d.rake==="string") d.rake = null; });
   }
   // fixed costs
@@ -1380,20 +1414,22 @@ function render(){
   save();
 }
 
-function stockOptions(d){
-  const ev = eventThisWeek();
+function stockOptions(d, field="loco"){
+  const ev = eventThisWeek(), cur = d[field], pilot = field==="pilot";
   let html = `<option value="">— choose —</option>`;
   state.locos.forEach(l=>{
+    if(pilot && l.kind==="dmu") return;
     const note = isBusy(l) ? " (in works)" : isAway(l) ? " (on hire)" : l.condition<0.15 ? " (worn out)" : "";
-    html += `<option value="${l.id}" ${d.loco===l.id?"selected":""}>${l.number} · ${catOf("loco",l.cat).name}${note}</option>`;
+    const c = catOf("loco",l.cat);
+    html += `<option value="${l.id}" ${cur===l.id?"selected":""}>${l.number} · ${c.name}${pilot?` · ${c.maxHaul} coaches`:""}${note}</option>`;
   });
   if(ev) ev.guests.forEach(k=>{
     const g = catOf("guest",k);
-    html += `<option value="${k}" ${d.loco===k?"selected":""}>★ ${g.number} · ${g.name} (guest)</option>`;
+    html += `<option value="${k}" ${cur===k?"selected":""}>★ ${g.number} · ${g.name}${pilot?` · ${g.maxHaul} coaches`:""} (guest)</option>`;
   });
-  if(typeof d.loco==="string" && !(ev && ev.guests.includes(d.loco))){
-    const g = catOf("guest",d.loco);
-    html += `<option value="${d.loco}" selected>★ ${g?g.number:"guest"} (not on hire)</option>`;
+  if(typeof cur==="string" && !(ev && ev.guests.includes(cur))){
+    const g = catOf("guest",cur);
+    html += `<option value="${cur}" selected>★ ${g?g.number:"guest"} (not on hire)</option>`;
   }
   return html;
 }
@@ -1463,12 +1499,16 @@ function renderTimetable(){
       <h3>Diagram ${String.fromCharCode(65+i)} ${kind?kindBadge(kind):""} ${typeof d.loco==="string"?`<span class="badge b-guest">guest</span>`:""}
         <button class="act small warnbtn" style="margin-left:auto" onclick="removeDiagram(${i})">Delete</button></h3>
       <div class="row"><span>Loco</span><select class="sel" style="flex:1" onchange="setDiagLoco(${i}, this.value)">${stockOptions(d)}</select></div>
+      ${kind && kind!=="dmu" ? (d.pilot!==undefined
+        ? `<div class="row"><span>Pilot</span><select class="sel" style="flex:1;min-width:0" onchange="setDiagPilot(${i}, this.value)">${stockOptions(d,"pilot")}</select>
+            <button class="act small" onclick="setDiagPilot(${i}, null)" title="Run with one engine">×</button></div>`
+        : `<div class="row"><span></span><button class="act small" onclick="setDiagPilot(${i}, '')" title="Couple a second engine on the front: their loads add up">🚂🚂 Double-head</button></div>`) : ""}
       ${kind==="dmu" ? `<div class="row"><span>Stock</span><i class="sub" style="margin:0">Self-propelled: no carriages needed</i></div>`
         : `<div class="row"><span>Coaches</span><select class="sel" style="flex:1" onchange="setDiagRake(${i}, this.value)">${rakeOptions(d)}</select></div>`}
       <div class="deps">${chips || `<span class="sub" style="margin:0">No departures: this diagram won't run.</span>`}</div>
       <div class="row"><span>Add</span><select class="sel" id="add-${i}">${DEP_TIMES.map(m=>`<option value="${m}">${fmtT(m)}</option>`).join("")}</select>
         <button class="act small" onclick="addDep(${i})">+ Departure</button></div>
-      ${round?`<div class="sub" style="margin:4px 0 0">Round trip about ${Math.floor(round/60)} h ${String(Math.round(round%60)).padStart(2,"0")} min, then ${turnHome(set)} min at Ravensgill · ${set.cap} seats · ${set.crew} crew</div>`:""}
+      ${round?`<div class="sub" style="margin:4px 0 0">Round trip about ${Math.floor(round/60)} h ${String(Math.round(round%60)).padStart(2,"0")} min, then ${turnHome(set)} min at Ravensgill · ${set.cap} seats · ${set.crew} crew${set.pilot?` · double-headed: up to ${set.maxHaul} coaches`:""}</div>`:""}
       ${iss}
     </div>`;
   }).join("") + `<div class="card" style="display:flex;align-items:center;justify-content:center;min-height:120px">
@@ -1721,7 +1761,14 @@ function removeDiagram(i){ state.tt.splice(i,1); render(); }
 function setDiagLoco(i, v){
   const d = state.tt[i];
   d.loco = v==="" ? null : (/^\d+$/.test(v) ? parseInt(v,10) : v);
-  if(diagKind(d)==="dmu") d.rake = null;
+  if(diagKind(d)==="dmu"){ d.rake = null; delete d.pilot; }
+  render();
+}
+// v: null = back to one engine, "" = double-head (pilot not yet chosen), else the pilot's id/key
+function setDiagPilot(i, v){
+  const d = state.tt[i];
+  if(v===null) delete d.pilot;
+  else d.pilot = v==="" ? null : (/^\d+$/.test(v) ? parseInt(v,10) : v);
   render();
 }
 function setDiagRake(i, v){ state.tt[i].rake = v==="" ? null : (/^\d+$/.test(v) ? parseInt(v,10) : v); render(); }
@@ -1816,7 +1863,7 @@ function sellItem(kind,id){
   const item = arr[i]; const v = sellValue(kind,item);
   if(!confirm(`Sell ${item.number||catOf(kind,item.cat).name} for ${money(v)}?`)) return;
   state.cash += v; arr.splice(i,1);
-  state.tt.forEach(d=>{ if(kind==="loco" && d.loco===id) d.loco=null; if(kind==="rake" && d.rake===id) d.rake=null; });
+  state.tt.forEach(d=>{ if(kind==="loco" && d.loco===id) d.loco=null; if(kind==="loco" && d.pilot===id) d.pilot=null; if(kind==="rake" && d.rake===id) d.rake=null; });
   logEntry(`Sold ${item.number||catOf(kind,item.cat).name}.`, v);
   render();
 }
@@ -1924,7 +1971,7 @@ function cancelEvent(w){
   const ev = state.events[w]; if(!ev || (live && w===state.week)) return;
   if(!confirm(`Cancel the ${EVENTS[ev.type].name}? The ${money(ev.deposit)} deposit is lost.`)) return;
   delete state.events[w];
-  state.tt.forEach(d=>{ if(w===state.week){ if(typeof d.loco==="string") d.loco = null; if(typeof d.rake==="string") d.rake = null; } });
+  state.tt.forEach(d=>{ if(w===state.week){ if(typeof d.loco==="string") d.loco = null; if(typeof d.pilot==="string") d.pilot = null; if(typeof d.rake==="string") d.rake = null; } });
   logEntry(`Cancelled the ${EVENTS[ev.type].name} (week ${woy(w)}).`, 0);
   render();
 }
@@ -2718,7 +2765,7 @@ function shuntJob(plan){
   const coaches = [coach(types[0]), coach(types[1]), coach(types[2])];
   const target = [...coaches, loco];                     // from the buffer stops out to the points
   const spares = [coach(types[3]), {type:"van", label:"Brake van", len:8, col:[.38,.29,.22]}];
-  const other = state.locos.find(l=>l.kind!=="dmu" && !plan.sets.some(x=>x.loco===l) && !isAway(l));
+  const other = state.locos.find(l=>l.kind!=="dmu" && !plan.sets.some(x=>x.loco===l || x.pilot===l) && !isAway(l));
   spares.push(other ? {type:other.kind, label:other.number, len:other.kind==="steam"?14:17, col:locoLivery(other.cat, other.kind), key:other.cat}
                     : {type:"coach", label:`BG ${num()}`, len:18, col:liv[0], win:liv[0]});
   return {train:`${fmtT(set.deps[0])} ${set.label}`, time:fmtT(set.deps[0]), set:set.label, target, spares};

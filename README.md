@@ -112,7 +112,11 @@ works, and the takings and the week report arrive when the weekend ends.
    locomotive (and its carriage set) with a list of departure times. The
    quick-pattern buttons build an even-interval service for you, testing
    different intervals in the simulator and keeping the one that gets the
-   most trains round on time.
+   most trains round on time. Press **Double-head** on a diagram to add a
+   pilot engine: the two engines' loads add together (a 4-coach and a 5-coach
+   engine can take 9 coaches up the bank), with a small draw bonus and a
+   double-header counting as two engines for galas. The costs: two crews, both
+   engines' coal and wear, and the slower engine's pace.
 2. **Single-line working.** Only one train may be on each single-line
    section, and trains can pass only at the loops. Each loop has one road for
    each direction, so the line never locks solid, but too many trains for
