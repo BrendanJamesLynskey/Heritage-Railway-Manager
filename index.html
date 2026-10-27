@@ -60,6 +60,7 @@
   .dicon:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.2)}
   .dicon.sel,.dicon:focus-visible{background:rgba(120,170,255,.35);border-color:rgba(170,200,255,.75);outline:none}
   .dicon .di{font-size:2.1rem;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.55));position:relative}
+  .appico{display:block;flex:0 0 auto}
   .nbadge{position:absolute;top:-5px;right:-11px;background:#d13438;color:#fff;font:700 .62rem/16px "Segoe UI",sans-serif;min-width:16px;height:16px;border-radius:8px;padding:0 4px;text-align:center;font-style:normal;text-shadow:none}
   .nbadge:empty{display:none}
   .gadget{position:absolute;top:12px;right:12px;width:340px;background:rgba(251,247,238,.94);border-radius:10px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.6);user-select:text}
@@ -123,7 +124,7 @@
   .sm-head small{display:block;font-size:.62rem;letter-spacing:1.5px;text-transform:uppercase;opacity:.65}
   .sm-app{display:flex;gap:10px;align-items:center;width:100%;background:none;border:none;color:#fff;padding:7px 10px;border-radius:6px;font-size:.85rem;cursor:pointer;text-align:left}
   .sm-app:hover{background:rgba(255,255,255,.1)}
-  .sm-app .di{font-size:1.2rem;width:26px;text-align:center}
+  .sm-app .di{font-size:1.2rem;width:26px;text-align:center;display:flex;justify-content:center}
   .sm-sep{border-top:1px solid rgba(255,255,255,.12);margin:6px 0}
   .sm-about{font-size:.66rem;opacity:.55;margin:8px 6px 0;line-height:1.4}
   .toast{position:absolute;right:12px;bottom:60px;width:310px;max-width:calc(100% - 24px);background:rgba(26,34,42,.98);color:#fff;border-radius:8px;padding:12px 14px;
@@ -2474,6 +2475,47 @@ const APPS = [
   {id:"log",       name:"Ledger",               icon:"📒"},
   {id:"help",      name:"How to Play",          icon:"❓"}
 ];
+// Each app's emblem: an enamel plaque in a pre-grouping or BR colour with a cream pictogram.
+// g(bg) draws inside a 48-unit square; bg is passed in for cut-outs.
+const CREAM = "#f4ead2";
+const APP_EMBLEM = {
+  tt:{bg:"#0f5132", g:bg=>`<rect x="12" y="10" width="24" height="28" rx="2"/><path d="M12 17h24M20 17v21" stroke-width="2"/>
+      <path d="M24 23h8M24 28h8M24 33h8M15 23h2M15 28h2M15 33h2" stroke-width="2"/>`},
+  map:{bg:"#12395f", g:bg=>`<path d="M10 35 C17 35 15 23 22 23 S29 31 37 14" stroke-width="3"/>
+      <circle cx="10" cy="35" r="3.2" fill="${CREAM}"/><circle cx="22" cy="23" r="3" fill="${bg}"/><circle cx="37" cy="14" r="3.2" fill="${CREAM}"/>`},
+  events:{bg:"#5b2a6e", g:bg=>`<path d="M7 13 Q24 21 41 13" stroke-width="1.8"/>
+      <path d="M10 14.6 L17 17.2 L13 24Z M20.5 18.2 L27.5 18.2 L24 25.5Z M31 17.2 L38 14.6 L35 24Z" fill="${CREAM}" stroke-width="1"/>
+      <path d="M11 38 L24 27 L37 38Z" /><path d="M24 27v11" stroke-width="2"/>`},
+  mail:{bg:"#a3262b", g:bg=>`<rect x="9" y="14" width="30" height="21" rx="2"/><path d="M9.5 15 L24 26.5 L38.5 15"/><path d="M9.5 34.5 L20 25M38.5 34.5 L28 25" stroke-width="1.8"/>`},
+  depot:{bg:"#5b4632", g:bg=>`<path d="M9 38V21L24 11L39 21V38"/><path d="M17 38V29a7 7 0 0 1 14 0v9"/><path d="M21.5 31v7M26.5 31v7" stroke-width="1.6"/>
+      <rect x="21" y="9" width="6" height="4" fill="${CREAM}" stroke-width="1"/><path d="M6 38h36" stroke-width="2"/>`},
+  power:{bg:"#1d1d1f", g:bg=>`<g fill="${CREAM}" stroke="none"><rect x="8" y="15" width="9" height="15" rx="1"/><rect x="16" y="19.5" width="17" height="10" rx="2"/>
+      <rect x="28" y="14" width="4" height="6"/><rect x="21" y="16.5" width="4" height="3.5" rx="1.5"/><rect x="33" y="23" width="4" height="6.5" rx=".5"/></g>
+      <rect x="10.5" y="18" width="4" height="4" fill="${bg}" stroke="none"/><path d="M7 30.5h31" stroke="#c8343a" stroke-width="1.6"/>
+      <circle cx="15" cy="34" r="3.6"/><circle cx="24" cy="34" r="3.6"/><circle cx="32.5" cy="35" r="2.4" stroke-width="2"/>`},
+  carriages:{bg:"#6e1f24", g:bg=>`<path d="M8 19 Q8 15 12 15 H36 Q40 15 40 19 V30 H8Z" fill="${CREAM}" stroke="none"/>
+      <g fill="${bg}" stroke="none"><rect x="11" y="18.5" width="5" height="5" rx="1"/><rect x="18.5" y="18.5" width="5" height="5" rx="1"/><rect x="26" y="18.5" width="5" height="5" rx="1"/><rect x="33" y="18.5" width="4" height="8" rx="1"/></g>
+      <path d="M8 26.5h24" stroke="${bg}" stroke-width="1.2"/><g fill="${CREAM}" stroke="none"><circle cx="13" cy="33" r="2.4"/><circle cx="18.5" cy="33" r="2.4"/><circle cx="29.5" cy="33" r="2.4"/><circle cx="35" cy="33" r="2.4"/></g>
+      <path d="M6 36.5h36" stroke-width="1.8"/>`},
+  works:{bg:"#7a5a12", g:bg=>`<path d="M14 34 L29 19" stroke-width="5.5"/><circle cx="32.5" cy="15.5" r="6.5" fill="${CREAM}" stroke="none"/>
+      <rect x="32" y="9" width="5" height="8" fill="${bg}" stroke="none" transform="rotate(45 34.5 13)"/>
+      <circle cx="13" cy="35" r="4.6" fill="${CREAM}" stroke="none"/><circle cx="13" cy="35" r="1.9" fill="${bg}" stroke="none"/>`},
+  railway:{bg:"#24533f", g:bg=>`<circle cx="24" cy="22" r="5.6" fill="${CREAM}" stroke="none"/><path d="M12.5 39 C12.5 31 17.5 29 24 29 S35.5 31 35.5 39Z" fill="${CREAM}" stroke="none"/>
+      <path d="M17.5 18 Q18 11.5 24 11.5 Q30 11.5 30.5 18Z" fill="${bg}" stroke-width="1.6"/><path d="M16 18.3h16.5" stroke-width="2"/><circle cx="24" cy="15" r="1.2" fill="${CREAM}" stroke="none"/>
+      <path d="M24 29l-2.2 4.5L24 39l2.2-5.5Z" fill="${bg}" stroke="none"/>`},
+  log:{bg:"#2e3560", g:bg=>`<path d="M24 15C20 12 14 12 9 14V35C14 33 20 33 24 36Z M24 15C28 12 34 12 39 14V35C34 33 28 33 24 36Z" stroke-width="2.2"/>
+      <path d="M13 19h7M13 23h7M13 27h7" stroke-width="1.6"/><text x="31.5" y="30" font-family="Georgia,serif" font-size="13" font-weight="700" text-anchor="middle" fill="${CREAM}" stroke="none">£</text>`},
+  help:{bg:"#454b55", g:bg=>`<circle cx="24" cy="24" r="13"/><text x="24" y="31" font-family="Georgia,serif" font-size="21" font-weight="700" text-anchor="middle" fill="${CREAM}" stroke="none">?</text>`}
+};
+function appIcon(id, px){
+  const e = APP_EMBLEM[id]; if(!e) return "";
+  return `<svg class="appico" viewBox="0 0 48 48" width="${px}" height="${px}" aria-hidden="true">
+    <rect x="1.5" y="1.5" width="45" height="45" rx="10" fill="${e.bg}"/>
+    <defs><linearGradient id="appico-sheen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient></defs>
+    <rect x="1.5" y="1.5" width="45" height="45" rx="10" fill="url(#appico-sheen)"/>
+    <rect x="4.5" y="4.5" width="39" height="39" rx="7.5" fill="none" stroke="${CREAM}" stroke-width="1.3" opacity=".75"/>
+    <g fill="none" stroke="${CREAM}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">${e.g(e.bg)}</g></svg>`;
+}
 const wm = {z:10, open:{}, active:null, n:0};   // open: id -> {min, max}
 const desk = () => document.getElementById("desktop");
 const narrowDesk = () => desk().clientWidth < 720;
@@ -2500,7 +2542,7 @@ function wallpaper(){
 function buildDesktop(){
   wallpaper();
   const icons = document.getElementById("icons");
-  icons.innerHTML = APPS.map(a=>`<button class="dicon" data-app="${a.id}" title="Double-click to open ${a.name}"><span class="di">${a.icon}${a.id==="mail"?`<i class="nbadge" data-badge></i>`:""}</span><span>${a.name}</span></button>`).join("");
+  icons.innerHTML = APPS.map(a=>`<button class="dicon" data-app="${a.id}" title="Double-click to open ${a.name}"><span class="di">${appIcon(a.id, 46)}${a.id==="mail"?`<i class="nbadge" data-badge></i>`:""}</span><span>${a.name}</span></button>`).join("");
   icons.querySelectorAll(".dicon").forEach(b=>{
     const id = b.dataset.app;
     b.addEventListener("click", e=>{ icons.querySelectorAll(".dicon").forEach(x=>x.classList.toggle("sel", x===b)); e.stopPropagation(); });
@@ -2513,7 +2555,7 @@ function buildDesktop(){
   APPS.forEach(a=>{
     const w = document.createElement("div");
     w.className = "win"; w.id = "w-"+a.id; w.hidden = true;
-    w.innerHTML = `<div class="win-title"><span>${a.icon}</span><span class="wt">${a.name}</span><span class="wbtns">
+    w.innerHTML = `<div class="win-title">${appIcon(a.id, 20)}<span class="wt">${a.name}</span><span class="wbtns">
       <button class="wb-min" title="Minimise">─</button><button class="wb-max" title="Maximise">▢</button><button class="wb-close" title="Close">✕</button></span></div><div class="win-body"></div>`;
     w.querySelector(".win-body").appendChild(document.getElementById("v-"+a.id));
     holder.appendChild(w);
@@ -2589,7 +2631,7 @@ function maximiseApp(id){
 function drawTaskbar(){
   document.getElementById("tasks").innerHTML = APPS.filter(a=>wm.open[a.id]).map(a=>{
     const on = wm.active===a.id && !wm.open[a.id].min;
-    return `<button class="task ${on?"on":""}" onclick="taskClick('${a.id}')" title="${a.name}"><span>${a.icon}</span><span class="tn">${a.name}</span>${a.id==="mail"?`<i class="nbadge" data-badge></i>`:""}</button>`;
+    return `<button class="task ${on?"on":""}" onclick="taskClick('${a.id}')" title="${a.name}">${appIcon(a.id, 24)}<span class="tn">${a.name}</span>${a.id==="mail"?`<i class="nbadge" data-badge></i>`:""}</button>`;
   }).join("");
   drawBadges();
 }
@@ -2601,7 +2643,7 @@ function toggleStart(on){
   const show = on===undefined ? m.hidden : on;
   if(show){
     m.innerHTML = `<div class="sm-head"><span class="totem">R&amp;H</span><div><b>Heritage Railway Manager</b><small>Ravensgill &amp; Highmoor Railway</small></div></div>
-      ${APPS.map(a=>`<button class="sm-app" onclick="openApp('${a.id}')"><span class="di">${a.icon}</span>${a.name}</button>`).join("")}
+      ${APPS.map(a=>`<button class="sm-app" onclick="openApp('${a.id}')"><span class="di">${appIcon(a.id, 24)}</span>${a.name}</button>`).join("")}
       <div class="sm-sep"></div>
       <button class="sm-app" onclick="toggleStart(false);openSaveDialog()"><span class="di">💾</span>Save / Load</button>
       <button class="sm-app" onclick="toggleStart(false);startAgain()"><span class="di">🆕</span>New Game</button>
