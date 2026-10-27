@@ -537,7 +537,7 @@
         <li><b>Timetabling:</b> every train is a round trip from Ravensgill Junction to Moorend and back, about two hours with turn-rounds. Give each loco a set of departure times. If a train isn't back in time, its next trip leaves late.</li>
         <li><b>The printed timetable:</b> the Up and Down tables at the top of the Timetable app are the public timetable, a column for each train. The times are worked out by the signallers' plan, so a train held at a loop shows its real, later time. <b>|</b> means the train runs through without stopping.</li>
         <li><b>Shuttles and non-stop trains:</b> each train working has a row of stations it calls at. Untick a station in the middle and the train runs straight through it: quicker, but nobody can get on there. Untick the ends to make a shuttle, say Fellside–Moorend: it can only start and turn back at a passing loop (⇄), runs out empty from the shed in the morning and back at night, and its shorter rides sell cheaper tickets. Each station's passengers wait for a train that calls there; most people join at Ravensgill, where the car park is.</li>
-        <li><b>Liveries:</b> every engine comes in a real livery its class carried, and can be repainted in any other it really wore: BR lined black, LNER apple green, LMS crimson lake, garter blue, BR blue, large logo, Railfreight, InterCity and more. Repaint in the <b>Ravensgill Shed</b> (volunteers, cheaper, two weeks) or at the <b>Works</b> (a contract paint shop, dearer, one week, with a lined works finish that draws a little more). Historic and famous liveries bring more visitors; the repaint window shows the engine in each one.</li>
+        <li><b>Liveries:</b> every engine comes in a real livery its class carried, and can be repainted in any other it really wore: BR lined black, LNER apple green, LMS crimson lake, garter blue, BR blue, large logo, Railfreight, InterCity and more. Repaint in the <b>Ravensgill Shed</b> (volunteers, cheaper, two weeks) or at the <b>Works</b> (a contract paint shop, dearer, one week, with a lined works finish that draws a little more). Historic and famous liveries bring more visitors; the repaint window shows the engine in each one. DMUs can be repainted too, and visiting engines come in their owners' liveries.</li>
         <li><b>Double-heading:</b> press <b>🚂🚂 Double-head</b> on a diagram to couple a pilot engine on the front. The two engines' loads add together (a 4-coach and a 5-coach engine can take 9 coaches up the bank), so small engines can work long trains and climb faster. The crowd likes the sight, and a double-header counts as two engines for a gala, but it needs two crews, burns both engines' coal and wears both engines, and the train goes at the slower engine's pace.</li>
         <li><b>Single line:</b> trains can only pass at the loops (Lowerdale and Fellside, plus Brackenby and Highmoor Summit once built), and only one train may be on each single-line section. The train graph shows where trains are held. Each loop has one road for each direction (Moorend holds two trains), so too many trains with too few loops means trains are held and run late.</li>
         <li><b>Passengers</b> arrive through the day (mostly late morning and lunchtime) and take the next train. A gap of more than two hours loses them; a full train turns them away. Steam draws more people than diesel, and both draw more than a DMU.</li>
@@ -2099,7 +2099,7 @@ function drawBooking(){
     const list = GUESTS.filter(g=>kind==="any" || g.kind===kind).sort((a,b)=>(a.kind!=="steam")-(b.kind!=="steam") || b.fee-a.fee);
     html += `<h4 style="margin:12px 0 4px;color:var(--br-blue)">Hire visiting engines (up to 3)</h4>`;
     html += list.map(g=>`<label class="chk"><input type="checkbox" ${booking.guests.includes(g.key)?"checked":""} onchange="toggleGuest('${g.key}')">
-      <span>${kindBadge(g.kind)} <b>${g.number} ${g.name}</b> — hire ${money(g.fee)} · draw ${g.draw.toFixed(2)}× · crowd +${Math.round(g.boost*(gala?100:60))}% · ${g.maxHaul} coaches</span></label>`).join("");
+      <span>${kindBadge(g.kind)} <b>${g.number} ${g.name}</b> — hire ${money(g.fee)} · draw ${g.draw.toFixed(2)}× · crowd +${Math.round(g.boost*(gala?100:60))}% · ${g.maxHaul} coaches${liveriesOf(g.key).length ? `<br><span class="lvrow" style="margin:2px 0 0">${lvSwatch(liveriesOf(g.key)[0])}<i class="sub" style="margin:0">visiting in ${LIVERIES[liveriesOf(g.key)[0]].name}</i></span>` : ""}</span></label>`).join("");
     html += `<h4 style="margin:12px 0 4px;color:var(--br-blue)">Hire visiting carriages (up to 2)</h4>`;
     html += VISITING_RAKES.map(r=>`<label class="chk"><input type="checkbox" ${booking.rakes.includes(r.key)?"checked":""} onchange="toggleVRake('${r.key}')">
       <span><b>${r.name}</b> — hire ${money(r.fee)} · ${r.capacity} seats · ${r.cars} coaches · comfort ${r.comfort.toFixed(2)}×${r.boost?` · crowd +${Math.round(r.boost*100)}%`:""}${r.vintage?" · vintage":""}<br><i class="sub">${r.blurb}</i></span></label>`).join("");
@@ -2970,7 +2970,7 @@ function shuntJob(plan){
   if(set.pilot) need.push(engine(set.pcat.key, set.pilot.number, set.pcat.name, set.pilotGuest ? null : liveryOf(set.pilot)));
   need.forEach(v=>v.need = true);
   // the rest of the fleet is on shed too
-  const decoys = shuffle(state.locos.filter(l=>l.kind!=="dmu" && l!==set.loco && l!==set.pilot && !isAway(l))).slice(0, 4)
+  const decoys = shuffle(state.locos.filter(l=>l!==set.loco && l!==set.pilot && !isAway(l))).slice(0, 4)
     .map(l=>engine(l.cat, l.number, catOf("loco", l.cat).name, liveryOf(l)));
   return {train:`${fmtT(set.deps[0])} ${set.label}`, time:fmtT(set.deps[0]), set:set.label,
           coaches:[coach(types[0]), coach(types[1]), coach(types[2])], need, decoys};
@@ -3312,7 +3312,7 @@ function vehicleMesh(v){
     box(a, 0,1.0,0, 2.2,0.5,L-0.4, dark); box(a, 0,2.25,-0.6, 2.5,2.0,L-2.6, v.col); box(a, 0,3.35,-0.2, 2.6,0.2,L-1.4, [.3,.3,.3]);
     for(const z of [-L*0.3, L*0.3]) box(a, 0,0.75,z, 0.3,1.0,1.0, dark);
     for(const z of [-h, h]) box(a, 0,1.15,z-Math.sign(z)*0.15, 2.4,0.35,0.3, red);
-  } else if(v.type==="steam" || v.type==="diesel"){
+  } else if(v.type==="steam" || v.type==="diesel" || v.type==="dmu"){
     return locoModel(v.key, v.livery).mesh();
   }
   return a;
@@ -3506,7 +3506,18 @@ const LIVERIES = {
   dDelticGreen:{name:"Two-tone green, lime band", era:"The Deltics as built, 1961–67", appeal:0.06, set:{col:LV.brgreen, col2:LV.lime, band2:2.45, yellow:"panel"}},
   dHymek:      {name:"BR two-tone green, white surrounds", era:"The Hymeks as built, 1961–67", appeal:0.05, set:{col:LV.brgreen, col2:LV.ltgreen, band2:2.45, rim:[.9,.9,.86], yellow:"panel"}},
   d08Green:    {name:"BR green, wasp ends", era:"Shunters in BR green with black and yellow ends", appeal:0.03, set:{col:LV.brgreen, yellow:"wasp"}},
-  d08Blue:     {name:"BR blue, wasp ends", era:"Shunters in BR blue, 1967–90s", appeal:0.02, set:{col:LV.railblue, yellow:"wasp"}}
+  d08Blue:     {name:"BR blue, wasp ends", era:"Shunters in BR blue, 1967–90s", appeal:0.02, set:{col:LV.railblue, yellow:"wasp"}},
+  // diesel multiple units
+  dmuGreen:    {name:"BR green, cat's whiskers", era:"As built, 1956–62: cream lining and yellow whiskers on the cab", appeal:0.05, set:{col:LV.brgreen, yellow:"whiskers", lining:LV.cream}},
+  dmuGreenPanel:{name:"BR green, yellow panel", era:"BR green with a small warning panel, 1962–67", appeal:0.04, set:{col:LV.brgreen, yellow:"panel", lining:LV.cream}},
+  dmuBlue:     {name:"BR blue", era:"All-over rail blue, full yellow ends, 1967–80", appeal:0.01, set:{col:LV.railblue, yellow:"full"}},
+  dmuBlueGrey: {name:"BR blue and grey", era:"Refurbished units, 1975–90: blue with a grey window band", appeal:0.02, set:{col:LV.railblue, upper:[.82,.83,.82], yellow:"full"}},
+  dmuWhite:    {name:"BR white, blue stripe", era:"The refurbishment livery, 1975–80", appeal:0.03, set:{col:[.92,.92,.9], stripe:LV.railblue, stripeH:0.14, yellow:"full"}},
+  dmuRegional: {name:"Regional Railways", era:"Light grey with blue bands, 1990–97", appeal:0.02, set:{col:[.18,.22,.45], upper:[.84,.86,.88], stripe:[.45,.65,.9], stripeH:0.08, yellow:"full"}},
+  dmuNSE:      {name:"Network SouthEast", era:"Blue, white, red and grey, 1986–94", appeal:0.02, set:{col:[.62,.64,.66], upper:[.14,.2,.5], stripe:[.85,.15,.15], stripeH:0.09, yellow:"full"}},
+  dmuMetro:    {name:"West Yorkshire Metro", era:"Verona green and buttermilk, as the Pacers were delivered in 1986", appeal:0.04, set:{col:[.25,.45,.3], upper:[.9,.85,.65], yellow:"full"}},
+  dmuNSpirit:  {name:"Northern Spirit", era:"Purple and gold, 1998–2004", appeal:0.02, set:{col:[.33,.15,.42], upper:[.33,.15,.42], stripe:[.9,.7,.2], stripeH:0.08, yellow:"full"}},
+  dmuNorthern: {name:"Northern", era:"Mauve and blue, 2004–20", appeal:0.02, set:{col:[.2,.22,.48], upper:[.55,.35,.6], yellow:"full"}},
 };
 // The liveries each class really carried; the first is how it arrives.
 const CLASS_LIVERIES = {
@@ -3524,17 +3535,21 @@ const CLASS_LIVERIES = {
   c33:["dGreenPanel","dBlue","dNSE","dTriple"], c47:["dTwoTone","dBlue","dLargeLogo","dIC","dNSE","dRfGrey"], c46:["dGreenPanel","dBlue"],
   "g-deltic":["dDelticBlue","dDelticGreen"], "g-western":["dMaroon","dOchre","dDesert","dBlue"], "g-c50":["dLargeLogo","dBlue","dNSE"],
   "g-c33":["dGreenPanel","dBlue"], "g-c20":["dBlue","dGreenPanel"], "g-c47":["dBlue","dTwoTone","dLargeLogo"], "g-d213":["dGreenPanel","dBlue"],
-  "g-c56":["dRfGrey","dBlue","dTriple","dLoadhaul","dEWS"], "g-c60":["dEWS","dTriple","dDB"], "g-c26":["dGreenPanel","dBlue"], "g-hymek":["dHymek","dBlue"]
+  "g-c56":["dRfGrey","dBlue","dTriple","dLoadhaul","dEWS"], "g-c60":["dEWS","dTriple","dDB"], "g-c26":["dGreenPanel","dBlue"], "g-hymek":["dHymek","dBlue"],
+  c101:["dmuGreen","dmuGreenPanel","dmuBlue","dmuBlueGrey","dmuWhite","dmuRegional"], c110:["dmuGreen","dmuGreenPanel","dmuBlue","dmuBlueGrey"],
+  c108:["dmuGreen","dmuGreenPanel","dmuBlue","dmuBlueGrey","dmuNSE"], c104:["dmuGreen","dmuGreenPanel","dmuBlue","dmuBlueGrey"],
+  c144:["dmuMetro","dmuRegional","dmuNSpirit","dmuNorthern"], railbus:["dmuGreen","dmuBlue"]
 };
 const liveriesOf = key => CLASS_LIVERIES[key] || [];
 const liveryOf = l => l && l.livery && liveriesOf(l.cat).includes(l.livery) ? l.livery : liveriesOf(l && l.cat)[0] || null;
 // draw bonus for one of our engines: its livery, plus a little for a works finish
 const liveryAppeal = l => { const id = liveryOf(l); return id ? LIVERIES[id].appeal + (l.finish==="works" ? 0.015 : 0) : 0; };
 // a model spec repainted: the livery's colours replace the class's own (steam lining, or diesel bands and ends)
-function withLivery(spec, id, steam){
+function withLivery(spec, id, kind){
   const L = id && LIVERIES[id]; if(!L) return spec;
-  return steam ? {...spec, line:null, wheel:null, ...L.set}
-               : {...spec, col2:null, band2:null, stripe:null, stripeY:null, stripeH:null, roof:null, rim:null, ...L.set};
+  return kind==="steam" ? {...spec, line:null, wheel:null, ...L.set}
+       : kind==="dmu" ? {...spec, upper:null, stripe:null, stripeY:null, stripeH:null, lining:null, roof:null, ...L.set}
+       : {...spec, col2:null, band2:null, stripe:null, stripeY:null, stripeH:null, roof:null, rim:null, ...L.set};
 }
 function repaintCost(l, where){
   const shop = state.upgrades.workshop ? 0.7 : 1, steam = l.kind==="steam";
@@ -3607,8 +3622,9 @@ function doRepaint(){
 }
 
 function locoModel(key, livery){
-  const s0 = STEAM_MODELS[key]; if(s0){ const s = withLivery(s0, livery, true); return {kind:"steam", len:s.eng + (s.tend||0), col:s.col, mesh:()=>steamMesh(s)}; }
-  const d0 = DIESEL_MODELS[key]; if(d0){ const d = withLivery(d0, livery, false); return {kind:"diesel", len:d.len, col:d.col, mesh:()=>dieselMesh(d)}; }
+  const s0 = STEAM_MODELS[key]; if(s0){ const s = withLivery(s0, livery, "steam"); return {kind:"steam", len:s.eng + (s.tend||0), col:s.col, mesh:()=>steamMesh(s)}; }
+  const u0 = DMU_MODELS[key]; if(u0){ const u = withLivery(u0, livery, "dmu"); return {kind:"dmu", len:u.carLen*u.cars, col:u.col, mesh:()=>dmuMesh(u)}; }
+  const d0 = DIESEL_MODELS[key]; if(d0){ const d = withLivery(d0, livery, "diesel"); return {kind:"diesel", len:d.len, col:d.col, mesh:()=>dieselMesh(d)}; }
   return {kind:"diesel", len:15.5, col:LV.brgreen, mesh:()=>dieselMesh({style:"cab", len:15.5, bogie:"Bo", col:LV.brgreen, yellow:"panel"})};
 }
 
@@ -3891,6 +3907,100 @@ function steamMesh(m){
     if(T.weather){ box(a, 0, (top + 3.9 + 0.53)/2 + 0.1, t1 - 0.1, T.w, 3.9 + 0.53 - top, 0.08, col);
       for(const sx of [0.6,-0.6]) cyl(a,"z", sx, top + 0.5, t1 - 0.04, 0.2, 0.02, GLASS, 14); }
     if(m.line) for(const sx of [hw+0.001,-hw-0.001]){ box(a, sx, bodyLo + 0.2, tm, 0.01, 0.05, tl - 0.4, m.line); box(a, sx, top - 0.18, tm, 0.01, 0.05, tl - 0.4, m.line); }
+  }
+  return a;
+}
+
+// Diesel multiple units: car length and count, wheels (bogies or the four-wheelers' single axles),
+// front (window layout), roof and body height, and livery fields (col = body / lower, upper = window band).
+const DMU_MODELS = {
+  c101:    {cars:2, carLen:18.49, wheels:"bogie", front:"two",   dome:false, col:LV.brgreen, yellow:"whiskers", lining:LV.cream},
+  c110:    {cars:3, carLen:18.49, wheels:"bogie", front:"four",  head:true,  col:LV.brgreen, yellow:"whiskers", lining:LV.cream},
+  c108:    {cars:2, carLen:18.49, wheels:"bogie", front:"three", dome:true,  col:LV.brgreen, yellow:"whiskers", lining:LV.cream},
+  c104:    {cars:3, carLen:18.49, wheels:"bogie", front:"two",   head:true,  col:LV.brgreen, yellow:"whiskers", lining:LV.cream},
+  c144:    {cars:2, carLen:15.45, wheels:"single", front:"pacer", roofFlat:true, col:[.25,.45,.3], upper:[.9,.85,.65], yellow:"full"},
+  railbus: {cars:1, carLen:11.6,  wheels:"single", front:"two",   low:true,  col:LV.brgreen, yellow:"whiskers", lining:LV.cream}
+};
+function dmuMesh(m){
+  const out = [], L = m.carLen, n = m.cars;
+  for(let i=0;i<n;i++){
+    const zc = (i - (n-1)/2)*L, front = i===n-1, back = i===0;
+    out.push(...placed(dmuCar(m, front, n===1 || back), zc, false));
+  }
+  return out;
+}
+// one car: cabFront is the +z end, cabBack the -z end
+function dmuCar(m, cabFront, cabBack){
+  const a = [], L = m.carLen, h = L/2, col = m.col, up = m.upper || col;
+  const B = [.07,.07,.08], UF = [.12,.12,.12], BOG = [.21,.21,.22], STEEL = [.62,.62,.6], G = [.11,.14,.18], FR = [.05,.05,.05];
+  const Y = [.96,.8,.12], WH = [.92,.92,.88], ROOF = m.roof || [.3,.31,.32];
+  const yb0 = m.low ? 1.2 : 1.38, yb1 = m.low ? 3.45 : 3.72, crown = m.low ? 3.95 : 4.25, W = 1.4, ze = h - 0.45;
+  const yWin0 = yb1 - 1.15, yWin1 = yb1 - 0.3, yBand = yWin0 - 0.12;
+  // underframe, buffers, couplings
+  box(a, 0, yb0 - 0.08, 0, 2.7, 0.14, 2*ze, [.1,.1,.1]);
+  for(const s of [1,-1]){
+    box(a, 0, yb0 - 0.05, s*(ze - 0.08), 2.62, 0.4, 0.18, B);
+    for(const sx of [0.87,-0.87]){ cyl(a,"z", sx, 1.06 + (m.low?-0.05:0), s*(ze + 0.2), 0.11, 0.45, B, 10); cyl(a,"z", sx, 1.06 + (m.low?-0.05:0), s*(h - 0.03), 0.19, 0.05, STEEL, 12); }
+    box(a, 0, 1.0, s*(ze + 0.15), 0.14, 0.14, 0.35, B);
+  }
+  const wheel = (z, r)=>{ for(const sx of [0.76,-0.76]){ cyl(a,"x", sx, 0.53 + r, z, r, 0.12, B, 16); cyl(a,"x", sx*1.08, 0.53 + r, z, r*0.25, 0.05, [.2,.2,.2], 8); } };
+  if(m.wheels==="bogie"){
+    for(const s of [1,-1]){ const zc = s*(h - 2.7), sp = 2.6;
+      for(const sx of [1.1,-1.1]){ box(a, sx, 0.98, zc, 0.1, 0.55, sp + 1.2, BOG); box(a, sx, 1.22, zc, 0.12, 0.1, sp + 1.5, BOG); }
+      for(const dz of [-sp/2, sp/2]){ wheel(zc + dz, 0.46); for(const sx of [1.17,-1.17]){ box(a, sx, 0.99, zc + dz, 0.1, 0.32, 0.3, [.27,.27,.28]); cyl(a,"y", sx, 1.15, zc + dz + 0.35, 0.08, 0.28, [.32,.32,.32], 8); } }
+    }
+    // underfloor engine, gearbox, fuel tank and radiator
+    box(a, 0, 1.02, 1.5, 1.4, 0.55, 2.4, [.14,.14,.14]); box(a, 0, 1.0, -1.4, 0.9, 0.45, 1.2, [.16,.16,.16]);
+    box(a, 0.8, 1.05, -3.6, 0.8, 0.5, 1.6, [.18,.18,.18]); box(a, -0.9, 1.05, 4.2, 0.6, 0.6, 1.2, [.2,.2,.21]);
+  } else {
+    for(const s of [1,-1]){ const z = s*(h - (m.low ? 2.6 : 3.2)); wheel(z, 0.45);
+      for(const sx of [1.12,-1.12]){ box(a, sx, 0.98, z, 0.1, 0.45, 1.6, BOG); box(a, sx, 1.12, z, 0.12, 0.08, 2.2, [.3,.3,.3]); } }
+    box(a, 0, 1.0, 0, 1.3, 0.5, 3.0, [.14,.14,.14]);
+  }
+  // body section: straight sides, roof arc (flatter on the Pacer)
+  const roofP = m.roofFlat ? [[1.36,yb1],[1.22,yb1+0.3],[0,crown-0.08]] : [[1.38,yb1],[1.28,yb1+0.22],[1.0,yb1+0.42],[0.5,crown-0.03],[0,crown]];
+  const right = [[W,yb0],[W,yWin0],[W,yb1],...roofP.slice(1)];
+  const P = [...right, ...right.slice(0,-1).reverse().map(([x,y])=>[-x,y])];
+  const lean = m.front==="pacer" ? 0.1 : 0.05, rake = m.front==="pacer" ? 0.45 : 0.14;
+  const fz = y => y <= yWin0 ? lean*(y - yb0)/(yWin0 - yb0) : lean + rake*(y - yWin0)/(yb1 - yWin0);
+  const zEnd = (s, cab) => p => s*(ze - (cab ? fz(p[1]) : 0));
+  const edge = (p, q) => (p[1] >= yb1 - 0.001 && q[1] >= yb1 - 0.001) ? ROOF : (p[1] < yb0 + 0.01 && q[1] < yb0 + 0.01) ? UF : (p[1] >= yWin0 - 0.001 && q[1] >= yWin0 - 0.001) ? up : col;
+  const capC = m.yellow==="full" ? Y : col;
+  extrude(a, P, zEnd(-1, cabBack), zEnd(1, cabFront), edge, cabBack ? capC : col, cabFront ? capC : col);
+  // a lining band at the waist, and the stripe
+  if(m.lining) for(const sx of [1,-1]) box(a, sx*(W + 0.008), yBand, 0, 0.01, 0.06, 2*ze - 0.6, m.lining);
+  if(m.stripe) for(const sx of [1,-1]) box(a, sx*(W + 0.009), m.stripeY || yBand, 0, 0.01, m.stripeH || 0.1, 2*ze - 0.6, m.stripe);
+  // bodyside: windows between the doors at each end; slam doors with droplights
+  const doorZ = [ze - (cabFront ? 2.0 : 0.9), -ze + (cabBack ? 2.0 : 0.9)];
+  if(!m.low && m.front!=="pacer") doorZ.push(0);
+  for(const sx of [1,-1]){ const x = sx*(W + 0.012);
+    doorZ.forEach(z=>{ for(const dz of [-0.36,0.36]) box(a, x, (yb0 + yb1 - 0.1)/2, z + dz, 0.02, yb1 - yb0 - 0.25, 0.03, FR);
+      box(a, x, yWin0 + 0.42, z, 0.02, 0.55, 0.5, G); });
+    const zs = [...doorZ, cabFront ? ze - 0.6 : ze, cabBack ? -ze + 0.6 : -ze].sort((p,q)=>p-q);
+    for(let i=0;i<zs.length-1;i++){ const z0 = zs[i] + 0.55, z1 = zs[i+1] - 0.55; if(z1 - z0 < 0.8) continue;
+      const nw = Math.max(1, Math.round((z1 - z0)/(m.front==="pacer" ? 2.4 : 1.55))), wl = (z1 - z0)/nw;
+      for(let k=0;k<nw;k++) box(a, x, (yWin0 + yWin1)/2, z0 + (k + 0.5)*wl, 0.02, yWin1 - yWin0, wl - 0.28, G); }
+    if(cabFront) box(a, x, (yWin0 + yWin1)/2, ze - 1.0, 0.02, yWin1 - yWin0, 0.55, G);   // driver's side window
+    if(cabBack) box(a, x, (yWin0 + yWin1)/2, -ze + 1.0, 0.02, yWin1 - yWin0, 0.55, G);
+  }
+  // ends: cab fronts with their window layout, or a gangway to the next car
+  const onFace = (x0, x1, y0, y1, zAt, s, c, off)=>{ const o = s*(off || 0.012);
+    quad(a, [x0,y0,zAt(y0)+o],[x1,y0,zAt(y0)+o],[x1,y1,zAt(y1)+o],[x0,y1,zAt(y1)+o], c, [0,0,s]); };
+  const pane = (x0, x1, y0, y1, zAt, s)=>{ onFace(x0-0.04, x1+0.04, y0-0.04, y1+0.04, zAt, s, FR, 0.01); onFace(x0, x1, y0, y1, zAt, s, G, 0.02); };
+  for(const [s, cab] of [[1, cabFront], [-1, cabBack]]){
+    const zAt = y => s*(ze - fz(y));
+    if(!cab){ box(a, 0, (yb0 + yb1)/2, s*(ze + 0.15), 1.1, yb1 - yb0 - 0.3, 0.3, B); continue; }
+    const y0 = yWin0 + 0.05, y1 = yb1 - 0.08;
+    if(m.front==="three"){ pane(-0.45, 0.45, y0, y1, zAt, s); pane(-1.25, -0.58, y0, y1, zAt, s); pane(0.58, 1.25, y0, y1, zAt, s); }
+    else if(m.front==="four"){ for(const [x0,x1] of [[-1.25,-0.68],[-0.6,-0.05],[0.05,0.6],[0.68,1.25]]) pane(x0, x1, y0 + 0.1, y1 - 0.12, zAt, s); }
+    else if(m.front==="pacer"){ pane(-1.25, 1.25, y0 - 0.1, y1, zAt, s); }
+    else { pane(-1.15, -0.08, y0, y1, zAt, s); pane(0.08, 1.15, y0, y1, zAt, s); }
+    if(m.head) onFace(-0.45, 0.45, yb1 - 0.02, yb1 + 0.22, y => s*(ze - fz(yb1) - 0.05), s, FR, 0.02);
+    if(m.dome) box(a, 0, crown + 0.05, s*(ze - 0.5), 0.8, 0.2, 0.4, col);
+    if(m.yellow==="panel") onFace(-0.8, 0.8, yb0 + 0.35, yWin0 - 0.1, zAt, s, Y);
+    if(m.yellow==="whiskers") for(const dy of [0, 0.14, 0.28]) onFace(-1.1, 1.1, yWin0 - 0.55 + dy, yWin0 - 0.5 + dy, zAt, s, Y);
+    for(const sx of [0.8,-0.8]) onFace(sx - 0.1, sx + 0.1, yb0 + 0.2, yb0 + 0.34, zAt, s, WH, 0.03);
+    onFace(-0.12, 0.12, yb0 + 0.45, yb0 + 0.6, zAt, s, WH, 0.03);
   }
   return a;
 }

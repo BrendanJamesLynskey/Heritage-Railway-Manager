@@ -55,7 +55,10 @@ with BFB wheels are modelled too); diesels from their real height and body
 style (cab ends with raked windscreens, noses, hood and single cab, the
 Western), bogies with axleboxes and springs (Bo-Bo, Co-Co, A1A, 1Co-Co1,
 coupled rods), headcode boxes, discs or roof domes, grilles, cab doors,
-warning panels and livery bands, with the Class 20 and 26 pairs as two locos.
+warning panels and livery bands, with the Class 20 and 26 pairs as two locos;
+DMUs from their car length and count, bogies or four-wheel axles, window and
+door layout, underfloor engines and their front ends (Metro-Cammell, Derby
+three-window, Calder Valley four-window, Pacer, Wickham railbus).
 
 | Control | Keys / on screen |
 |---------|------------------|
@@ -81,6 +84,12 @@ SR malachite, NER and L&Y lined liveries, London Transport maroon, industrial
 colours, and for the diesels BR green (plain, small panel or two-tone), BR blue,
 large logo, Railfreight grey and triple grey, InterCity, Network SouthEast,
 EWS, Loadhaul and DB, plus the Western's maroon, golden ochre and desert sand.
+The diesel multiple units are modelled and liveried too (BR green with cat's
+whiskers or a yellow panel, BR blue, blue and grey, white with a blue stripe,
+Regional Railways, Network SouthEast, and for the Pacer West Yorkshire Metro,
+Northern Spirit and Northern), and they stable in the engine shed with the rest
+of the fleet. Visiting engines arrive in their owners' liveries, shown when you
+book them.
 
 Repaint in the **Ravensgill Shed** (the volunteer painting gang: cheaper, two
 weeks) or at the **Works** (a contract paint shop: dearer, one week, with a
