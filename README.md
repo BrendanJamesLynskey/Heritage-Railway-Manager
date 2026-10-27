@@ -68,6 +68,8 @@ three-window, Calder Valley four-window, Pacer, Wickham railbus).
 | Points | 1 Platform road · 2 Shed road 1 · 3 Shed road 2 (locked while anything stands over them) |
 | Uncouple | U uncouples the shunter, or click ✂ between any two vehicles |
 | Change ends (DMU) | E, or click ⇄ Change ends (stopped only) |
+| Climb down / climb in | F, or click the Climb button (stopped only; walk up to a cab door to climb in) |
+| On foot | ↑ / ↓ walk, ← / → turn, hold Shift or ⚡ Sprint to run |
 
 Buffer up at under 2 mph to couple (engines in the shed stand apart, so you
 pick up only the one you buffer up to); faster
@@ -77,13 +79,20 @@ morale boost), or leave the yard at any time and the shed staff finish the job.
 Then the weekend runs as normal.
 
 **Driving a DMU off shed.** If the timetable has DMU services, every unit in
-it gets its own job too, offered alongside the shunter. There's no shunter
-and no coupling: you sit in the unit's own cab, facing the shed doors. Drive
+it gets its own job too, offered alongside the shunter, and you drive it from
+inside its cab: look out through the unit's own windscreen (two, three or
+four windows, or the Pacer's one big screen) over the desk and gauges. Start
+either in the unit's cab, facing the shed doors, or in the shunter on the
+headshunt: drive that nearer the shed if you like, climb down (F) and walk or
+sprint over to the unit and climb in at a cab door. Leave the shunter where it
+won't block the unit's way out, or go back and move it. There's no coupling. Drive
 it out onto the headshunt clear of the points, change ends (E) and walk
 through to the other cab, set the points for the Platform road and draw up
 gently to the STOP board near the end of the platform (within 10 m of the
 buffer stops). Each car follows the track on its own, so a three-car 110
-bends round the points. Under 4 minutes with no bumps earns ★★★.
+bends round the points. Under 4 minutes with no bumps earns ★★★ (6 minutes
+if you start in the shunter). You can climb down and walk about in the yard
+on the coach job too.
 
 ## Liveries
 
