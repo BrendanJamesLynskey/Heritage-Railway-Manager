@@ -29,6 +29,40 @@ close them, and switch between them on the **taskbar**, which also holds the
 **Start** button (the R&amp;H roundel) lists every app, plus Save / Load and
 New Game. On a phone, windows open full screen.
 
+## Drive a Service
+
+When you press **Run the Weekend**, you can also take a train out on the line
+yourself. Pick any train in the timetable and the trip to start from, and drive
+it from the cab (leaning out of the cab side of a steam or diesel engine, or from
+a DMU's driving seat) for the rest of its day.
+
+The 3D line is built from the map's own alignment: all seven stations with
+their platforms and nameboards, the passing loops, Brackenby Viaduct's twelve
+arches over the River Raven, Highmoor Tunnel through the fell, the climb to the
+summit, the B6481 and Highmoor Reservoir. It is squeezed eight times (about
+2.8 km end to end) and the clock runs six times as fast, so a round trip takes
+about a quarter of an hour instead of two, and the booked timetable still fits.
+Each engine's best speed on each section is the one the timetable was worked
+out from, for its load, its pace and the climb; downhill the train will run
+away with you if you let it.
+
+| Control | Keys / on screen |
+|---------|------------------|
+| Power and brake lever | ↑ / ↓ or W / S, or hold Power ▲ / ▼ Brake |
+| Emergency brake | Space, or hold ■ Emergency |
+| Look round | ← / → or A / D, or drag |
+| Change view | C, or 🎥 View (cab or lineside chase) |
+| Wait for the right away | T, or ⏩ Wait |
+| Hand over | H or Esc, or ✋ Hand over |
+
+Stop with the front of the train near the stop board at each booked call; the
+passengers board, and you get the right away at the booked time. At the loops
+the starter signal stays at danger until then, and while another train is in
+the section ahead. At the end of the line the engine runs round its train (or
+you change ends of a DMU). Arrive on time on average, with no signal passed at
+danger, no overruns and no long spells over the 25 mph limit, for ★★★ (+2
+reputation). Hand over at any time and another driver finishes the day.
+
 ## The Yard: Drive the Shunter
 
 When you press **Run the Weekend** you're offered the chance to marshal the

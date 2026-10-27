@@ -138,6 +138,13 @@
   #yard{position:fixed;inset:0;z-index:20000;background:#9ec3df;opacity:0;transition:opacity .6s;font-family:"Segoe UI",Tahoma,sans-serif;color:#fff;user-select:none;touch-action:none;overflow:hidden;line-height:1.35}
   #yard.show{opacity:1}
   #yard[hidden]{display:none}
+  #dHud{display:none} #yard.drv #dHud{display:block} #yard.drv > .yh, #yard.drv > .ybc{display:none}
+  .dlever{position:relative;height:8px;background:rgba(255,255,255,.15);border-radius:4px;margin:5px 0 3px;overflow:hidden} .dlever span{position:absolute;top:0;bottom:0}
+  .dlever::after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:2px;background:#fff}
+  table.dtt{border-collapse:collapse;margin-top:6px;font-size:.78rem} table.dtt td{padding:2px 7px 2px 0;color:rgba(255,255,255,.6)}
+  table.dtt tr.now td{color:#ffd24a;font-weight:700} table.dtt tr.done td{color:rgba(255,255,255,.4);text-decoration:line-through}
+  #dmap{width:280px;height:150px;display:block}
+  @media(max-height:520px){ #dJob table.dtt tr:nth-child(n+4){display:none} #dmap{width:190px;height:102px} #dInfo .yhelp{display:none} }
   #ygl,#ylab{position:absolute;inset:0;width:100%;height:100%;display:block}
   #ylab{pointer-events:none}
   .yh{position:absolute;background:rgba(14,19,25,.8);border:1px solid rgba(255,255,255,.16);border-radius:10px;padding:10px 12px;font-size:.78rem;box-shadow:0 6px 18px rgba(0,0,0,.35)}
@@ -533,7 +540,7 @@
       <ul style="font-size:.9rem">
         <li><b>The laptop:</b> each part of the railway is an app on the desktop. Double-click an icon (or tap it on a touch screen) to open its window; drag windows by the title bar, resize them from the corner, and switch between them on the taskbar. The <b>Start</b> button (the R&amp;H roundel) lists every app.</li>
         <li><b>Mail:</b> railtour companies and other heritage railways email asking to hire your locomotives. Accept their offer, decline, or send a counter-offer: ask for more, but push too hard and they'll go elsewhere. A hired-out engine is away for the weeks agreed, and comes back a little more worn.</li>
-        <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to make up the first train: the laptop folds away and you're in the cab. The coaches are already on the Platform road; the train engine (and the pilot, for a double-header) is in the engine shed with the rest of the fleet, every engine facing the shunter. Set the points for the right shed road, buffer up to the engine, draw it out, set the points back to the Platform road and buffer it up to the coaches, then uncouple. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the shunter. Buffer up gently (under 2 mph) to couple. Every class of engine is modelled from its own wheel arrangement, size and livery. If the timetable runs DMUs, you can drive each unit yourself from its own cab instead: out of the shed onto the headshunt, change ends (E), then into the platform up to the STOP board. Or start in the shunter, climb down (F) and walk over to the unit (hold Shift or ⚡ Sprint to run). A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
+        <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to make up the first train: the laptop folds away and you're in the cab. The coaches are already on the Platform road; the train engine (and the pilot, for a double-header) is in the engine shed with the rest of the fleet, every engine facing the shunter. Set the points for the right shed road, buffer up to the engine, draw it out, set the points back to the Platform road and buffer it up to the coaches, then uncouple. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the shunter. Buffer up gently (under 2 mph) to couple. Every class of engine is modelled from its own wheel arrangement, size and livery. <b>Drive a service:</b> or take a train out on the line yourself. Pick a train and the trip to start from, and drive it from the cab for the rest of its day: every booked call, the passing loops (the starter stays at danger until your time and a clear section), Brackenby Viaduct and Highmoor Tunnel. ↑/↓ (or W/S) move the power and brake lever, Space is the emergency brake, C changes the view, T waits for the right away, H hands the train to another driver to finish the day. The line is drawn to the map but squeezed eight times and the clock runs six times as fast, so a round trip takes about a quarter of an hour. If the timetable runs DMUs, you can drive each unit yourself from its own cab instead: out of the shed onto the headshunt, change ends (E), then into the platform up to the STOP board. Or start in the shunter, climb down (F) and walk over to the unit (hold Shift or ⚡ Sprint to run). A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
         <li><b>Each turn is one week.</b> Plan the weekend in the <b>Timetable</b> app, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week. The weekend then plays out live on the <b>Line Map</b>, all its days together in the time of one (change the speed there, or pause it). You can't start the next week until the last train is home, but you can carry on booking events, buying stock and recruiting while it runs. The takings arrive when the weekend ends.</li>
         <li><b>Timetabling:</b> every train is a round trip from Ravensgill Junction to Moorend and back, about two hours with turn-rounds. Give each loco a set of departure times. If a train isn't back in time, its next trip leaves late.</li>
         <li><b>The printed timetable:</b> the Up and Down tables at the top of the Timetable app are the public timetable, a column for each train. The times are worked out by the signallers' plan, so a train held at a loop shows its real, later time. <b>|</b> means the train runs through without stopping.</li>
@@ -581,6 +588,16 @@
       <button data-hold="rev">◀ Back</button><button class="brake" data-hold="brake">■ Brake</button><button data-hold="fwd">Forward ▶</button><button class="ysprint" data-hold="sprint">⚡ Sprint</button>
     </div></div>
   <div class="yh ybr"><canvas id="ymap" width="660" height="272"></canvas></div>
+  <div id="dHud">
+    <div class="yh ytl" id="dInfo"></div>
+    <div class="yh ytr" id="dJob"></div>
+    <div class="ybc"><div class="ydrive">
+      <button data-dhold="down">▼ Brake</button><button data-dhold="up">Power ▲</button><button class="brake" data-dhold="emerg">■ Emergency</button>
+      <button id="dSkip" onclick="dSkip()" hidden>⏩ Wait</button><button onclick="dv&&(dv.cam=1-dv.cam)">🎥 View</button><button onclick="dHandOver()">✋ Hand over</button>
+    </div></div>
+    <div class="yh ybr"><canvas id="dmap" width="560" height="300"></canvas></div>
+    <div class="ydone" id="dDone" hidden></div>
+  </div>
   <div class="ymsg" id="yMsg"></div>
   <div class="ydone" id="yDone" hidden></div>
 </div>
@@ -1316,11 +1333,12 @@ function advanceWeek(opt={}){
   }
 
   if(runDays && !opt.go){
-    const jobs = shuntJobs(plan);
+    const jobs = shuntJobs(plan); pendingPlan = plan;
     if(jobs.length){ offerShunt(jobs); return; }
   }
 
   const report = {week:state.week, weather:state.weather, days:runDays, ev, def, dayRes:[], events:[], startCash:state.cash};
+  if(opt.drive && opt.drive.stops) report.events.push({cls:"good", text:`🚂 You drove the ${opt.drive.train} yourself: ${"★".repeat(opt.drive.stars)}${"☆".repeat(3-opt.drive.stars)} (${opt.drive.stops} call${opt.drive.stops===1?"":"s"}, average ${opt.drive.late.toFixed(1)} min late${opt.drive.complete ? "" : `, handed over at ${opt.drive.at}`}).`});
   if(opt.shunt) report.events.push({cls:"good", text:`${opt.shunt.dmu ? `🚃 You drove the ${opt.shunt.train} unit off shed and into the platform yourself` : `🚜 You marshalled the ${opt.shunt.train} train yourself`}: ${"★".repeat(opt.shunt.stars)}${"☆".repeat(3-opt.shunt.stars)} (${opt.shunt.time}, ${opt.shunt.rough} rough shunt${opt.shunt.rough===1?"":"s"}).`});
   for(let d=0; d<runDays; d++){
     // roll failures for each set: per-trip probability from condition and reliability
@@ -3003,12 +3021,13 @@ function offerShunt(jobs){
         ? `<button class="act greenbtn" style="width:auto" onclick="closeModal();startShunt(pendingJobs[${i}])">🚃 Drive ${j.need[0].label} from its cab</button>
            <button class="act greenbtn" style="width:auto" onclick="closeModal();startShunt(pendingJobs[${i}], true)">🚜 Shunter, then walk to ${j.need[0].label}</button>`
         : `<button class="act greenbtn" style="width:auto" onclick="closeModal();startShunt(pendingJobs[${i}])">🚜 Drive the shunter</button>`).join("")}
+      <button class="act greenbtn" style="width:auto" onclick="closeModal();driveChoice()">🚂 Drive a service on the line</button>
       <button class="act" style="width:auto" onclick="closeModal();advanceWeek({go:true})">Let the shed staff do it ▸</button>
     </div>`);
   pendingJobs = jobs;
   document.getElementById("modalClose").style.display = "none";
 }
-let pendingJobs = [];
+let pendingJobs = [], pendingPlan = null;
 
 function startShunt(job, via){
   const gl = yardGL();
@@ -3324,10 +3343,10 @@ function yardGL(){
     uniform mat4 vp, m; varying vec3 col; varying float d;
     void main(){ vec4 w = m*vec4(p,1.0); gl_Position = vp*w; vec3 nn = (m*vec4(n,0.0)).xyz;
       float l = max(dot(nn, normalize(vec3(0.45,0.8,0.35))), 0.0); col = c*(0.48 + 0.62*l + 0.06*nn.y); d = gl_Position.w; }`));
-  gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, `precision mediump float; uniform vec3 fog; varying vec3 col; varying float d;
-    void main(){ float f = clamp((d - 90.0)/380.0, 0.0, 1.0); gl_FragColor = vec4(mix(col, fog, f*f*0.85 + f*0.15), 1.0); }`));
+  gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, `precision mediump float; uniform vec3 fog; uniform vec2 fr; varying vec3 col; varying float d;
+    void main(){ float f = clamp((d - fr.x)/fr.y, 0.0, 1.0); gl_FragColor = vec4(mix(col, fog, f*f*0.85 + f*0.15), 1.0); }`));
   gl.linkProgram(prog); gl.useProgram(prog);
-  YGL = {gl, prog, vp:gl.getUniformLocation(prog,"vp"), m:gl.getUniformLocation(prog,"m"), fog:gl.getUniformLocation(prog,"fog"),
+  YGL = {gl, prog, vp:gl.getUniformLocation(prog,"vp"), m:gl.getUniformLocation(prog,"m"), fog:gl.getUniformLocation(prog,"fog"), fr:gl.getUniformLocation(prog,"fr"),
          ap:gl.getAttribLocation(prog,"p"), an:gl.getAttribLocation(prog,"n"), ac:gl.getAttribLocation(prog,"c")};
   gl.enable(gl.DEPTH_TEST);
   YGL.scene = meshBuffer(gl, sceneryMesh());
@@ -3681,7 +3700,7 @@ function liveryPreview(key, id){
   gl.clearColor(.62,.76,.88,1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   const eye = [-8.5, 3.9, zf - 7.5], at = [0, 2.3, zc - md.len*0.12], d = at.map((x,i)=>x - eye[i]), dl = Math.hypot(...d);
   gl.uniformMatrix4fv(YGL.vp, false, m4mul(m4persp(0.62, W/Hh, 0.25, 900), m4look(eye, d.map(x=>x/dl))));
-  gl.uniform3f(YGL.fog, .62,.76,.88);
+  gl.uniform3f(YGL.fog, .62,.76,.88); gl.uniform2f(YGL.fr, 90, 380);
   for(const [m, model] of [[YGL.scene, m4model(0,0,0)], [mesh, m4model(0, zc, Math.PI)]]) glDraw(m, model);
   const url = cv.toDataURL("image/jpeg", 0.85);
   gl.deleteBuffer(mesh.buf); cv.width = ow; cv.height = oh;
@@ -4433,7 +4452,7 @@ function yardSize(){
   for(const c of [cv, lab]){ c.width = Math.round(innerWidth*dpr); c.height = Math.round(innerHeight*dpr); }
   yardGL().viewport(0, 0, cv.width, cv.height);
 }
-window.addEventListener("resize", ()=>{ if(yd) yardSize(); });
+window.addEventListener("resize", ()=>{ if(yd || dv) yardSize(); });
 function m4mul(a, b){ const o = new Float32Array(16); for(let c=0;c<4;c++) for(let r=0;r<4;r++){ let t=0; for(let k=0;k<4;k++) t += a[k*4+r]*b[c*4+k]; o[c*4+r] = t; } return o; }
 function m4persp(fovy, asp, near, far){ const f = 1/Math.tan(fovy/2), nf = 1/(near-far); return new Float32Array([f/asp,0,0,0, 0,f,0,0, 0,0,(far+near)*nf,-1, 0,0,2*far*near*nf,0]); }
 function m4look(e, f){
@@ -4464,7 +4483,7 @@ function yDraw(){
   if(yd.cam){ eye = yd.cam.eye; dir = yd.cam.dir; }
   const vp = m4mul(m4persp((yd.cam && yd.cam.fov) || 1.2, cv.width/cv.height, 0.25, 900), m4look(eye, dir));
   gl.uniformMatrix4fv(YGL.vp, false, vp);
-  gl.uniform3f(YGL.fog, .62,.76,.88);
+  gl.uniform3f(YGL.fog, .62,.76,.88); gl.uniform2f(YGL.fr, 90, 380);
   const draw = glDraw;
   draw(YGL.scene, m4model(0,0,0));
   yd.all.forEach(v=>{   // engines face the shunter
@@ -4527,18 +4546,498 @@ addEventListener("keydown", e=>{
 addEventListener("keyup", e=>{ if(yd && YKEYS[e.key]) yd.keys[YKEYS[e.key]] = false; });
 (()=>{
   const cv = document.getElementById("ygl"); let drag = null;
-  cv.addEventListener("pointerdown", e=>{ drag = {x:e.clientX, y:e.clientY, look:yd?yd.look:0, pitch:yd?yd.pitch:0}; cv.setPointerCapture(e.pointerId); });
-  cv.addEventListener("pointermove", e=>{ if(!drag || !yd) return;
-    yd.look = Math.max(-2.6, Math.min(2.6, drag.look - (e.clientX - drag.x)*0.006));
-    yd.pitch = Math.max(-0.6, Math.min(0.4, drag.pitch - (e.clientY - drag.y)*0.004)); });
+  cv.addEventListener("pointerdown", e=>{ const o = yd || dv; drag = {x:e.clientX, y:e.clientY, look:o?o.look:0, pitch:o?o.pitch:0}; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener("pointermove", e=>{ const o = yd || dv; if(!drag || !o) return;
+    o.look = Math.max(-2.6, Math.min(2.6, drag.look - (e.clientX - drag.x)*0.006));
+    o.pitch = Math.max(-0.6, Math.min(0.4, drag.pitch - (e.clientY - drag.y)*0.004)); });
   cv.addEventListener("pointerup", ()=>drag = null);
-  cv.addEventListener("dblclick", ()=>{ if(yd){ yd.look = 0; yd.pitch = -0.06; } });
+  cv.addEventListener("dblclick", ()=>{ const o = yd || dv; if(o){ o.look = 0; o.pitch = -0.06; } });
+  document.querySelectorAll("[data-dhold]").forEach(b=>{
+    const k = b.dataset.dhold, set = on => { if(!dv) return; if(k==="emerg"){ dv.emerg = on; if(on) dv.ctl = -1; } else dv.keys[k] = on; };
+    b.addEventListener("pointerdown", e=>{ e.preventDefault(); set(true); });
+    for(const ev of ["pointerup","pointerleave","pointercancel"]) b.addEventListener(ev, ()=>set(false));
+  });
   document.querySelectorAll("[data-hold]").forEach(b=>{
     const k = b.dataset.hold, set = on => { if(yd) yd.keys[k] = on; };
     b.addEventListener("pointerdown", e=>{ e.preventDefault(); set(true); });
     for(const ev of ["pointerup","pointerleave","pointercancel"]) b.addEventListener(ev, ()=>set(false));
   });
 })();
+
+/* ============================ DRIVING A SERVICE ============================ */
+// The 3D line is the map's own track (LINE_PTS), squeezed eight times so a round trip takes minutes, not hours.
+// The clock runs faster while you drive (a little less than the squeeze, as starting and stopping take
+// as long as ever), so the booked timetable still fits.
+const DRV = {squeeze:8, clock:6, step:4, plat:150, lim:25};
+const STN_H = [0, 4, 9, 13, 19, 42, 37];   // each station's height above Ravensgill in the squeezed world, metres
+const RIVER_PTS = [[845,94],[750,192],[612,298],[487,404],[360,478],[190,560],[70,620]];
+const ROAD_PTS = [[0,492],[120,478],[240,500],[360,462],[480,440],[600,385],[700,300],[760,262],[860,190],[960,120]];
+const smooth01 = t => { t = Math.max(0, Math.min(1, t)); return t*t*(3 - 2*t); };
+let LINE3 = null;
+function line3(){
+  const loops = [...loopSet()].sort().join(",");
+  if(LINE3 && LINE3.loops===loops) return LINE3;
+  const {miles} = lineGeom();
+  let mapLen = 0; for(let i=1;i<LINE_PTS.length;i++) mapLen += Math.hypot(LINE_PTS[i][0]-LINE_PTS[i-1][0], LINE_PTS[i][1]-LINE_PTS[i-1][1]);
+  const S = LINE_MILES*1609.34/DRV.squeeze/mapLen, W = (x, y) => ({x:(x-140)*S, z:(520-y)*S});   // map east = +x, north = +z
+  // round off the map's corners (carrying the mileage), then resample every few metres
+  let P = LINE_PTS.map((p,i)=>({...W(p[0],p[1]), m:miles[i]}));
+  for(let k=0;k<4;k++){ const Q = [P[0]];
+    for(let i=0;i<P.length-1;i++){ const a = P[i], b = P[i+1], mix = f => ({x:a.x + (b.x-a.x)*f, z:a.z + (b.z-a.z)*f, m:a.m + (b.m-a.m)*f}); Q.push(mix(0.25), mix(0.75)); }
+    Q.push(P[P.length-1]); P = Q; }
+  const cum = [0]; for(let i=1;i<P.length;i++) cum.push(cum[i-1] + Math.hypot(P[i].x-P[i-1].x, P[i].z-P[i-1].z));
+  const L = cum[cum.length-1], pts = [];
+  for(let s=0, j=0; s<=L; s+=DRV.step){ while(j < P.length-2 && cum[j+1] < s) j++;
+    const f = (s - cum[j])/((cum[j+1] - cum[j]) || 1), a = P[j], b = P[j+1];
+    pts.push({x:a.x + (b.x-a.x)*f, z:a.z + (b.z-a.z)*f, m:a.m + (b.m-a.m)*f, s}); }
+  const G = {loops, S, W, L, pts, lp:new Set(loopSet())};
+  G.sOfMile = m => { let lo = 0, hi = pts.length-1; if(m <= pts[0].m) return 0; if(m >= pts[hi].m) return L;
+    while(hi - lo > 1){ const md = (lo+hi)>>1; if(pts[md].m < m) lo = md; else hi = md; }
+    return pts[lo].s + (m - pts[lo].m)/((pts[hi].m - pts[lo].m) || 1)*DRV.step; };
+  G.mileOfS = s => { const i = Math.max(0, Math.min(pts.length-2, Math.floor(s/DRV.step))), f = (s - pts[i].s)/DRV.step; return pts[i].m + (pts[i+1].m - pts[i].m)*f; };
+  G.st = STATIONS.map(st=>G.sOfMile(st.mile));
+  // platforms: termini end in buffer stops, the others are centred on the station
+  G.plat = G.st.map((s,i)=>i===0 ? [-10, DRV.plat - 10] : i===STATIONS.length-1 ? [L - DRV.plat + 10, L + 10] : [s - DRV.plat/2, s + DRV.plat/2]);
+  G.stopAt = (i, dir) => dir>0 ? G.plat[i][1] - 6 : G.plat[i][0] + 6;
+  const flat = G.plat.map(([a,b])=>[a - 25, b + 25]);
+  G.y = s => { for(let i=0;i<flat.length;i++) if(s <= flat[i][1]){ if(s >= flat[i][0] || i===0) return STN_H[i];
+      return STN_H[i-1] + (STN_H[i] - STN_H[i-1])*smooth01((s - flat[i-1][1])/(flat[i][0] - flat[i-1][1])); }
+    return STN_H[STN_H.length-1]; };
+  // a point on the line (s may run a little past either end, along the end tangents)
+  G.at = (s, off) => { const n = pts.length, i = Math.max(0, Math.min(n-2, Math.floor(s/DRV.step))), a = pts[i], b = pts[i+1];
+    const f = (s - a.s)/DRV.step, yaw = Math.atan2(b.x - a.x, b.z - a.z), c = Math.cos(yaw), sn = Math.sin(yaw), o = off || 0;
+    return {x:a.x + (b.x-a.x)*f + c*o, z:a.z + (b.z-a.z)*f - sn*o, y:G.y(s), yaw}; };
+  // the passing loops: the loop road swings out beside the main line
+  G.loopOff = (i, s) => { const [p0, p1] = G.plat[i], a = p0 - 60, b = p1 + 60;
+    if(s < a || s > b) return 0; return -4.6*Math.min(smooth01((s - a)/45), smooth01((b - s)/45)); };
+  G.via = [miles[VIADUCT[0]], miles[VIADUCT[1]]].map(G.sOfMile);
+  G.tun = [miles[TUNNEL[0]], miles[TUNNEL[1]]].map(G.sOfMile);
+  return LINE3 = G;
+}
+// distance from a world point to the line, and how far along it that is
+function lineNear(G, x, z){
+  const P = G.pts; let best = 1e18, bi = 0;
+  for(let i=0;i<P.length;i+=6){ const d = (P[i].x-x)**2 + (P[i].z-z)**2; if(d < best){ best = d; bi = i; } }
+  for(let i=Math.max(0,bi-6); i<=Math.min(P.length-1,bi+6); i++){ const d = (P[i].x-x)**2 + (P[i].z-z)**2; if(d < best){ best = d; bi = i; } }
+  return {d:Math.sqrt(best), s:P[bi].s};
+}
+function polyDist(pts, x, z){
+  let best = 1e18;
+  for(let i=0;i<pts.length-1;i++){ const [ax,az] = pts[i], [bx,bz] = pts[i+1], dx = bx-ax, dz = bz-az, l2 = dx*dx + dz*dz || 1;
+    const t = Math.max(0, Math.min(1, ((x-ax)*dx + (z-az)*dz)/l2)), qx = ax + dx*t - x, qz = az + dz*t - z; best = Math.min(best, qx*qx + qz*qz); }
+  return Math.sqrt(best);
+}
+// the lie of the land: it follows the line up the dale, with the fells beyond, the river in its valley,
+// the viaduct striding across it and the hill over the tunnel
+function lineTerrain(G){
+  const river = RIVER_PTS.map(([x,y])=>{ const p = G.W(x,y); return [p.x,p.z]; });
+  const fell = G.W(230,120), pike = G.W(930,250), res = G.W(880,70), S = G.S;
+  const nat = (x, z, n) => {
+    let h = G.y(n.s) - 0.4 + Math.min(26, 0.05*Math.max(0, n.d - 70));
+    h += 70*Math.exp(-(((x-fell.x)**2 + (z-fell.z)**2)/(150*S)**2)) + 45*Math.exp(-(((x-pike.x)**2 + (z-pike.z)**2)/(75*S)**2));
+    h += (Math.sin(x*0.011) + Math.sin(z*0.014 + 1.3) + 0.6*Math.sin((x+z)*0.027))*1.6*smooth01((n.d - 40)/150);
+    h -= 24*Math.exp(-((polyDist(river, x, z)/75)**2));
+    return h; };
+  const resLevel = nat(res.x, res.z, lineNear(G, res.x, res.z)) - 3;
+  const height = (x, z) => { const n = lineNear(G, x, z); let h = nat(x, z, n);
+    const inVia = n.s > G.via[0] - 12 && n.s < G.via[1] + 12, f = (n.s - G.tun[0])/(G.tun[1] - G.tun[0]);
+    if(f > -0.25 && f < 1.25){   // the fell the tunnel goes through, with cuttings at each portal
+      const amp = (9 + 16*Math.sin(Math.PI*Math.max(0, Math.min(1, f))))*(f < 0 ? 1 + f/0.25 : f > 1 ? 1 - (f-1)/0.25 : 1);
+      h = Math.max(h, G.y(n.s) + amp*(1 - smooth01((n.d - 50)/140))); }
+    if(!inVia && !(f > 0 && f < 1)) h = h + (G.y(n.s) - 0.4 - h)*(1 - smooth01((n.d - 26)/70));
+    const er = ((x-res.x)/(70*S))**2 + ((z-res.z)/(30*S))**2; if(er < 1.3) h = Math.min(h, resLevel - 1.5 + 2*Math.max(0, er - 1));
+    return {h, n}; };
+  return {height, nat, river, res, resLevel};
+}
+function lineSceneMesh(G){
+  const a = [], T = lineTerrain(G), S = G.S;
+  const xs = G.pts.map(p=>p.x), zs = G.pts.map(p=>p.z), X0 = Math.min(...xs) - 500, X1 = Math.max(...xs) + 500, Z0 = Math.min(...zs) - 450, Z1 = Math.max(...zs) + 600;
+  const cell = 20, nx = Math.ceil((X1-X0)/cell), nz = Math.ceil((Z1-Z0)/cell), H = [], C = [];
+  const heathA = (mx, my) => my < 345 - 0.575*mx, heathB = (mx, my) => mx > 690 && my < 120 + (mx - 690)*0.55;
+  for(let j=0;j<=nz;j++) for(let i=0;i<=nx;i++){
+    const x = X0 + i*cell, z = Z0 + j*cell, {h, n} = T.height(x, z), mx = x/S + 140, my = 520 - z/S;
+    const moor = heathA(mx, my) || heathB(mx, my) || h - G.y(n.s) > 22, k = 0.04*Math.sin(x*0.05 + z*0.03);
+    H.push(h); C.push(n.d < 12 ? [.38,.35,.31] : moor ? [.42 + k,.37,.33 + k] : [.34 + k,.47 + k,.24]); }
+  const v = (i, j) => { const q = j*(nx+1) + i; return [X0 + i*cell, H[q], Z0 + j*cell]; };
+  for(let j=0;j<nz;j++) for(let i=0;i<nx;i++){ const q = j*(nx+1) + i, c = C[q];
+    quad(a, v(i,j), v(i,j+1), v(i+1,j+1), v(i+1,j), c, [0,1,0]); }
+  // water: the river in its valley and the reservoir
+  const water = [.36,.52,.62];
+  for(let i=0;i<T.river.length-1;i++){ const [ax,az] = T.river[i], [bx,bz] = T.river[i+1], n = Math.ceil(Math.hypot(bx-ax, bz-az)/15);
+    for(let k=0;k<n;k++){ const p = [ax + (bx-ax)*k/n, az + (bz-az)*k/n], q = [ax + (bx-ax)*(k+1)/n, az + (bz-az)*(k+1)/n];
+      const ya = T.height(p[0], p[1]).h + 0.5, yb = T.height(q[0], q[1]).h + 0.5, yaw = Math.atan2(q[0]-p[0], q[1]-p[1]), cx = Math.cos(yaw)*5, cz = -Math.sin(yaw)*5;
+      quad(a, [p[0]-cx, ya, p[1]-cz], [p[0]+cx, ya, p[1]+cz], [q[0]+cx, yb, q[1]+cz], [q[0]-cx, yb, q[1]-cz], water, [0,1,0]); } }
+  for(let k=0;k<24;k++){ const t0 = k/24*Math.PI*2, t1 = (k+1)/24*Math.PI*2, R = (t)=>[T.res.x + Math.cos(t)*70*S, T.resLevel, T.res.z + Math.sin(t)*30*S];
+    quad(a, [T.res.x, T.resLevel, T.res.z], R(t0), R(t1), R(t1), water, [0,1,0]); }
+  // the B6481, laid on the land
+  const road = ROAD_PTS.map(([x,y])=>{ const p = G.W(x,y); return [p.x,p.z]; });
+  for(let i=0;i<road.length-1;i++){ const [ax,az] = road[i], [bx,bz] = road[i+1], n = Math.ceil(Math.hypot(bx-ax, bz-az)/12);
+    for(let k=0;k<n;k++){ const p = [ax + (bx-ax)*k/n, az + (bz-az)*k/n], q = [ax + (bx-ax)*(k+1)/n, az + (bz-az)*(k+1)/n];
+      const ya = T.height(p[0], p[1]).h + 0.15, yb = T.height(q[0], q[1]).h + 0.15, yaw = Math.atan2(q[0]-p[0], q[1]-p[1]), cx = Math.cos(yaw)*3.2, cz = -Math.sin(yaw)*3.2;
+      quad(a, [p[0]-cx, ya, p[1]-cz], [p[0]+cx, ya, p[1]+cz], [q[0]+cx, yb, q[1]+cz], [q[0]-cx, yb, q[1]-cz], [.3,.3,.31], [0,1,0]); } }
+  // the track: ballast, sleepers and rails on the main line and every loop
+  const ballast = [.5,.47,.43], sleeper = [.27,.19,.13], railC = [.56,.54,.5];
+  const lay = (s0, s1, offAt) => {
+    for(let s = s0; s < s1 - 0.01; s += DRV.step){ const e = Math.min(s1, s + DRV.step), p = G.at(s, offAt(s)), q = G.at(e, offAt(e));
+      const cy = Math.cos(p.yaw), sy = Math.sin(p.yaw), cq = Math.cos(q.yaw), sq = Math.sin(q.yaw);
+      const side = (P, c, sn, o, y) => [P.x + c*o, P.y + y, P.z - sn*o];
+      quad(a, side(p,cy,sy,-1.9,0.28), side(p,cy,sy,1.9,0.28), side(q,cq,sq,1.9,0.28), side(q,cq,sq,-1.9,0.28), ballast, [0,1,0]);
+      for(const o of [1.9,-1.9]) quad(a, side(p,cy,sy,o,0.28), side(p,cy,sy,o*1.45,-0.2), side(q,cq,sq,o*1.45,-0.2), side(q,cq,sq,o,0.28), [.44,.41,.37], [o,1,0]);
+      for(const o of [0.75,-0.75]){ quad(a, side(p,cy,sy,o-0.04,0.53), side(p,cy,sy,o+0.04,0.53), side(q,cq,sq,o+0.04,0.53), side(q,cq,sq,o-0.04,0.53), railC, [0,1,0]);
+        quad(a, side(p,cy,sy,o-0.04,0.38), side(p,cy,sy,o-0.04,0.53), side(q,cq,sq,o-0.04,0.53), side(q,cq,sq,o-0.04,0.38), [.36,.33,.3], [-1,0,0]); }
+      for(let t = 0; t < e - s; t += 2){ const m = G.at(s + t, offAt(s + t)); box(a, m.x, m.y + 0.33, m.z, 2.6, 0.12, 0.26, sleeper, m.yaw); }
+    } };
+  lay(-30, G.L + 30, ()=>0);
+  STATIONS.forEach((st,i)=>{ if(!G.lp.has(i)) return; const [p0, p1] = G.plat[i]; lay(p0 - 60, p1 + 60, s=>G.loopOff(i, s)); });
+  // buffer stops at the termini
+  for(const [s, d] of [[-16, -1], [G.L + 16, 1]]) for(const o of [0, -4.6]){ const p = G.at(s, o); box(a, p.x, p.y + 0.8, p.z, 2.4, 1.0, 0.8, [.35,.25,.18], p.yaw); box(a, p.x, p.y + 1.4, p.z, 2.8, 0.35, 0.3, [.75,.15,.12], p.yaw); }
+  // stations: platforms with edging, a building, lamps, benches and nameboards, and a starter signal each way at the loops
+  const stone = [.62,.58,.52], brick = [.56,.33,.25], slate = [.27,.28,.31], cream = [.88,.83,.66], dark = [.13,.13,.14];
+  G.boards = []; G.sigs = [];
+  STATIONS.forEach((st,i)=>{
+    const [p0, p1] = G.plat[i], loop = G.lp.has(i);
+    const plat = (off) => { for(let s = p0; s < p1; s += DRV.step){ const p = G.at(s + DRV.step/2, off); box(a, p.x, p.y + 0.5, p.z, 4.0, 1.0, DRV.step + 0.05, stone, p.yaw);
+        const e = G.at(s + DRV.step/2, off - Math.sign(off)*1.85); box(a, e.x, e.y + 1.01, e.z, 0.3, 0.02, DRV.step, [.95,.92,.8], e.yaw); } };
+    plat(3.6); if(loop) plat(-8.2);
+    const mid = (p0 + p1)/2, b = G.at(mid, 7.2);
+    box(a, b.x, b.y + 2.6, b.z, 4.4, 3.2, 12, i===0 || i===STATIONS.length-1 ? brick : stone, b.yaw);
+    box(a, b.x, b.y + 4.5, b.z, 5.0, 0.6, 12.8, slate, b.yaw);
+    const ch = G.at(mid + 4, 7.2); box(a, ch.x, ch.y + 5.3, ch.z, 0.7, 1.2, 0.7, brick, ch.yaw);
+    for(const ds of [-60, -35, 30, 60]){ const l = G.at(mid + ds, 4.9); box(a, l.x, l.y + 2.6, l.z, 0.12, 3.2, 0.12, dark, l.yaw); box(a, l.x, l.y + 4.25, l.z, 0.35, 0.35, 0.35, cream, l.yaw); }
+    for(const ds of [-20, 16]){ const q = G.at(mid + ds, 4.6); box(a, q.x, q.y + 1.45, q.z, 0.5, 0.1, 2.0, [.4,.24,.14], q.yaw); }
+    for(const ds of [-45, 45]){ const n = G.at(mid + ds, 4.4); for(const dd of [-1.4, 1.4]){ const q = G.at(mid + ds + dd, 4.4); box(a, q.x, q.y + 1.9, q.z, 0.1, 1.8, 0.1, dark, q.yaw); }
+      box(a, n.x, n.y + 3.0, n.z, 0.12, 0.7, 3.6, cream, n.yaw); G.boards.push({i, x:n.x, y:n.y + 3.0, z:n.z}); }
+    if(loop) for(const dir of [1,-1]){ if((i===0 && dir<0) || (i===STATIONS.length-1 && dir>0)) continue;
+      const ss = G.stopAt(i, dir) + dir*16, q = G.at(ss, 2.6);
+      box(a, q.x, q.y + 2.4, q.z, 0.16, 4.8, 0.16, dark, q.yaw); box(a, q.x, q.y + 4.6, q.z, 0.5, 0.9, 0.3, B0, q.yaw);
+      G.sigs.push({i, dir, s:ss, x:q.x, y:q.y + 4.6, z:q.z, yaw:q.yaw}); }
+  });
+  // Brackenby Viaduct: twelve stone arches over the Raven
+  { const [v0, v1] = G.via, n = 12, span = (v1 - v0)/n, r = span*0.38, vc = [.55,.5,.45];
+    for(let s = v0; s < v1; s += DRV.step){ const p = G.at(s + DRV.step/2); box(a, p.x, p.y - 0.4, p.z, 5.0, 1.6, DRV.step + 0.05, vc, p.yaw);
+      for(const o of [2.45,-2.45]){ const q = G.at(s + DRV.step/2, o); box(a, q.x, q.y + 1.0, q.z, 0.4, 1.2, DRV.step + 0.05, vc, q.yaw); } }
+    for(let k=0;k<=n;k++){ const s = v0 + k*span, p = G.at(s), g = T.height(p.x, p.z).h, top = p.y - 1.2 - r;
+      if(top > g) box(a, p.x, (g + top)/2, p.z, 4.8, top - g + 0.5, span - 2*r, vc, p.yaw); }
+    for(let k=0;k<n;k++){ const sc = v0 + (k + 0.5)*span, p = G.at(sc), spring = p.y - 1.2 - r, c = Math.cos(p.yaw), sn = Math.sin(p.yaw);
+      const at = (along, y, o) => [p.x + sn*along + c*o, y, p.z + c*along - sn*o];
+      for(let q=0;q<10;q++){ const t0 = Math.PI*q/10, t1 = Math.PI*(q+1)/10, A0 = -Math.cos(t0)*r, A1 = -Math.cos(t1)*r, Y0 = spring + Math.sin(t0)*r, Y1 = spring + Math.sin(t1)*r;
+        for(const o of [2.4,-2.4]) quad(a, at(A0, Y0, o), at(A1, Y1, o), at(A1, p.y - 1.2, o), at(A0, p.y - 1.2, o), vc, [o,0,0]);
+        quad(a, at(A0, Y0, 2.4), at(A1, Y1, 2.4), at(A1, Y1, -2.4), at(A0, Y0, -2.4), [.42,.38,.34], [0,-1,0]); } } }
+  // Highmoor Tunnel: a dark bore with a stone portal at each end
+  { const [t0, t1] = G.tun, tc = [.16,.15,.14];
+    for(let s = t0; s < t1; s += DRV.step){ const m = s + DRV.step/2;
+      for(const o of [2.9,-2.9]){ const q = G.at(m, o); box(a, q.x, q.y + 3.0, q.z, 0.5, 6.0, DRV.step + 0.05, tc, q.yaw); }
+      const p = G.at(m); box(a, p.x, p.y + 6.2, p.z, 6.3, 0.5, DRV.step + 0.05, tc, p.yaw); }
+    for(const s of [t0, t1]){ for(const o of [6.4,-6.4]){ const q = G.at(s, o); box(a, q.x, q.y + 5, q.z, 7.0, 10, 1.6, [.5,.47,.42], q.yaw); }
+      const q = G.at(s); box(a, q.x, q.y + 8.5, q.z, 6.0, 3.6, 1.6, [.5,.47,.42], q.yaw); } }
+  // trees in the fields, cottages by the stations, and stone walls along the line
+  let seed = 11; const rnd = () => (seed = (seed*16807) % 2147483647)/2147483647;
+  for(let k=0;k<520;k++){ const x = X0 + rnd()*(X1-X0), z = Z0 + rnd()*(Z1-Z0), t = T.height(x, z);
+    if(t.n.d < 22 || t.h < T.nat(x, z, t.n) - 6 || t.h - G.y(t.n.s) > 30) continue;
+    const ht = 4 + rnd()*4, y = rnd()*3; box(a, x, t.h + ht/2, z, 0.5, ht, 0.5, [.3,.22,.15], y); box(a, x, t.h + ht + 1.8, z, 3.4 + rnd()*1.5, 4.0, 3.4 + rnd()*1.5, [.17,.31 + rnd()*.1,.15], y); }
+  STATIONS.forEach((st,i)=>{ const mid = (G.plat[i][0] + G.plat[i][1])/2;
+    for(let k=0;k<(i===0 ? 9 : 5);k++){ const o = 22 + rnd()*40, p = G.at(mid - 80 + rnd()*160, o), h = T.height(p.x, p.z).h, w = 5 + rnd()*3;
+      box(a, p.x, h + 2.2, p.z, w, 4.4, 7, rnd() < 0.5 ? stone : [.66,.62,.55], p.yaw); box(a, p.x, h + 4.9, p.z, w + 0.4, 1.0, 7.4, slate, p.yaw); } });
+  for(let s = 0; s < G.L; s += 8){ if(s > G.via[0] - 10 && s < G.via[1] + 10 || s > G.tun[0] - 30 && s < G.tun[1] + 30) continue;
+    if(G.plat.some(([p0, p1])=>s > p0 - 70 && s < p1 + 70)) continue;
+    for(const o of [13, -13]){ const p = G.at(s + 4, o), q0 = G.at(s, o), q1 = G.at(s + 8, o), h = T.height(p.x, p.z).h;
+      if(Math.abs(T.height(q0.x, q0.z).h - T.height(q1.x, q1.z).h) > 0.5) continue;   // walls only on the level
+      box(a, p.x, h + 0.45, p.z, 0.4, 0.9, 8.1, [.5,.48,.44], p.yaw); } }
+  return a;
+}
+const B0 = [.07,.07,.08];
+
+/* ---- the day's working: which trips the chosen train makes, call by call ---- */
+function driveWorking(plan, k, from){
+  const set = plan.sets[k], sim = simulateDay(plan.sets, null);
+  const trips = sim.trips.filter(t=>t.set===set && t.calls).slice(from);
+  if(!trips.length) return null;
+  const stops = st => !set.stops || set.stops.has(st);
+  const calls = [];
+  trips.forEach(t=>t.calls.forEach(c=>{
+    const last = calls[calls.length-1];
+    if(last && last.st===c.st && last.dep==null){ last.dep = c.dep; return; }   // home and out again
+    calls.push({st:c.st, arr:c.arr, dep:c.dep, stop: c.st===set.lo || c.st===set.hi || stops(c.st)});
+  }));
+  calls.forEach((c,i)=>{ const n = calls[i+1], p = calls[i-1];
+    c.dirOut = n ? Math.sign(n.st - c.st) : 0; c.dirIn = p ? Math.sign(c.st - p.st) : 0; });
+  return {set, sim, calls, trips:trips.length, from};
+}
+
+let dv = null;   // the driving session
+function driveChoice(){
+  const plan = pendingPlan || currentPlan();
+  const rows = plan.sets.map((s,k)=>`<div class="row" style="align-items:flex-start;gap:10px;flex-wrap:wrap">
+      <span style="min-width:180px"><b>${s.label}</b><br><span class="sub" style="margin:0">${s.lcat.name}${s.pcat ? " + " + s.pcat.name : ""}${s.rcat ? " · " + s.rcat.name : ""}</span></span>
+      <span style="display:flex;gap:6px;flex-wrap:wrap">${s.deps.map((d,i)=>`<button class="act greenbtn" style="width:auto;padding:5px 9px" onclick="closeModal();startDrive(${k},${i})">${i ? "From" : "Whole day from"} ${ttTime(d)}</button>`).join("")}</span></div>`).join("");
+  openModal("Drive a Service", `<p>Pick a train and the trip to start from. You'll drive it from the cab, calling at its booked stations, through the passing loops, over Brackenby Viaduct and up through Highmoor Tunnel, for the rest of its day. Hand over to another driver whenever you've had enough.</p>
+    <p class="sub">The line is drawn to the map but squeezed eight times, and the clock runs six times as fast, so a round trip takes about a quarter of an hour, not two hours.</p>
+    ${rows}
+    <div class="toolbar" style="margin-bottom:0"><button class="act" style="width:auto" onclick="closeModal();${pendingJobs.length ? "offerShunt(pendingJobs)" : "advanceWeek({go:true})"}">◂ Back</button></div>`, true);
+}
+function startDrive(k, from){
+  const gl = yardGL();
+  if(!gl){ alert("Your browser can't show the 3D line (WebGL is turned off)."); advanceWeek({go:true}); return; }
+  const plan = pendingPlan || currentPlan(), work = driveWorking(plan, k, from);
+  if(!work){ alert("That train doesn't run that trip today."); advanceWeek({go:true}); return; }
+  const G = line3();
+  if(!G.mesh){ G.mesh = meshBuffer(gl, lineSceneMesh(G)); }
+  const set = work.set, train = driveConsist(gl, set), first = work.calls[0];
+  dv = {plan, k, work, G, set, train, ci:0, phase:"stand", boarded:1, T:(first.dep || 0) - 1.5, dir:first.dirOut || 1,
+        v:0, ctl:0, emerg:false, look:0, pitch:-0.04, cam:0, keys:{}, raf:0, last:0, msgT:0, log:[], spad:0, over:0, early:0, overrun:0, done:false};
+  dv.s = dv.standS = G.stopAt(first.st, dv.dir);
+  dv.others = work.sim.agents.filter(a=>a.k!==k).map(a=>({a, train:driveConsist(gl, plan.sets[a.k])}));
+  dv.sigMesh = {r:meshBuffer(gl, (()=>{ const m = []; box(m, 0,0,0, 0.22,0.22,0.06, [1,.12,.08]); return m; })()), g:meshBuffer(gl, (()=>{ const m = []; box(m, 0,0,0, 0.22,0.22,0.06, [.2,1,.35]); return m; })())};
+  document.querySelector(".laptop").classList.add("away");
+  const y = document.getElementById("yard"); y.classList.add("drv");
+  setTimeout(()=>{ if(!dv) return;
+    y.hidden = false; document.getElementById("dDone").hidden = true;
+    yardSize(); dHud(); requestAnimationFrame(()=>y.classList.add("show"));
+    dv.raf = requestAnimationFrame(driveFrame);
+    dMsg(`You're in the cab of ${set.loco.number} at ${STATIONS[first.st].name}. Right away at ${ttTime(first.dep)}`);
+  }, 550);
+}
+// the train: engine (and pilot) at the front, then the coaches; a unit is its own cars
+function driveConsist(gl, set){
+  const out = [], eng = (loco, cat, guest) => { const md = locoModel(cat.key, guest ? null : liveryOf(loco));
+    if(md.cars){ const parts = md.cars(0); const open = md.cars(1)[parts.length-1];
+      parts.forEach((c,i)=>out.push({len:c.len, mesh:meshBuffer(gl, i===parts.length-1 ? open.mesh : c.mesh), plain:meshBuffer(gl, c.mesh), eye:i===parts.length-1 ? open.eye : null, front:i===parts.length-1}));
+      out.reverse(); return; }
+    out.push({len:md.len, mesh:meshBuffer(gl, md.mesh()), eye:engineEye(cat.key, md)}); };
+  eng(set.loco, set.lcat, set.trainGuest);
+  if(set.pilot) eng(set.pilot, set.pcat, set.pilotGuest), out.unshift(out.pop());
+  if(set.rcat){ const rk = set.rcat.key || "", liv = rk.includes("teak") ? [[.5,.29,.13],[.72,.52,.3]] : rk.includes("pullman") ? [[.34,.2,.12],[.9,.84,.68]]
+      : rk.includes("mk2") ? [[.16,.3,.55],[.86,.86,.86]] : [[.42,.08,.1],[.86,.8,.62]];
+    const cm = meshBuffer(gl, vehicleMesh({type:"coach", len:20, col:liv[0], win:liv[1]}));
+    for(let i=0;i<(set.rcat.cars || 4);i++) out.push({len:20, mesh:cm, shared:i>0}); }
+  out.len = out.reduce((t,v)=>t + v.len, 0);
+  return out;
+}
+// where the driver looks out: leaning from the cab side of an engine
+function engineEye(key, md){
+  const L = md.len, st = STEAM_MODELS[key], d = DIESEL_MODELS[key];
+  if(st){ const tank = st.type!=="tender", cl = st.eng > 12 ? 2.6 : 2.35; return [-1.85, 3.85, L/2 - st.eng + (tank ? 1.6 : 0.05) + cl + 0.3]; }
+  if(d && d.style==="hood") return [-1.65, 3.7, d.cab==="end" ? -(L/2 - 0.62) + 2.9 : (d.cabZ || 0) + 1.6];
+  return [-1.65, 3.45, L/2 - 0.9];
+}
+
+/* ---- physics, signals and the timetable ---- */
+const dTime = T => ttTime(Math.round(T));
+function dNext(){ return dv.work.calls[dv.ci + 1]; }
+function dSignal(){   // the starter at a loop: off when it's time and the section ahead is clear of other trains
+  const c = dv.work.calls[dv.ci], G = dv.G;
+  if(!G.lp.has(c.st) || c.dep==null || !c.dirOut) return {here:false, clear:true};
+  const dir = dv.dir;
+  let nx = c.st + dir; while(nx > 0 && nx < STATIONS.length-1 && !G.lp.has(nx)) nx += dir;
+  const m0 = Math.min(STATIONS[c.st].mile, STATIONS[nx].mile), m1 = Math.max(STATIONS[c.st].mile, STATIONS[nx].mile);
+  const busy = dv.others.some(o=>{ const m = agentMile(o.a, dv.T); return m!=null && m > m0 + 0.05 && m < m1 - 0.05; });
+  return {here:true, clear: !busy && c.dep!=null && dv.T >= c.dep - 0.01 && dv.boarded >= 1};
+}
+function agentMile(a, T){
+  const P = a.path; if(!P.length || T < P[0].t || T > P[P.length-1].t) return null;
+  for(let i=0;i<P.length-1;i++) if(T >= P[i].t && T <= P[i+1].t){ const f = (T - P[i].t)/((P[i+1].t - P[i].t) || 1); return P[i].m + (P[i+1].m - P[i].m)*f; }
+  return null;
+}
+function dStep(dt){
+  const G = dv.G, k = dv.keys, n = dNext(), c = dv.work.calls[dv.ci];
+  if(k.up) dv.ctl = Math.min(1, dv.ctl + 0.6*dt);
+  if(k.down) dv.ctl = Math.max(-1, dv.ctl - 0.8*dt);
+  // the engine's best speed on this section is the one the timetable was worked out from (load, pace and the climb),
+  // with a little in hand; downhill the train will run away with you if you let it
+  const set = dv.set, from = dv.phase==="run" ? c.st : c.st, to = n ? n.st : c.st, seg = Math.min(from, to), sd = Math.sign(to - from) || dv.dir;
+  const load = Math.min(1, (set.cars || 0)/(set.maxHaul || 1)), climb = (GRADE[Math.min(seg, GRADE.length-1)] || 0)*sd;
+  const vSim = LINE_SPEED*(set.pace || 1)/(climb > 0 ? 1 + climb*(0.35 + 0.75*load) : 1), vmax = Math.min(vSim*0.447*1.3, (DRV.lim + 1)*0.447);
+  const A = set.kind==="dmu" ? 0.5 : 0.42;
+  const grade = (G.y(dv.s + 2) - G.y(dv.s - 2))/4*dv.dir*0.35;
+  let acc = dv.ctl > 0 ? dv.ctl*A*Math.max(-0.3, Math.min(1, 4*(1 - dv.v/vmax))) : dv.ctl*0.9;
+  if(dv.emerg) acc = -1.5;
+  acc -= (grade < 0 ? 9.81*grade : 0) + 0.012 + 0.0004*dv.v*dv.v;
+  if(dv.v <= 0 && acc < 0) acc = 0;
+  dv.v = Math.max(0, dv.v + acc*dt);
+  const old = dv.s; dv.s += dv.dir*dv.v*dt;
+  // the buffer stops at the ends of the line
+  if(dv.s > G.L + 15){ dv.s = G.L + 15; if(dv.v > 1) dRough("Bang! Into the buffer stops at Moorend"); dv.v = 0; }
+  if(dv.s < -15){ dv.s = -15; if(dv.v > 1) dRough("Bang! Into the buffer stops at Ravensgill"); dv.v = 0; }
+  dv.T += dt*DRV.clock/60;
+  if(dv.v*MPH > DRV.lim + 2) dv.over += dt;
+  // passing a starter signal at danger
+  for(const sg of G.sigs) if(sg.dir===dv.dir && sg.i===dv.leftSt && (old - sg.s)*(dv.s - sg.s) <= 0 && old!==dv.s && !dv.leftClear){
+    dv.leftClear = true; dv.spad++; dMsg("You passed the signal at danger! The signalman is not pleased", true); }
+  if(dv.phase==="stand"){
+    if(dv.boarded < 1) dv.boarded = Math.min(1, dv.boarded + dt/(DWELL*60/DRV.clock));
+    if(dv.v > 0.2 && dv.moveT==null) dv.moveT = dv.T;
+    if(dv.v < 0.05) dv.moveT = null;
+    if(Math.abs(dv.s - dv.standS) > 10){   // moving off
+      const sig = dSignal();
+      dv.leftSt = c.st; dv.leftClear = sig.clear;
+      if(!sig.here && (dv.T < c.dep - 0.5 || dv.boarded < 1)){ dv.early++; dMsg("You left before time! The guard hadn't given the right away", true); }
+      dv.log.push({st:c.st, dep:dv.moveT ?? dv.T, booked:c.dep}); dv.phase = "run"; dv.moveT = null; dHud(); }
+  } else {
+    // calling, passing and overrunning the next station
+    const stopS = G.stopAt(n.st, dv.dir), past = (dv.s - stopS)*dv.dir, [p0, p1] = G.plat[n.st];
+    if(!n.stop && past > 0){ dv.ci++; dv.log.push({st:n.st, pass:dv.T, booked:n.arr}); dv.phase = "run"; dHud(); return; }
+    if(n.stop && dv.v < 0.05 && past > -28 && dv.s >= p0 - 1 && dv.s <= p1 + 1 || n.stop && past > 30){
+      if(past > 30){ dv.overrun++; dMsg(`You overran ${STATIONS[n.st].name}! Set back and call`, true); dv.s = stopS; dv.v = 0; }
+      else if(past > 8){ dv.overrun++; dMsg(`A bit past the stop board at ${STATIONS[n.st].name}`, true); }
+      const late = dv.T - n.arr;
+      dv.log.push({st:n.st, arr:dv.T, booked:n.arr, late});
+      dv.ci++; dv.phase = "stand"; dv.boarded = 0; dv.v = 0; dv.ctl = Math.min(dv.ctl, 0); dv.standS = dv.s; dv.leftSt = null;
+      if(dv.ci===dv.work.calls.length-1){ dFinish(true); return; }
+      const now = dv.work.calls[dv.ci];
+      if(now.dirOut && now.dirOut!==dv.dir){   // turn round: the engine runs round, or the driver changes ends
+        dv.dir = now.dirOut; dv.s = dv.standS = G.stopAt(now.st, dv.dir);
+        dMsg(dv.set.kind==="dmu" ? `${STATIONS[now.st].name}: you change ends. Right away at ${dTime(now.dep)}` : `${STATIONS[now.st].name}: the engine runs round its train. Right away at ${dTime(now.dep)}`);
+      } else dMsg(`${STATIONS[now.st].name}${late > 1 ? `, ${Math.round(late)} min late` : late < -1 ? ", early" : ", right time"}. Right away at ${dTime(Math.max(now.dep, dv.T))}`);
+      dHud();
+    }
+  }
+}
+function dRough(text){ dv.overrun++; dMsg(text, true); }
+function dSkip(){
+  if(!dv || dv.phase!=="stand") return;
+  const c = dv.work.calls[dv.ci];
+  if(c.dep==null || dv.T >= c.dep - 0.3){ dMsg("Nothing to wait for: away you go", true); return; }
+  dv.T = c.dep - 0.3; dv.boarded = 1; dMsg("Time passes on the platform...");
+}
+function dHandOver(){
+  if(!dv || dv.done) return;
+  if(!confirm("Hand the train over to another driver for the rest of the day?")) return;
+  dFinish(false);
+}
+function dFinish(complete){
+  dv.done = true; dv.v = 0;
+  const arr = dv.log.filter(l=>l.arr!=null), mean = arr.length ? arr.reduce((t,l)=>t + Math.max(0, l.late), 0)/arr.length : 0;
+  const faults = dv.spad*3 + dv.overrun + dv.early + (dv.over > 20 ? 1 : 0);
+  const stars = !arr.length ? 0 : faults===0 && mean <= 2 ? 3 : dv.spad===0 && faults <= 2 && mean <= 5 ? 2 : 1;
+  const legs = dv.log.filter(l=>l.arr!=null).length, total = dv.work.calls.filter((c,i)=>i && c.stop).length;
+  dv.result = {stars, complete, stops:legs, total, late:mean, spad:dv.spad, overrun:dv.overrun, over:Math.round(dv.over),
+               train:`${dTime(dv.work.calls[0].dep)} ${dv.set.label}`, at:STATIONS[dv.work.calls[dv.ci].st].name};
+  const d = document.getElementById("dDone");
+  d.innerHTML = `<div class="card"><h3 style="justify-content:center">${complete ? "Shift complete!" : "Handed over"}</h3>
+    <div class="ystars">${"★".repeat(stars)}${"☆".repeat(3-stars)}</div>
+    <p>${complete ? `You brought ${dv.set.label} home: ${legs} station call${legs===1?"":"s"}.` : `You handed over at ${dv.result.at} after ${legs} of ${total} calls; another driver finishes the day.`}<br>
+      Average ${mean.toFixed(1)} min late · ${dv.spad} signal${dv.spad===1?"":"s"} passed at danger · ${dv.overrun} overrun${dv.overrun===1?"":"s"} · ${Math.round(dv.over)} s over the limit</p>
+    <p class="sub">${stars===3 ? "Right time and smooth all the way (+2 reputation, morale up)." : stars===2 ? "A tidy turn (+1 reputation)." : stars ? "You got there." : "Not long enough to judge."}</p>
+    <button class="act greenbtn" onclick="endDrive(dv.result)">Back to the laptop and run the weekend ▸</button></div>`;
+  d.hidden = false;
+}
+function endDrive(result){
+  cancelAnimationFrame(dv.raf);
+  const gl = yardGL(), seen = new Set();
+  [dv.train, ...dv.others.map(o=>o.train)].forEach(t=>t.forEach(v=>{ for(const m of [v.mesh, v.plain]) if(m && !seen.has(m)){ seen.add(m); gl.deleteBuffer(m.buf); } }));
+  for(const m of Object.values(dv.sigMesh)) gl.deleteBuffer(m.buf);
+  dv = null;
+  const y = document.getElementById("yard"); y.classList.remove("show");
+  setTimeout(()=>{ y.hidden = true; y.classList.remove("drv"); document.querySelector(".laptop").classList.remove("away"); }, 450);
+  if(result && result.stars){
+    state.rep = Math.min(160, state.rep + (result.stars===3 ? 2 : result.stars===2 ? 1 : 0));
+    state.vol.morale = Math.min(1, state.vol.morale + (result.stars===3 ? 0.03 : 0.01));
+    logEntry(`Drove the ${result.train} yourself (${"★".repeat(result.stars)}).`, 0);
+  }
+  setTimeout(()=>advanceWeek({go:true, drive:result}), 650);
+}
+
+/* ---- drawing the line ---- */
+function m4at(x, y, z, yaw){ const c = Math.cos(yaw), s = Math.sin(yaw); return new Float32Array([c,0,-s,0, 0,1,0,0, s,0,c,0, x,y,z,1]); }
+function trainPoses(G, train, sFront, dir, off){   // each vehicle's place behind the front, on the main line or a loop
+  const out = []; let d = 0;
+  for(const v of train){ const sc = sFront - dir*(d + v.len/2), f = G.at(sc + dir*v.len*0.36, off ? off(sc) : 0), r = G.at(sc - dir*v.len*0.36, off ? off(sc) : 0);
+    out.push({v, x:(f.x + r.x)/2, y:(f.y + r.y)/2, z:(f.z + r.z)/2, yaw:Math.atan2(f.x - r.x, f.z - r.z)}); d += v.len; }
+  return out;
+}
+function driveDraw(){
+  const gl = YGL.gl, cv = gl.canvas, G = dv.G;
+  gl.clearColor(.64,.76,.86,1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  const mine = trainPoses(G, dv.train, dv.s, dv.dir), lead = mine[0], c = Math.cos(lead.yaw), sn = Math.sin(lead.yaw);
+  let eye, head = lead.yaw;
+  if(dv.cam===0){ const e = lead.v.eye || [-1.75, 3.5, lead.v.len/2 - 1.7]; eye = [lead.x + c*e[0] + sn*e[2], lead.y + e[1], lead.z - sn*e[0] + c*e[2]]; }
+  else { const b = G.at(dv.s - dv.dir*(dv.train.len*0.5 + 22), 9); eye = [b.x, b.y + 11, b.z]; head = Math.atan2(lead.x - b.x, lead.z - b.z); }
+  const yaw = head + dv.look, dir = [Math.sin(yaw)*Math.cos(dv.pitch), Math.sin(dv.pitch) - (dv.cam ? 0.22 : 0), Math.cos(yaw)*Math.cos(dv.pitch)];
+  const vp = m4mul(m4persp(1.15, cv.width/cv.height, 0.25, 2600), m4look(eye, dir));
+  gl.uniformMatrix4fv(YGL.vp, false, vp); gl.uniform3f(YGL.fog, .64,.76,.86); gl.uniform2f(YGL.fr, 350, 1500);
+  glDraw(G.mesh, m4at(0,0,0,0));
+  mine.forEach((p,i)=>glDraw(dv.cam===0 || !p.v.plain ? p.v.mesh : p.v.plain, m4at(p.x, p.y, p.z, p.yaw)));
+  // the other trains, where they stand or run on the booked timetable (kept out of your way)
+  for(const o of dv.others){ const m = agentMile(o.a, dv.T); if(m==null) continue;
+    const s = G.sOfMile(m), st = STATIONS.findIndex(q=>Math.abs(q.mile - m) < 0.01);
+    if(st < 0 && Math.abs(s - dv.s) < 300) continue;
+    const loop = st >= 0 && G.lp.has(st), next = agentMile(o.a, dv.T + 0.5), dirO = next!=null && next < m ? -1 : 1;
+    const sf = st >= 0 ? G.stopAt(st, dirO) : s;
+    if(!loop && Math.abs(sf - dv.s) < dv.train.len + o.train.len + 40) continue;
+    trainPoses(G, o.train, sf, dirO, loop ? (q=>G.loopOff(st, q)) : null).forEach(p=>glDraw(p.v.plain || p.v.mesh, m4at(p.x, p.y, p.z, p.yaw))); }
+  // starter signals
+  const here = dSignal();
+  for(const sg of G.sigs){ const off = sg.dir===dv.dir && (dv.phase==="stand" ? here.here && here.clear && sg.i===dv.work.calls[dv.ci].st : sg.i===dv.leftSt && dv.leftClear), on = !off;
+    const fwd = [Math.sin(sg.yaw), Math.cos(sg.yaw)], f = -sg.dir*0.18;
+    glDraw(on ? dv.sigMesh.r : dv.sigMesh.g, m4at(sg.x + fwd[0]*f, sg.y + 0.15, sg.z + fwd[1]*f, sg.yaw)); }
+  // nameboards
+  const lab = document.getElementById("ylab"), g = lab.getContext("2d"), k = lab.width/innerWidth;
+  g.clearRect(0,0,lab.width,lab.height); g.font = `700 ${Math.round(13*k)}px Georgia, serif`; g.textAlign = "center";
+  for(const b of G.boards){ const cx = vp[0]*b.x+vp[4]*b.y+vp[8]*b.z+vp[12], cy = vp[1]*b.x+vp[5]*b.y+vp[9]*b.z+vp[13], cw = vp[3]*b.x+vp[7]*b.y+vp[11]*b.z+vp[15];
+    if(cw < 2 || cw > 200) continue;
+    const sx = (cx/cw + 1)/2*lab.width, sy = (1 - cy/cw)/2*lab.height, txt = STATIONS[b.i].name.toUpperCase(), tw = g.measureText(txt).width + 14*k;
+    g.fillStyle = "rgba(250,246,232,.95)"; g.fillRect(sx - tw/2, sy - 12*k, tw, 20*k); g.fillStyle = "#6e1f24"; g.fillText(txt, sx, sy + 3*k); }
+}
+function dMap(){
+  const c = document.getElementById("dmap"), g = c.getContext("2d"), W = c.width, H = c.height;
+  g.clearRect(0,0,W,H);
+  const xs = LINE_PTS.map(p=>p[0]), ys = LINE_PTS.map(p=>p[1]), x0 = Math.min(...xs) - 70, x1 = Math.max(...xs) + 60, y0 = Math.min(...ys) - 30, y1 = Math.max(...ys) + 30;
+  const sc = Math.min(W/(x1-x0), H/(y1-y0)), X = x => (x - x0)*sc + (W - (x1-x0)*sc)/2, Y = y => (y - y0)*sc + (H - (y1-y0)*sc)/2;
+  g.strokeStyle = "rgba(255,255,255,.5)"; g.lineWidth = 4; g.lineJoin = "round"; g.beginPath(); LINE_PTS.forEach((p,i)=>i ? g.lineTo(X(p[0]),Y(p[1])) : g.moveTo(X(p[0]),Y(p[1]))); g.stroke();
+  g.font = "bold 15px Segoe UI, sans-serif"; g.fillStyle = "rgba(255,255,255,.75)";
+  STATIONS.forEach((st,i)=>{ const p = LINE_PTS.find(q=>q[2]===i); g.fillStyle = "#fff"; g.beginPath(); g.arc(X(p[0]),Y(p[1]), dv.G.lp.has(i) ? 6 : 4, 0, 7); g.fill();
+    const [dx, dy, anc] = LABEL_OFF[i]; g.textAlign = anc==="end" ? "right" : anc==="start" ? "left" : "center";
+    g.fillStyle = "rgba(255,255,255,.75)"; g.fillText(STATION_SHORT[i], X(p[0]) + dx*1.3, Y(p[1]) + dy*0.9); });
+  g.textAlign = "left";
+  for(const o of dv.others){ const m = agentMile(o.a, dv.T); if(m==null) continue; const [px,py] = pointAtMile(m); g.fillStyle = "#9ab"; g.beginPath(); g.arc(X(px),Y(py),6,0,7); g.fill(); }
+  const [px,py] = pointAtMile(dv.G.mileOfS(Math.max(0, Math.min(dv.G.L, dv.s)))); g.fillStyle = "#ffd24a"; g.beginPath(); g.arc(X(px),Y(py),8,0,7); g.fill();
+}
+function dMsg(text, bad){
+  const m = document.getElementById("yMsg"); m.textContent = text; m.className = "ymsg show" + (bad?" bad":"");
+  clearTimeout(dv.msgT); dv.msgT = setTimeout(()=>m.className = "ymsg", 3200);
+}
+function dHud(){
+  if(!dv) return;
+  const calls = dv.work.calls, show = calls.slice(Math.max(0, dv.ci - 1), dv.ci + 5);
+  document.getElementById("dJob").innerHTML = `<b>${dv.set.label}</b> <span class="ysub">${dv.set.lcat.name}${dv.set.rcat ? " · " + dv.set.rcat.cars + " coaches" : ""}</span>
+    <table class="dtt">${show.map(c=>{ const i = calls.indexOf(c), done = i < dv.ci || (i===dv.ci && dv.phase==="run"), now = i===dv.ci + (dv.phase==="run" ? 1 : 0);
+      const l = dv.log.find(q=>q.st===c.st && (q.booked===c.arr || q.booked===c.dep));
+      return `<tr class="${done ? "done" : now ? "now" : ""}"><td>${STATION_SHORT[c.st]}</td><td>${c.stop ? (c.arr!=null ? "arr " + dTime(c.arr) : "") : "pass"}</td><td>${c.dep!=null && c.stop ? "dep " + dTime(c.dep) : ""}</td><td>${l && l.late!=null ? (l.late > 1 ? `+${Math.round(l.late)}` : "✓") : ""}</td></tr>`; }).join("")}</table>`;
+}
+function dInfo(){
+  const mph = dv.v*MPH, c = dv.work.calls[dv.ci], n = dNext(), G = dv.G, sig = dSignal();
+  let next = "";
+  if(dv.phase==="stand") next = c.dep==null ? "End of the shift" : sig.here ? (sig.clear ? "<b>Signal off: right away!</b>" : `Starter at danger${dv.T < c.dep ? " until " + dTime(c.dep) : ": section occupied"}`)
+      : dv.T >= c.dep - 0.01 && dv.boarded >= 1 ? "<b>Right away!</b>" : `Right away at ${dTime(c.dep)}${dv.boarded < 1 ? " · passengers boarding" : ""}`;
+  else if(n) next = `${n.stop ? "Next stop" : "Passing"} <b>${STATIONS[n.st].name}</b> ${n.stop ? "arr " + dTime(n.arr) : ""} · ${Math.max(0, Math.round((G.stopAt(n.st, dv.dir) - dv.s)*dv.dir))} m`;
+  document.getElementById("dInfo").innerHTML = `<div class="ysub">${dv.set.loco.number} ${dv.set.lcat.name} · ${dv.dir>0 ? "up to Moorend" : "down to Ravensgill"}</div>
+    <div class="yspeed" style="${mph > DRV.lim + 2 ? "color:#ff8a7a" : ""}">${mph.toFixed(0)} <span style="font-size:.9rem">mph</span> <span class="ysub" style="font-size:.8rem">limit ${DRV.lim}</span></div>
+    <div class="dlever"><span style="width:${Math.abs(dv.ctl)*50}%;${dv.ctl >= 0 ? "left:50%;background:#5fbf6a" : `right:50%;background:#e0604f`}"></span></div>
+    <div class="ysub">${dv.emerg ? "<b>Emergency brake</b>" : dv.ctl > 0.02 ? `Power ${Math.round(dv.ctl*100)}%` : dv.ctl < -0.02 ? `Brake ${Math.round(-dv.ctl*100)}%` : "Coasting"}</div>
+    <div style="margin-top:6px">🕰 ${dTime(dv.T)} · ${next}</div>
+    <div class="ysub yhelp" style="margin:6px 0">↑/↓ or W/S power and brake · Space emergency · ←/→ look · C camera · T wait · H hand over</div>`;
+  document.getElementById("dSkip").hidden = !(dv.phase==="stand" && c.dep!=null && dv.T < c.dep - 0.5);
+}
+function driveFrame(ts){
+  if(!dv) return;
+  const dt = dv.last ? Math.min(0.05, (ts - dv.last)/1000) : 0; dv.last = ts;
+  if(!dv.done){ dStep(dt);
+    const L = dv.keys.left, R = dv.keys.right; if(L || R) dv.look = Math.max(-2.8, Math.min(2.8, dv.look + (L?1:-1)*1.6*dt)); }
+  if(!dv) return;
+  driveDraw();
+  if(Math.floor(dv.T*20) !== dv.hudTick){ dv.hudTick = Math.floor(dv.T*20); dInfo(); dMap(); }
+  dv.raf = requestAnimationFrame(driveFrame);
+}
+const DKEYS = {ArrowUp:"up", w:"up", W:"up", ArrowDown:"down", s:"down", S:"down", ArrowLeft:"left", a:"left", A:"left", ArrowRight:"right", d:"right", D:"right"};
+addEventListener("keydown", e=>{
+  if(!dv || dv.done) return;
+  if(DKEYS[e.key]){ dv.keys[DKEYS[e.key]] = true; e.preventDefault(); return; }
+  if(e.key===" "){ dv.emerg = true; dv.ctl = -1; e.preventDefault(); }
+  else if(e.key==="c" || e.key==="C") dv.cam = 1 - dv.cam;
+  else if(e.key==="t" || e.key==="T") dSkip();
+  else if(e.key==="h" || e.key==="H" || e.key==="Escape") dHandOver();
+});
+addEventListener("keyup", e=>{ if(!dv) return; if(DKEYS[e.key]) dv.keys[DKEYS[e.key]] = false; if(e.key===" ") dv.emerg = false; });
 
 /* ============================ MODAL / BOOT ============================ */
 function openModal(head, body, noClose){
