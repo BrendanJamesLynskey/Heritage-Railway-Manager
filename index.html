@@ -238,6 +238,7 @@
   .b-dmu{background:#3d6b2a}
   .b-rake{background:var(--gwr-green)}
   .b-guest{background:#7a4a12}
+  .b-shuttle{background:#8a6d1c}
   .b-event{background:#5b2a86}
   .sub{color:#6a7480;font-size:.8rem;margin:0 0 8px;font-style:italic}
   .specs{list-style:none;padding:0;margin:8px 0;font-size:.82rem}
@@ -304,6 +305,28 @@
   .diag{border-left:6px solid var(--br-blue)}
   .diag .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0;font-size:.8rem}
   .diag .row > span:first-child{width:52px;color:#6a7480;text-transform:uppercase;font-size:.68rem;letter-spacing:.4px;font-weight:700}
+  .calls{display:flex;flex-wrap:wrap;gap:4px;flex:1}
+  .stopchip{font:inherit;font-size:.72rem;padding:3px 7px;border-radius:4px;border:1px dashed #b9ae95;background:#fff;color:#9a917e;cursor:pointer;text-decoration:line-through}
+  .stopchip.on{border-style:solid;border-color:#1f4d2e;background:#e7f0e2;color:#1f4d2e;text-decoration:none;font-weight:600}
+  .stopchip.loop::after{content:" ⇄";font-size:.65rem;opacity:.7}
+  /* the public timetable, printed-leaflet style */
+  .htt-pair{display:grid;grid-template-columns:1fr;gap:12px;margin:0 0 14px}
+  .htt{background:#fffaf0;border:1px solid #d8cba8;border-radius:6px;padding:10px 12px 8px;font-family:Georgia,"Times New Roman",serif;color:#2a2a2a;min-width:0}
+  .htt h3{margin:0 0 8px;background:#1f4d2e;color:#f6efd9;padding:6px 10px;border-radius:3px;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .htt h3 small{text-transform:none;letter-spacing:0;font-weight:400;opacity:.85;margin-left:6px}
+  .htt .wrap{overflow-x:auto}
+  .htt table{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.82rem}
+  .htt th,.htt td{padding:2px 7px;text-align:center;white-space:nowrap;border-left:1px dotted #cdbf9c}
+  .htt thead th{font-weight:700;font-size:.72rem;border-bottom:2px solid #1f4d2e;padding-bottom:4px}
+  .htt thead th i{display:block;height:4px;border-radius:2px;margin:0 0 3px}
+  .htt td.st,.htt th.st{text-align:left;position:sticky;left:0;background:#fffaf0;border-left:0;padding-right:12px;font-weight:700;z-index:1}
+  .htt td.ad{border-left:0;color:#6a6152;font-style:italic;font-size:.72rem;padding:2px 4px;text-align:left}
+  .htt tr.halt td.st{font-weight:400}
+  .htt tbody tr:nth-child(even) td{background:#f6eedb}
+  .htt td.pass,.htt td.none{color:#a89a78}
+  .htt td.cx{color:#a83232;font-style:italic;font-size:.7rem}
+  .htt sup{font-size:.62rem;font-style:italic;color:#6a6152}
+  .htt .key{font-size:.72rem;color:#5c5446;margin:6px 0 0;font-style:italic}
   .deps{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0}
   .dep{background:#fff;border:1px solid var(--line);border-radius:14px;padding:2px 4px 2px 9px;font-size:.78rem;font-weight:600;font-variant-numeric:tabular-nums;display:inline-flex;align-items:center;gap:3px}
   .dep.late{border-color:var(--warn);background:#fff6dc}
@@ -382,7 +405,7 @@
   <!-- TIMETABLE -->
   <section class="view" id="v-tt">
     <h2>This Week's Timetable</h2>
-    <p class="lede">Every train starts at Ravensgill Junction, runs up the dale to Moorend and back. Give each locomotive (and its carriage set) a list of departure times. The line is single track: trains can only pass at the loops at Lowerdale and Fellside (and Brackenby or Highmoor Summit, if you build them), so the signallers will hold one train at a loop until the other has cleared the single line.</p>
+    <p class="lede">Trains start at Ravensgill Junction, run up the dale to Moorend and back. Give each locomotive (and its carriage set) a list of departure times. Untick stations to make a train run through them without stopping, or untick the ends to make a shuttle (it must start and turn back at a loop, ⇄). The line is single track: trains can only pass at the loops at Lowerdale and Fellside (and Brackenby or Highmoor Summit, if you build them), so the signallers will hold one train at a loop until the other has cleared the single line.</p>
     <div class="toolbar" id="tt-toolbar"></div>
     <div id="tt-event"></div>
     <div class="toolbar">
@@ -393,6 +416,8 @@
       <button class="act small" onclick="applyPreset(9)">Intensive (all stock)</button>
       <button class="act small warnbtn" onclick="clearTimetable()">Clear</button>
     </div>
+    <div class="htt-pair" id="tt-public"></div>
+    <h3 style="margin:4px 0 8px">Train workings</h3>
     <div class="grid" id="tt-diagrams"></div>
     <div id="tt-projection"></div>
     <div class="graphbox"><div class="sub" style="margin:2px 4px 6px">Train graph — time runs left to right, distance up the line from bottom to top. Flat lines are trains standing at a station; a long flat line at a loop is a train being held for a crossing.</div><div id="tt-graph"></div></div>
@@ -495,6 +520,8 @@
         <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to marshal the first train: the laptop folds away and you're in the cab. Form the train on the Platform road in the order shown, using the headshunt and Sidings A and B. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the far vehicle. Buffer up gently (under 2 mph) to couple. A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
         <li><b>Each turn is one week.</b> Plan the weekend in the <b>Timetable</b> app, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week. The weekend then plays out live on the <b>Line Map</b>, all its days together in the time of one (change the speed there, or pause it). You can't start the next week until the last train is home, but you can carry on booking events, buying stock and recruiting while it runs. The takings arrive when the weekend ends.</li>
         <li><b>Timetabling:</b> every train is a round trip from Ravensgill Junction to Moorend and back, about two hours with turn-rounds. Give each loco a set of departure times. If a train isn't back in time, its next trip leaves late.</li>
+        <li><b>The printed timetable:</b> the Up and Down tables at the top of the Timetable app are the public timetable, a column for each train. The times are worked out by the signallers' plan, so a train held at a loop shows its real, later time. <b>|</b> means the train runs through without stopping.</li>
+        <li><b>Shuttles and non-stop trains:</b> each train working has a row of stations it calls at. Untick a station in the middle and the train runs straight through it: quicker, but nobody can get on there. Untick the ends to make a shuttle, say Fellside–Moorend: it can only start and turn back at a passing loop (⇄), runs out empty from the shed in the morning and back at night, and its shorter rides sell cheaper tickets. Each station's passengers wait for a train that calls there; most people join at Ravensgill, where the car park is.</li>
         <li><b>Double-heading:</b> press <b>🚂🚂 Double-head</b> on a diagram to couple a pilot engine on the front. The two engines' loads add together (a 4-coach and a 5-coach engine can take 9 coaches up the bank), so small engines can work long trains and climb faster. The crowd likes the sight, and a double-header counts as two engines for a gala, but it needs two crews, burns both engines' coal and wears both engines, and the train goes at the slower engine's pace.</li>
         <li><b>Single line:</b> trains can only pass at the loops (Lowerdale and Fellside, plus Brackenby and Highmoor Summit once built), and only one train may be on each single-line section. The train graph shows where trains are held. Each loop has one road for each direction (Moorend holds two trains), so too many trains with too few loops means trains are held and run late.</li>
         <li><b>Passengers</b> arrive through the day (mostly late morning and lunchtime) and take the next train. A gap of more than two hours loses them; a full train turns them away. Steam draws more people than diesel, and both draw more than a DMU.</li>
@@ -555,6 +582,9 @@ const STATIONS = [
   {key:"MOR", name:"Moorend",             mile:14.0,loop:true,  blurb:"Moorland terminus with a run-round loop, beside Highmoor Reservoir."}
 ];
 const LINE_MILES = 14.0;
+const STATION_SHORT = ["Ravensgill","Kirkby Thorpe","Lowerdale","Brackenby","Fellside","Highmoor","Moorend"];
+// Where the day's passengers join: most drive to Ravensgill; the rest walk up at the villages.
+const STATION_SHARE = [0.62, 0.04, 0.08, 0.04, 0.10, 0.03, 0.09];
 // Gradient of each section in the up direction (positive = climbing towards Moorend).
 const GRADE = [0.15, 0.25, 0.35, 0.45, 0.95, -0.35];
 const LINE_SPEED = 25;      // mph — Light Railway Order limit
@@ -898,6 +928,8 @@ function currentPlan(){
   const usedLoco = new Set(), usedRake = new Set();
   state.tt.forEach((d, i)=>{
     const err = m => issues.push({i, msg:m});
+    const route = routeOf(d);
+    if(route.err){ err(route.err); return; }
     if(!d.deps.length) return;
     const main = engineFor(d.loco, ev);
     if(main.err){ err(main.err); return; }
@@ -950,7 +982,7 @@ function currentPlan(){
       if(pilot.kind==="steam") kind = "steam";   // steam sets the turn-round: water and coal
     }
     if(kind==="steam" && state.upgrades.turntable) draw += 0.03;
-    sets.push({diag:i, label:pilot ? `${pilot.loco.number}+${loco.number}` : loco.number, colour:SET_COLOURS[i%SET_COLOURS.length], kind,
+    sets.push({diag:i, lo:route.lo, hi:route.hi, stops:route.stops, label:pilot ? `${pilot.loco.number}+${loco.number}` : loco.number, colour:SET_COLOURS[i%SET_COLOURS.length], kind,
       guest: guest || !!(pilot && pilot.guest), boost, engines: pilot ? [main.kind, pilot.kind] : [kind],
       loco, lcat, pilot: pilot ? pilot.loco : null, pcat: pilot ? pilot.lcat : null, pilotGuest: !!(pilot && pilot.guest), trainGuest: guest,
       rake, rcat, cars, maxHaul, cap, comfort, draw, pace,
@@ -960,6 +992,17 @@ function currentPlan(){
   sets.forEach(s=>s.engines.forEach(k=>kinds[k]++));   // a double-header counts both engines
   const volNeed = sets.length ? 8 + sets.reduce((a,s)=>a+s.crew,0) + (def?def.staff:0) : 0;
   return {ev, def, sets, issues, kinds, volNeed, volAvail: volunteersAvailable()};
+}
+// The stretch of line a diagram works: from its first ticked station to its last, calling at the
+// ticked ones in between. Both ends must be passing loops so the engine can run round.
+function routeOf(d){
+  const N = STATIONS.length, loops = loopSet();
+  const list = Array.isArray(d.stops) ? [...d.stops].filter(k=>k>=0 && k<N).sort((a,b)=>a-b) : STATIONS.map((_,k)=>k);
+  if(list.length<2) return {err:"Tick at least two stations for this train to call at."};
+  const lo = list[0], hi = list[list.length-1];
+  for(const k of [lo,hi]) if(!loops.has(k))
+    return {err:`${STATIONS[k].name} has no loop, so an engine can't run round there. A train can only start or turn back at ${[...loops].sort((a,b)=>a-b).map(j=>STATION_SHORT[j]).join(", ")}.`};
+  return {lo, hi, stops:new Set(list), shuttle: lo>0 || hi<N-1};
 }
 // Look up a diagram's engine (one of ours by id, or a guest by key) and check it can run.
 function engineFor(ref, ev){
@@ -1000,18 +1043,26 @@ function segMinutes(seg, dir, set, failed){
   return miles/v*60 + 1;                       // +1 min to start and stop
 }
 function turnTop(set){ return set.kind==="dmu"?5 : set.kind==="diesel"?10 : (state.upgrades.turntable?10:15); }
-function turnHome(set){ return set.kind==="dmu"?6 : set.kind==="diesel"?10 : 20; }   // steam takes water and coal
+// steam takes water and coal at Ravensgill; a shuttle just runs round at its bottom end
+function turnHome(set){ return set.lo>0 ? turnTop(set) : set.kind==="dmu"?6 : set.kind==="diesel"?10 : 20; }
 function idealRound(set){
-  let t = 0;
-  for(let s=0;s<STATIONS.length-1;s++) t += segMinutes(s, 1, set) + segMinutes(s,-1,set);
-  return t + DWELL*2*(STATIONS.length-2) + turnTop(set);
+  const lo = set.lo||0, hi = set.hi==null ? STATIONS.length-1 : set.hi;
+  let t = 0, calls = 0;
+  for(let s=lo;s<hi;s++) t += segMinutes(s, 1, set) + segMinutes(s,-1,set);
+  for(let k=lo+1;k<hi;k++) if(!set.stops || set.stops.has(k)) calls++;
+  return t + DWELL*2*calls + turnTop(set);
 }
+// minutes for the empty run from the shed at Ravensgill out to a shuttle's bottom end
+function ecsMinutes(set){ let t = 0; for(let s=0;s<(set.lo||0);s++) t += segMinutes(s, 1, set); return t; }
 
 // Minute-by-minute dispatcher. Each single-line section between loops holds one train
 // (token working); a train may only enter if there is room in the loop at the far end.
 // A passing loop keeps one road for each direction, so down trains can always drain
 // back to Ravensgill and the line can never lock solid (Moorend holds any two trains).
-// failTrip: per set, the trip on which it fails at Moorend (-1 = none).
+// A shuttle (set.lo > 0 or set.hi < Moorend) runs out empty from the shed first thing, lays
+// over between trips in the bay at its bottom end (clear of the loop), and runs home empty at night.
+// Stations not in set.stops are passed without stopping.
+// failTrip: per set, the trip on which it fails at the top end (-1 = none).
 function simulateDay(sets, failTrip){
   const loops = loopSet(), N = STATIONS.length, LAST = N-1;
   const tokens = {}, occ = [...Array(N)].map(()=>({u:0,d:0})), resv = [...Array(N)].map(()=>({u:0,d:0}));
@@ -1022,30 +1073,48 @@ function simulateDay(sets, failTrip){
     : occ[i][dk(dir)] + resv[i][dk(dir)] < 1;
   const nextLoop = (i,dir) => { let j=i+dir; while(j>0 && j<LAST && !loops.has(j)) j+=dir; return j; };
   const key = (a,b) => Math.min(a,b)+"-"+Math.max(a,b);
-  const A = sets.map((s,k)=>({k, s, st:0, dir:1, phase:"idle", timer:0, trip:0, readyAt:0,
-    path:[], trips:[], hold:null, waitSince:0, waitNow:0, cur:null, failed:false, done:false}));
+  const A = sets.map((s,k)=>({k, s, lo:s.lo||0, hi:s.hi==null?LAST:s.hi, st:0, dir:1, phase:"idle", timer:0, trip:0, readyAt:0,
+    path:[], trips:[], hold:null, waitSince:0, waitNow:0, cur:null, failed:false, done:false,
+    ecs: (s.lo||0)>0 && s.deps.length ? "out" : null, ecsLead: ecsMinutes(s)+15, ecsMiles:0, inBay:false}));
+  const stopsAt = (a,st) => !a.s.stops || a.s.stops.has(st);
   let deadlock = null, holds = 0, holdMins = 0;
 
   function arrive(a,t){
     a.st += a.dir; const st = a.st;
     a.path.push({t, m:STATIONS[st].mile});
     if(loops.has(st)){ tokens[a.hold]=null; a.hold=null; resv[st][dk(a.dir)]--; if(st!==0) occ[st][dk(a.dir)]++; }
-    if(st===LAST){
+    a.ecsMiles += Math.abs(STATIONS[st].mile - STATIONS[st-a.dir].mile) * (a.cur.ecs?1:0);
+    if(a.cur.ecs){                              // empty stock: non-stop
+      if(a.ecs==="out" && st===a.lo){ occ[st].u--; a.inBay = true; a.ecs = null; a.phase = "idle"; a.readyAt = t; a.cur = null; }
+      else if(a.ecs==="home" && st===0){ a.ecs = null; a.phase = "idle"; a.done = true; a.cur = null; }
+      else { a.phase = "want"; a.waitSince = t; }
+      return;
+    }
+    a.cur.calls.push({st, dir:a.dir, arr:t, dep:null});
+    if(st===a.hi && a.dir>0){
       occ[st].u--; occ[st].d++;                 // the train turns round here
       a.cur.arrTop = t; a.dir = -1; a.phase = "turn"; a.timer = turnTop(a.s);
       if(failTrip && failTrip[a.k]===a.trip){ a.failed = true; a.cur.failed = true; a.timer += 70; }
-    } else if(st===0){
+    } else if(st===a.lo && a.dir<0){
       a.cur.arrHome = t; a.phase = "idle"; a.readyAt = t + turnHome(a.s); a.trip++; a.cur = null;
+      if(st!==0){ occ[st].d--; a.inBay = true; }   // into the bay, clear of the loop
       if(a.failed) a.done = true;
-    } else { a.phase = "dwell"; a.timer = DWELL; }
+      if(st!==0 && (a.failed || a.trip>=a.s.deps.length)){   // home to the shed, empty
+        a.done = false; a.ecs = "home"; a.cur = {ecs:true}; a.dir = -1; a.phase = "want"; a.waitSince = t;
+      }
+    } else if(stopsAt(a, st)){ a.phase = "dwell"; a.timer = DWELL; }
+    else { a.phase = "want"; a.waitSince = t; }   // runs through
   }
 
   for(let t=SIM_START; t<=SIM_END; t+=DT){
     for(const a of A){
       if(a.phase==="run"){ a.timer -= DT; if(a.timer<=1e-9) arrive(a,t); }
       else if(a.phase==="dwell" || a.phase==="turn"){ a.timer -= DT; if(a.timer<=1e-9){ a.phase="want"; a.waitSince=t; } }
+      else if(a.phase==="idle" && !a.done && a.ecs==="out"){
+        if(t >= a.s.deps[0] - a.ecsLead){ a.cur = {ecs:true}; a.dir = 1; a.phase = "want"; a.waitSince = t; }
+      }
       else if(a.phase==="idle" && !a.done && a.trip<a.s.deps.length && t>=a.s.deps[a.trip] && t>=a.readyAt){
-        a.cur = {sched:a.s.deps[a.trip], dep:null, arrTop:null, arrHome:null, wait:0, failed:false};
+        a.cur = {sched:a.s.deps[a.trip], dep:null, arrTop:null, arrHome:null, wait:0, failed:false, calls:[]};
         a.trips.push(a.cur); a.dir = 1; a.phase = "want"; a.waitSince = t;
       }
     }
@@ -1056,17 +1125,21 @@ function simulateDay(sets, failTrip){
       if(loops.has(st)){
         const dest = nextLoop(st, a.dir), kk = key(st, dest);
         if(tokens[kk]!=null || !room(dest, a.dir)) ok = false;
-        if(ok){ tokens[kk]=a.k; a.hold=kk; resv[dest][dk(a.dir)]++; if(st!==0) occ[st][dk(a.dir)]--; }
+        if(ok){ tokens[kk]=a.k; a.hold=kk; resv[dest][dk(a.dir)]++; if(st!==0 && !a.inBay) occ[st][dk(a.dir)]--; }
       }
       if(ok){
-        if(a.cur.dep==null) a.cur.dep = t;
+        a.inBay = false;
+        if(!a.cur.ecs){
+          if(a.cur.dep==null){ a.cur.dep = t; a.cur.calls.push({st, dir:1, arr:null, dep:t}); }
+          else { const c = a.cur.calls[a.cur.calls.length-1]; if(c && c.st===st && c.dep==null) c.dep = t; }
+        }
         if(a.waitNow>=1 && st!==0 && st!==LAST){ holds++; holdMins += a.waitNow; }
         a.path.push({t, m:STATIONS[st].mile});
         a.phase = "run"; a.waitNow = 0;
         a.timer = segMinutes(Math.min(st, st+a.dir), a.dir, a.s, a.failed);
       } else {
         a.waitNow += DT;
-        if(a.cur.dep!=null) a.cur.wait += DT;
+        if(a.cur.dep!=null && !a.cur.ecs) a.cur.wait += DT;
         if(a.waitNow > 180 && !deadlock) deadlock = {t, at:STATIONS[st].name};
       }
     }
@@ -1076,13 +1149,14 @@ function simulateDay(sets, failTrip){
   // Delay = late start + any hold at loops beyond the 12 minutes of crossings a timetable books per round trip.
   const trips = [];
   A.forEach(a=>{
+    const miles = 2*(STATIONS[a.hi].mile - STATIONS[a.lo].mile);
     a.s.deps.forEach((sched, i)=>{
       const r = a.trips[i];
       if(r && r.arrHome!=null){
-        trips.push({set:a.s, k:a.k, sched, dep:r.dep, arrHome:r.arrHome, late:Math.max(0,r.dep-sched), wait:r.wait,
+        trips.push({set:a.s, k:a.k, sched, dep:r.dep, arrHome:r.arrHome, late:Math.max(0,r.dep-sched), wait:r.wait, miles, calls:r.calls,
                     delay:Math.max(0,r.dep-sched)+Math.max(0,r.wait-12), failed:r.failed, cancelled:false});
       } else if(r && r.dep!=null){
-        trips.push({set:a.s, k:a.k, sched, dep:r.dep, arrHome:null, late:Math.max(0,r.dep-sched), wait:r.wait,
+        trips.push({set:a.s, k:a.k, sched, dep:r.dep, arrHome:null, late:Math.max(0,r.dep-sched), wait:r.wait, miles:miles/2, calls:r.calls,
                     delay:Math.max(0,r.dep-sched)+Math.max(0,r.wait-12), failed:r.failed, stranded:true, cancelled:false});
       } else {
         trips.push({set:a.s, k:a.k, sched, cancelled:true, reason: a.done?"failure":deadlock?"lock-up":"too late"});
@@ -1091,7 +1165,7 @@ function simulateDay(sets, failTrip){
   });
   trips.sort((x,y)=>x.sched-y.sched);
   return {agents:A.map(a=>({k:a.k, label:a.s.label, colour:a.s.colour, kind:a.s.kind, path:a.path, failed:a.failed})),
-          trips, deadlock, holds, holdMins};
+          ecs:A.filter(a=>a.ecsMiles>0).map(a=>({set:a.s, miles:a.ecsMiles})), trips, deadlock, holds, holdMins};
 }
 
 /* ============================ PASSENGERS & MONEY ============================ */
@@ -1132,22 +1206,31 @@ function allocatePassengers(trips, demand, curveName){
   const curve = CURVES[curveName] || CURVES.normal;
   const sumW = curve.reduce((a,b)=>a+b,0);
   const dens = m => { const i = Math.floor(m/60)-9; return (curve[i]||0)/sumW/60; };
-  let prev = -Infinity, carry = 0, turned = 0, lost = 0;
+  // each station keeps its own queue, filled since the last train that called there
+  const prev = STATIONS.map(()=>-Infinity), carry = STATIONS.map(()=>0);
+  let turned = 0, lost = 0;
   trips.forEach(tr=>{
-    const from = Math.max(prev, tr.sched-120);
-    let arrivals = 0; for(let m=Math.floor(from); m<tr.sched; m++) arrivals += dens(m);
-    const want = arrivals*demand*tr.set.draw + carry;
-    prev = tr.sched;
-    if(tr.cancelled){ tr.pax = 0; tr.want = want; carry = 0; lost += want; return; }
+    const part = servedBy(tr.set).map(st=>{
+      const from = Math.max(prev[st], tr.sched-120);
+      let arrivals = 0; for(let m=Math.floor(from); m<tr.sched; m++) arrivals += dens(m);
+      prev[st] = tr.sched;
+      const w = arrivals*demand*tr.set.draw*STATION_SHARE[st] + carry[st];
+      carry[st] = 0;
+      return [st, w];
+    });
+    const want = part.reduce((a,p)=>a+p[1],0);
     tr.want = want;
+    if(tr.cancelled){ tr.pax = 0; lost += want; return; }
     tr.pax = Math.round(Math.min(tr.set.cap, want));
-    const over = want - tr.pax;
-    carry = over*0.55; turned += over*0.45;
+    const f = want>0 ? (want - tr.pax)/want : 0;
+    part.forEach(([st,w])=>{ carry[st] = w*f*0.55; turned += w*f*0.45; });
   });
-  turned += carry;
+  turned += carry.reduce((a,b)=>a+b,0);
   return {turned:Math.max(0,Math.round(turned)), lost:Math.round(lost)};
 }
 const trips_per = sim => sim.trips.filter(t=>!t.cancelled).length;
+// the stations a set's trains call at (whole line when there's no shuttle)
+function servedBy(set){ return STATIONS.map((_,k)=>k).filter(k=>k>=(set.lo||0) && k<=(set.hi==null?STATIONS.length-1:set.hi) && (!set.stops || set.stops.has(k))); }
 function evaluateDay(plan, sim, noise){
   const def = plan.def;
   const {demand, notes} = dayDemand(plan, noise);
@@ -1158,15 +1241,16 @@ function evaluateDay(plan, sim, noise){
   sim.trips.forEach(tr=>{
     if(tr.cancelled) return;
     ran++;
-    const fare = Math.round(fareBase * (1 + (tr.set.comfort-1)*0.6));
+    const fare = Math.round(fareBase * (1 + (tr.set.comfort-1)*0.6) * (0.45 + 0.55*tr.miles/(2*LINE_MILES)));   // shorter rides, cheaper tickets
     tr.fare = fare;
     pax += tr.pax; seats += tr.set.cap;
     fares += tr.pax*fare;
     if(tr.failed){ const r = Math.round(tr.pax*fare*0.5); refunds += r; }
     legs += tr.arrHome!=null ? 2 : 1;
-    fuel += tr.set.runPerMile * LINE_MILES * (tr.arrHome!=null?2:1);
+    fuel += tr.set.runPerMile * tr.miles;
     delaySum += tr.delay;
   });
+  (sim.ecs||[]).forEach(e=>{ fuel += e.set.runPerMile * e.miles; });
   const spend = Math.round(pax*spendPer);
   const upkeep = plan.sets.filter(s=>s.rcat).reduce((a,s)=>a+s.rcat.upkeep,0);
   const volCost = plan.volNeed*6;
@@ -1284,7 +1368,8 @@ function settleWeek(plan, report, mk){
       repDelta += res.rep;
       // wear on the stock that ran
       plan.sets.forEach(s=>{
-        const miles = sim.trips.filter(t=>t.set===s && !t.cancelled).length * LINE_MILES * 2;
+        const miles = sim.trips.filter(t=>t.set===s && !t.cancelled).reduce((a,t)=>a+t.miles,0)
+                    + (sim.ecs||[]).filter(e=>e.set===s).reduce((a,e)=>a+e.miles,0);
         const failed = sim.trips.some(t=>t.set===s && t.failed);
         const wearOn = (loco, cat, guest, k) => { if(guest) return;
           const lw = miles/2600 * cat.wear * (k==="steam"?1.25:1) * (1 + 0.3*Math.min(1,s.cars/s.maxHaul));
@@ -1495,8 +1580,15 @@ function renderTimetable(){
       return `<span class="dep ${cls}"${tip}>${fmtT(m)}${tr && !tr.cancelled && tr.delay>=5?` <small>+${Math.round(tr.delay)}</small>`:""}<button onclick="removeDep(${i},${m})" title="Remove">×</button></span>`;
     }).join("");
     const round = set ? Math.round(idealRound(set)) : null;
+    const route = routeOf(d), loops = loopSet();
+    const ticked = Array.isArray(d.stops) ? d.stops : STATIONS.map((_,k)=>k);
+    const callRow = `<div class="row"><span>Calls</span><span class="calls">${STATIONS.map((st,k)=>
+        `<button class="stopchip ${ticked.includes(k)?"on":""} ${loops.has(k)?"loop":""}" onclick="toggleStop(${i},${k})"
+          title="${st.name}${loops.has(k)?": passing loop, a train can start or turn back here":": halt"}">${STATION_SHORT[k]}</button>`).join("")}
+        ${Array.isArray(d.stops)?`<button class="act small" onclick="toggleStop(${i},null)" title="Call at every station, end to end">Whole line</button>`:""}</span></div>`;
     return `<div class="card diag" style="border-left-color:${SET_COLOURS[i%SET_COLOURS.length]}">
       <h3>Diagram ${String.fromCharCode(65+i)} ${kind?kindBadge(kind):""} ${typeof d.loco==="string"?`<span class="badge b-guest">guest</span>`:""}
+        ${route.shuttle?`<span class="badge b-shuttle">${STATION_SHORT[route.lo]}–${STATION_SHORT[route.hi]} shuttle</span>`:""}
         <button class="act small warnbtn" style="margin-left:auto" onclick="removeDiagram(${i})">Delete</button></h3>
       <div class="row"><span>Loco</span><select class="sel" style="flex:1" onchange="setDiagLoco(${i}, this.value)">${stockOptions(d)}</select></div>
       ${kind && kind!=="dmu" ? (d.pilot!==undefined
@@ -1505,14 +1597,18 @@ function renderTimetable(){
         : `<div class="row"><span></span><button class="act small" onclick="setDiagPilot(${i}, '')" title="Couple a second engine on the front: their loads add up">🚂🚂 Double-head</button></div>`) : ""}
       ${kind==="dmu" ? `<div class="row"><span>Stock</span><i class="sub" style="margin:0">Self-propelled: no carriages needed</i></div>`
         : `<div class="row"><span>Coaches</span><select class="sel" style="flex:1" onchange="setDiagRake(${i}, this.value)">${rakeOptions(d)}</select></div>`}
+      ${callRow}
+      <div class="sub" style="margin:2px 0 0">Departures from ${STATIONS[route.lo!=null?route.lo:0].name}:</div>
       <div class="deps">${chips || `<span class="sub" style="margin:0">No departures: this diagram won't run.</span>`}</div>
       <div class="row"><span>Add</span><select class="sel" id="add-${i}">${DEP_TIMES.map(m=>`<option value="${m}">${fmtT(m)}</option>`).join("")}</select>
         <button class="act small" onclick="addDep(${i})">+ Departure</button></div>
-      ${round?`<div class="sub" style="margin:4px 0 0">Round trip about ${Math.floor(round/60)} h ${String(Math.round(round%60)).padStart(2,"0")} min, then ${turnHome(set)} min at Ravensgill · ${set.cap} seats · ${set.crew} crew${set.pilot?` · double-headed: up to ${set.maxHaul} coaches`:""}</div>`:""}
+      ${round?`<div class="sub" style="margin:4px 0 0">Round trip about ${Math.floor(round/60)} h ${String(Math.round(round%60)).padStart(2,"0")} min, then ${turnHome(set)} min at ${STATION_SHORT[set.lo]}${set.lo>0?` (runs out empty from the shed and back)`:""} · ${set.cap} seats · ${set.crew} crew${set.pilot?` · double-headed: up to ${set.maxHaul} coaches`:""}</div>`:""}
       ${iss}
     </div>`;
   }).join("") + `<div class="card" style="display:flex;align-items:center;justify-content:center;min-height:120px">
       <button class="act greenbtn" style="width:auto" onclick="addDiagram()">+ Add a train diagram</button></div>`;
+
+  document.getElementById("tt-public").innerHTML = sim ? publicTimetable(sim) : "";
 
   // projection
   const pj = document.getElementById("tt-projection");
@@ -1545,6 +1641,44 @@ function renderTimetable(){
     </div>`;
   }
   document.getElementById("tt-graph").innerHTML = sim ? trainGraph(sim, plan, null) : `<p class="sub" style="padding:10px">No trains planned.</p>`;
+}
+
+// The leaflet timetable: Up and Down tables, a column per train, a row per station.
+// Times are as the signallers will work them (from the simulated day), so held trains show late.
+const ttTime = m => { m = Math.round(m); return Math.floor(m/60) + "." + String(m%60).padStart(2,"0"); };
+function publicTimetable(sim){
+  const trips = sim.trips.filter(t=>t.calls || t.cancelled);
+  const LAST = STATIONS.length-1;
+  const kindMark = k => k==="steam" ? "Steam" : k==="diesel" ? "Diesel" : "DMU";
+  const table = (dir) => {
+    const order = dir>0 ? STATIONS.map((_,k)=>k) : STATIONS.map((_,k)=>LAST-k);
+    const startOf = t => { if(t.cancelled) return t.sched + (dir>0?0:60);
+      const c = dir>0 ? t.calls[0] : t.calls.find(c=>c.st===t.set.hi); return c && c.dep!=null ? c.dep : 1e9; };
+    const cols = trips.filter(t=>t.cancelled || dir>0 || t.calls.some(c=>c.st===t.set.hi && c.dep!=null))
+                      .sort((a,b)=>startOf(a)-startOf(b));
+    if(!cols.length) return "";
+    const head = cols.map(t=>`<th title="${t.set.label} · Diagram ${String.fromCharCode(65+t.set.diag)}"><i style="background:${t.set.colour}"></i>${kindMark(t.set.kind)}<br><span style="font-weight:400">${String.fromCharCode(65+t.set.diag)}</span></th>`).join("");
+    const rows = order.map((k, r)=>{
+      const first = r===0, last = r===order.length-1;
+      const cells = cols.map(t=>{
+        const lo = t.set.lo||0, hi = t.set.hi==null?LAST:t.set.hi;
+        if(k<lo || k>hi) return `<td class="none"></td>`;
+        if(t.cancelled) return `<td class="cx">${k===(dir>0?lo:hi)?"cancelled":""}</td>`;
+        const top = dir>0 ? k===hi : k===lo;           // where this run ends
+        // the call at the top end is logged on the way up: it holds the up arrival and the down departure
+        const c = t.calls.find(c=>c.st===k && c.dir===(dir>0 || k===hi ? 1 : -1));
+        if(!c) return `<td class="none"></td>`;
+        if(top) return c.arr!=null ? `<td>${ttTime(c.arr)}${(first||last)?"":"<sup>a</sup>"}</td>` : `<td class="none"></td>`;
+        if(t.set.stops && !t.set.stops.has(k)) return `<td class="pass">|</td>`;
+        return c.dep!=null ? `<td>${ttTime(c.dep)}</td>` : `<td class="none"></td>`;
+      }).join("");
+      return `<tr class="${STATIONS[k].loop?"":"halt"}"><td class="st">${STATIONS[k].name}</td><td class="ad">${first?"dep":last?"arr":""}</td>${cells}</tr>`;
+    }).join("");
+    return `<div class="htt"><h3>${dir>0?"Up trains":"Down trains"}<small>${dir>0?"Ravensgill Junction to Moorend":"Moorend to Ravensgill Junction"}</small></h3>
+      <div class="wrap"><table><thead><tr><th class="st"></th><th class="ad"></th>${head}</tr></thead><tbody>${rows}</tbody></table></div>
+      <p class="key">| runs through without stopping · <sup>a</sup> arrival time (shuttle turns back) · letters are the train workings below · times as worked, including waits at the loops</p></div>`;
+  };
+  return table(1) + table(-1);
 }
 
 // Time–distance diagram, the timetabler's classic tool.
@@ -1771,6 +1905,15 @@ function setDiagPilot(i, v){
   else d.pilot = v==="" ? null : (/^\d+$/.test(v) ? parseInt(v,10) : v);
   render();
 }
+// k: a station to tick or untick; null = back to the whole line, every station
+function toggleStop(i, k){
+  const d = state.tt[i], all = STATIONS.map((_,j)=>j);
+  if(k===null){ delete d.stops; render(); return; }
+  let s = Array.isArray(d.stops) ? [...d.stops] : all;
+  s = s.includes(k) ? s.filter(x=>x!==k) : [...s, k].sort((a,b)=>a-b);
+  if(s.length===all.length) delete d.stops; else d.stops = s;
+  render();
+}
 function setDiagRake(i, v){ state.tt[i].rake = v==="" ? null : (/^\d+$/.test(v) ? parseInt(v,10) : v); render(); }
 function addDep(i){
   const m = parseInt(document.getElementById("add-"+i).value,10);
@@ -1989,7 +2132,7 @@ function showWeekReport(r){
   const tot = r.dayRes.reduce((a,x)=>({pax:a.pax+x.pax, rev:a.rev+x.revenue, cost:a.cost+x.cost, turned:a.turned+x.turned, cx:a.cx+x.cancelled}),{pax:0,rev:0,cost:0,turned:0,cx:0});
   const evs = [...r.events];
   r.dayRes.forEach((x,di)=>{
-    x.sim.trips.filter(t=>t.failed).forEach(t=>evs.push({cls:"bad", text:`💥 <b>${t.set.label} failed at Moorend</b> on day ${di+1} (the ${fmtT(t.sched)}). A rescue engine dragged it home; the rest of its trains were cancelled and half the fares refunded.`}));
+    x.sim.trips.filter(t=>t.failed).forEach(t=>evs.push({cls:"bad", text:`💥 <b>${t.set.label} failed at ${STATIONS[t.set.hi==null?STATIONS.length-1:t.set.hi].name}</b> on day ${di+1} (the ${fmtT(t.sched)}). A rescue engine dragged it home; the rest of its trains were cancelled and half the fares refunded.`}));
     if(x.sim.deadlock) evs.push({cls:"bad", text:`🔒 <b>Lock-up at ${x.sim.deadlock.at}</b> on day ${di+1}: every loop full, nothing could move. The rest of the day was cancelled.`});
   });
   if(tot.turned>60) evs.push({cls:"", text:`🚶 About ${tot.turned} people were turned away from full trains.`});

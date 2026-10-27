@@ -117,6 +117,16 @@ works, and the takings and the week report arrive when the weekend ends.
    engine can take 9 coaches up the bank), with a small draw bonus and a
    double-header counting as two engines for galas. The costs: two crews, both
    engines' coal and wear, and the slower engine's pace.
+   The Timetable app opens with the **printed timetable**: Up and Down tables,
+   a column per train and a row per station, in the style of a heritage
+   railway's leaflet. Times come from the simulated day, so trains held at
+   loops show their real times, and `|` marks a train running through.
+   Each train working has a row of **station toggles**: untick a station to
+   run through it, or untick the ends to make a **shuttle** (e.g.
+   Fellside–Moorend). A shuttle must start and turn back at a passing loop,
+   runs out empty from the shed in the morning and back at night, and sells
+   cheaper tickets for its shorter ride. Each station has its own queue of
+   passengers, so a station nobody calls at earns nothing.
 2. **Single-line working.** Only one train may be on each single-line
    section, and trains can pass only at the loops. Each loop has one road for
    each direction, so the line never locks solid, but too many trains for
