@@ -44,13 +44,18 @@ three-way point for the right shed road, buffer up to the engine, draw it out
 onto the headshunt, set the road for the Platform road and buffer it up to the
 coaches, then uncouple.
 
-Every locomotive class is modelled individually (cylinders and panels as well
+Every locomotive class is modelled individually, checked against photographs
+of the real engines and their published dimensions (cylinders and panels as well
 as boxes): steam engines from their real wheel arrangement, wheel diameter,
-length, boiler, tanks or tender, Belpaire firebox, smoke deflectors and livery
-(the A4's wedge front and the Bulleid casing are modelled too); diesels from
-their body style (cab ends, noses, hood and single cab, the Western), bogies
-(Bo-Bo, Co-Co, A1A, 1Co-Co1, coupled rods), warning panels, headcodes and
-livery bands, with the Class 20 and 26 pairs as two locos coupled.
+length, boiler pitch, taper or parallel boiler, Belpaire or wide firebox,
+running plate height, inside or outside cylinders with Walschaerts or Caprotti
+valve gear, spoked wheels with balance weights, cab and tender type, chimney,
+dome, smoke deflectors and livery (the A4's wedge front and the Bulleid casing
+with BFB wheels are modelled too); diesels from their real height and body
+style (cab ends with raked windscreens, noses, hood and single cab, the
+Western), bogies with axleboxes and springs (Bo-Bo, Co-Co, A1A, 1Co-Co1,
+coupled rods), headcode boxes, discs or roof domes, grilles, cab doors,
+warning panels and livery bands, with the Class 20 and 26 pairs as two locos.
 
 | Control | Keys / on screen |
 |---------|------------------|
