@@ -4831,7 +4831,7 @@ function sndWhistle(r, on){
   if(!r || !SND.ctx) return;
   const c = SND.ctx, t = c.currentTime, w = r.p.whistle;
   if(on && !r.wh){
-    const out = c.createGain(); out.gain.value = 0.22/Math.sqrt(w.notes.length); out.connect(SND.bus);
+    const out = c.createGain(); out.gain.value = 0.22/Math.sqrt(w.notes.length)*(r.gain || 1); out.connect(SND.bus);
     const hiss = sndLoop(SND.noise, "highpass", 2000, 0.7, out); hiss.g.gain.setTargetAtTime(w.breath*0.6, t, 0.03);
     const oscs = [], gains = [];
     w.notes.forEach((f0, ni)=>{ const det = w.detune ? (ni - 1)*w.detune : 0, f = f0*Math.pow(2, det/1200);
@@ -4901,7 +4901,7 @@ function sndHorn(r, on){
   if(!r || !SND.ctx) return;
   const c = SND.ctx, t = c.currentTime, [hi, lo] = r.p.horn, style = r.p.style;
   if(on && !r.hn){
-    const out = c.createGain(); out.gain.value = 0; out.gain.setTargetAtTime(0.09, t, 0.012);
+    const out = c.createGain(); out.gain.value = 0; out.gain.setTargetAtTime(0.09*(r.gain || 1), t, 0.012);
     const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = style==="dark" ? 2500 : 3500; lp.connect(out).connect(SND.bus);
     const voice = f => { const bell = c.createBiquadFilter(); bell.type = "peaking"; bell.frequency.value = f*2; bell.Q.value = 2; bell.gain.value = 8; bell.connect(lp);
       const g = c.createGain(); g.gain.value = 0; g.connect(bell);
@@ -5157,7 +5157,8 @@ function startDrive(k, from){
   dv = {plan, k, work, G, set, train, ci:0, phase:"stand", boarded:1, T:(first.dep || 0) - 1.5, dir:first.dirOut || 1,
         v:0, ctl:0, emerg:false, look:0, pitch:-0.04, cam:0, keys:{}, raf:0, last:0, msgT:0, log:[], spad:0, over:0, early:0, overrun:0, done:false};
   dv.s = dv.standS = G.stopAt(first.st, dv.dir);
-  dv.others = work.sim.agents.filter(a=>a.k!==k).map(a=>({a, train:driveConsist(gl, plan.sets[a.k])}));
+  dv.others = work.sim.agents.filter(a=>a.k!==k).map(a=>{ const st = plan.sets[a.k];
+    return {a, d:0, dir:1, train:driveConsist(gl, st), prof:sndProfile(st.pilot ? st.pcat.key : st.lcat.key)}; });
   { const lead = dv.train[0], eye = lead.eye || [0, 0, lead.len/2 - 1.7], key = set.pilot ? set.pcat.key : set.lcat.key;
     dv.snd = {voice:sndVoiceStart(sndProfile(key)), run:sndRunStart(sndAxles(dv.train, lead.len/2 - eye[2])), odo:0}; }
   dv.sigMesh = {r:meshBuffer(gl, (()=>{ const m = []; box(m, 0,0,0, 0.22,0.22,0.06, [1,.12,.08]); return m; })()), g:meshBuffer(gl, (()=>{ const m = []; box(m, 0,0,0, 0.22,0.22,0.06, [.2,1,.35]); return m; })())};
@@ -5197,14 +5198,45 @@ function engineEye(key, md){
 /* ---- physics, signals and the timetable ---- */
 const dTime = T => ttTime(Math.round(T));
 function dNext(){ return dv.work.calls[dv.ci + 1]; }
+// the single-line section between one loop and the next in a direction, as [lower mile, upper mile]
+function dSection(st, dir){
+  const lp = dv.G.lp; let nx = st + dir; while(nx > 0 && nx < STATIONS.length-1 && !lp.has(nx)) nx += dir;
+  nx = Math.max(0, Math.min(STATIONS.length-1, nx));
+  return [Math.min(STATIONS[st].mile, STATIONS[nx].mile), Math.max(STATIONS[st].mile, STATIONS[nx].mile)];
+}
+// the section you hold: the one you're in, or the one your starter has been pulled off for
+function dOurSection(){
+  const c = dv.work.calls[dv.ci], lp = dv.G.lp;
+  if(dv.phase==="stand" && lp.has(c.st)) return dv.cleared ? dSection(c.st, dv.dir) : null;
+  const m = dv.G.mileOfS(Math.max(0, Math.min(dv.G.L, dv.s)));
+  let lo = 0, hi = STATIONS.length-1;
+  STATIONS.forEach((q,i)=>{ if(!lp.has(i)) return; if(q.mile <= m + 1e-6 && (dv.dir > 0 || q.mile < m - 0.02)) lo = Math.max(lo, i); });
+  STATIONS.forEach((q,i)=>{ if(lp.has(i) && i > lo && i < hi && q.mile > m) hi = i; });
+  return [STATIONS[lo].mile, STATIONS[hi].mile];
+}
+const dOverlap = (a, b) => a && b && a[0] < b[1] - 1e-6 && b[0] < a[1] - 1e-6;
+const oMile = (o, T) => agentMile(o.a, T - o.d);
 function dSignal(){   // the starter at a loop: off when it's time and the section ahead is clear of other trains
   const c = dv.work.calls[dv.ci], G = dv.G;
   if(!G.lp.has(c.st) || c.dep==null || !c.dirOut) return {here:false, clear:true};
-  const dir = dv.dir;
-  let nx = c.st + dir; while(nx > 0 && nx < STATIONS.length-1 && !G.lp.has(nx)) nx += dir;
-  const m0 = Math.min(STATIONS[c.st].mile, STATIONS[nx].mile), m1 = Math.max(STATIONS[c.st].mile, STATIONS[nx].mile);
-  const busy = dv.others.some(o=>{ const m = agentMile(o.a, dv.T); return m!=null && m > m0 + 0.05 && m < m1 - 0.05; });
-  return {here:true, clear: !busy && c.dep!=null && dv.T >= c.dep - 0.01 && dv.boarded >= 1};
+  if(dv.cleared) return {here:true, clear:true};
+  const [m0, m1] = dSection(c.st, dv.dir);
+  const busy = dv.others.some(o=>{ const m = oMile(o, dv.T); return m!=null && m > m0 + 0.02 && m < m1 - 0.02; });
+  const clear = !busy && dv.T >= c.dep - 0.01 && dv.boarded >= 1;
+  if(clear) dv.cleared = true;   // the section is yours until you're through it
+  return {here:true, clear};
+}
+// the other trains run to the booked timetable, but each waits at its loop while you hold the section it wants;
+// a wait makes it late for the rest of its day
+function dOthers(dtG){
+  const G = dv.G, ours = dOurSection();
+  for(const o of dv.others){
+    const m = oMile(o, dv.T), mN = oMile(o, dv.T + dtG);
+    o.held = false;
+    if(m==null || mN==null || Math.abs(mN - m) < 1e-7) continue;
+    const st = STATIONS.findIndex(q=>Math.abs(q.mile - m) < 0.005);
+    if(st >= 0 && G.lp.has(st) && dOverlap(dSection(st, Math.sign(mN - m)), ours)){ o.d += dtG; o.held = true; }
+  }
 }
 function agentMile(a, T){
   const P = a.path; if(!P.length || T < P[0].t || T > P[P.length-1].t) return null;
@@ -5231,6 +5263,7 @@ function dStep(dt){
   // the buffer stops at the ends of the line
   if(dv.s > G.L + 15){ dv.s = G.L + 15; if(dv.v > 1) dRough("Bang! Into the buffer stops at Moorend"); dv.v = 0; }
   if(dv.s < -15){ dv.s = -15; if(dv.v > 1) dRough("Bang! Into the buffer stops at Ravensgill"); dv.v = 0; }
+  dOthers(dt*DRV.clock/60);
   dv.T += dt*DRV.clock/60;
   if(dv.v*MPH > DRV.lim + 2) dv.over += dt;
   // passing a starter signal at danger
@@ -5254,7 +5287,7 @@ function dStep(dt){
       else if(past > 8){ dv.overrun++; dMsg(`A bit past the stop board at ${STATIONS[n.st].name}`, true); }
       const late = dv.T - n.arr;
       dv.log.push({st:n.st, arr:dv.T, booked:n.arr, late});
-      dv.ci++; dv.phase = "stand"; dv.boarded = 0; dv.v = 0; dv.ctl = Math.min(dv.ctl, 0); dv.standS = dv.s; dv.leftSt = null;
+      dv.ci++; dv.phase = "stand"; dv.boarded = 0; dv.v = 0; dv.ctl = Math.min(dv.ctl, 0); dv.standS = dv.s; dv.leftSt = null; dv.cleared = false;
       if(dv.ci===dv.work.calls.length-1){ dFinish(true); return; }
       const now = dv.work.calls[dv.ci];
       if(now.dirOut && now.dirOut!==dv.dir){   // turn round: the engine runs round, or the driver changes ends
@@ -5303,7 +5336,8 @@ function endDrive(result){
   const gl = yardGL(), seen = new Set();
   [dv.train, ...dv.others.map(o=>o.train)].forEach(t=>t.forEach(v=>{ for(const m of [v.mesh, v.plain]) if(m && !seen.has(m)){ seen.add(m); gl.deleteBuffer(m.buf); } }));
   for(const m of Object.values(dv.sigMesh)) gl.deleteBuffer(m.buf);
-  if(dv.snd){ sndVoiceStop(dv.snd.voice); sndRunStop(dv.snd.run); }
+  if(dv.snd){ sndVoiceStop(dv.snd.voice); sndRunStop(dv.snd.run);
+    for(const n of [dv.snd.pass, dv.snd.pass2]) if(n){ n.g.gain.setTargetAtTime(0, SND.ctx.currentTime, 0.1); n.src.stop(SND.ctx.currentTime + 0.5); } }
   dv = null;
   const y = document.getElementById("yard"); y.classList.remove("show");
   setTimeout(()=>{ y.hidden = true; y.classList.remove("drv"); document.querySelector(".laptop").classList.remove("away"); }, 450);
@@ -5316,6 +5350,17 @@ function endDrive(result){
 }
 
 /* ---- drawing the line ---- */
+// where another train's front is and which way it faces: at a station it draws up to the stop board, between them it runs
+function dOtherPlace(o){
+  const G = dv.G, m = oMile(o, dv.T); if(m==null) return null;
+  const ahead = oMile(o, dv.T + 0.4), behind = oMile(o, dv.T - 0.4);
+  if(ahead!=null && Math.abs(ahead - m) > 1e-5) o.dir = Math.sign(ahead - m); else if(behind!=null && Math.abs(m - behind) > 1e-5) o.dir = Math.sign(m - behind);
+  const st = STATIONS.findIndex(q=>Math.abs(q.mile - m) < 0.005);
+  const s = st >= 0 ? G.stopAt(st, o.dir) : G.sOfMile(m);
+  const front = G.sOfMile(m), f = st >= 0 ? s : front;
+  return {s:f, dir:o.dir, st};
+}
+const dLoopOff = q => { const G = dv.G; for(const i of G.lp){ const v = G.loopOff(i, q); if(v) return v; } return 0; };
 function m4at(x, y, z, yaw){ const c = Math.cos(yaw), s = Math.sin(yaw); return new Float32Array([c,0,-s,0, 0,1,0,0, s,0,c,0, x,y,z,1]); }
 function trainPoses(G, train, sFront, dir, off){   // each vehicle's place behind the front, on the main line or a loop
   const out = []; let d = 0;
@@ -5335,14 +5380,9 @@ function driveDraw(){
   gl.uniformMatrix4fv(YGL.vp, false, vp); gl.uniform3f(YGL.fog, .64,.76,.86); gl.uniform2f(YGL.fr, 350, 1500);
   glDraw(G.mesh, m4at(0,0,0,0));
   mine.forEach((p,i)=>glDraw(dv.cam===0 || !p.v.plain ? p.v.mesh : p.v.plain, m4at(p.x, p.y, p.z, p.yaw)));
-  // the other trains, where they stand or run on the booked timetable (kept out of your way)
-  for(const o of dv.others){ const m = agentMile(o.a, dv.T); if(m==null) continue;
-    const s = G.sOfMile(m), st = STATIONS.findIndex(q=>Math.abs(q.mile - m) < 0.01);
-    if(st < 0 && Math.abs(s - dv.s) < 300) continue;
-    const loop = st >= 0 && G.lp.has(st), next = agentMile(o.a, dv.T + 0.5), dirO = next!=null && next < m ? -1 : 1;
-    const sf = st >= 0 ? G.stopAt(st, dirO) : s;
-    if(!loop && Math.abs(sf - dv.s) < dv.train.len + o.train.len + 40) continue;
-    trainPoses(G, o.train, sf, dirO, loop ? (q=>G.loopOff(st, q)) : null).forEach(p=>glDraw(p.v.plain || p.v.mesh, m4at(p.x, p.y, p.z, p.yaw))); }
+  // the other trains: in the platforms, out on the line, and through the loops on the loop road as they pass you
+  for(const o of dv.others){ const p0 = dOtherPlace(o); if(!p0) continue;
+    trainPoses(G, o.train, p0.s, p0.dir, dLoopOff).forEach(p=>glDraw(p.v.plain || p.v.mesh, m4at(p.x, p.y, p.z, p.yaw))); }
   // starter signals
   const here = dSignal();
   for(const sg of G.sigs){ const off = sg.dir===dv.dir && (dv.phase==="stand" ? here.here && here.clear && sg.i===dv.work.calls[dv.ci].st : sg.i===dv.leftSt && dv.leftClear), on = !off;
@@ -5409,6 +5449,15 @@ function driveFrame(ts){
     let cv = G.at(dv.s + 6).yaw - G.at(dv.s - 6).yaw; cv = Math.atan2(Math.sin(cv), Math.cos(cv))/12;
     sndRunUpdate(k.run, k.odo, dv.v, cv, dv.emerg ? 1 : Math.max(0, -dv.ctl), dv.s > G.tun[0] && dv.s < G.tun[1], 1.2);
     if(ready && !k.ready) sndGuard();
+    if(!k.pass && SND.ctx){ k.pass = sndLoop(SND.brown, "lowpass", 200, 0.7); k.pass2 = sndLoop(SND.pink, "bandpass", 650, 0.6); }
+    let near = 0; const me = G.at(dv.s);
+    for(const o of dv.others){ const pl = dOtherPlace(o); if(!pl){ o.ps = null; continue; }
+      const q = G.at(pl.s, dLoopOff(pl.s)), d = Math.hypot(q.x - me.x, q.z - me.z), vO = o.ps!=null ? Math.abs(pl.s - o.ps)/Math.max(dt, 1e-3) : 0;
+      if(o.ps!=null && o.vO < 0.05 && vO > 0.2 && d < 400 && !o.toot){ o.toot = true; const fall = Math.min(1, 60/(d + 30)), r = {p:o.prof, kind:o.prof.type==="steam" ? "steam" : "diesel", gain:fall};
+        sndSignal(r, true); setTimeout(()=>sndSignal(r, false), o.prof.type==="steam" ? 900 : 700); }
+      if(vO < 0.05) o.toot = false;
+      o.vO = vO; o.ps = pl.s; near += Math.min(1, vO/10)/(1 + (d/35)**2); }
+    if(k.pass){ k.pass.g.gain.setTargetAtTime(Math.min(0.5, 0.4*near), SND.ctx.currentTime, 0.1); k.pass2.g.gain.setTargetAtTime(Math.min(0.2, 0.12*near), SND.ctx.currentTime, 0.1); }
     k.ready = ready;
     if(dv.phase==="stand" && dv.boarded < 0.05 && !k.doors){ k.doors = true; sndDoors(6 + (dv.set.rcat ? dv.set.rcat.cars*2 : 4)); }
     if(dv.phase==="run") k.doors = false;

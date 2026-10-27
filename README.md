@@ -61,7 +61,12 @@ away with you if you let it.
 Stop with the front of the train near the stop board at each booked call; the
 passengers board, and you get the right away at the booked time. At the loops
 the starter signal stays at danger until then, and while another train is in
-the section ahead. At the end of the line the engine runs round its train (or
+the section ahead. The rest of the day's timetabled trains run too, in full view: in the
+platforms, out on the line, and crossing you at the loops on the loop road. They
+keep to their booked times, but each waits at its loop while you hold the single
+line section it wants, so if you run late they're held for you (and run late
+themselves). You hear them rumble past, and whistle or sound their horns as they
+leave a station near you. At the end of the line the engine runs round its train (or
 you change ends of a DMU). Arrive on time on average, with no signal passed at
 danger, no overruns and no long spells over the 25 mph limit, for ★★★ (+2
 reputation). Hand over at any time and another driver finishes the day.
