@@ -39,7 +39,26 @@ a DMU's driving seat) for the rest of its day.
 The 3D line is built from the map's own alignment: all seven stations with
 their platforms and nameboards, the passing loops, Brackenby Viaduct's twelve
 arches over the River Raven, Highmoor Tunnel through the fell, the climb to the
-summit, the B6481 and Highmoor Reservoir. It is squeezed five times (about
+summit, the B6481 and Highmoor Reservoir. Along it:
+
+- **Stations:** booking halls with windows, doors and chimneys, canopies on
+  iron columns, white palings, benches, flower tubs, milk churns, barrows and
+  clocks; signal boxes, footbridges and waiting shelters at the loops; water
+  columns; car parks full of cars; Ravensgill's engine shed, coaling stage and
+  a siding of wagons.
+- **Places to eat and drink:** the Thorpe Arms by Kirkby Thorpe crossing, the
+  Goods Shed Tea Room at Lowerdale, the Viaduct Inn at Brackenby, the Junction
+  Inn and the Station Buffet at Ravensgill, the Fellside Café, the Summit Tea
+  Hut and the Reservoir Café, each with its sign.
+- **Villages:** terraces of stone cottages, houses with garden walls,
+  churches with towers, farms with barns and bales, and lanes down to every
+  station.
+- **Crossings and bridges:** level crossings with white gates, red targets and
+  lamps, keepers' cottages and whistle boards; farm crossings; stone arched
+  overbridges with their approach ramps.
+- **The lineside:** telegraph poles with their wires, quarter-mile posts,
+  platelayers' huts, stone walls, hedgerows and hedgerow trees, sheep on the
+  fells and cattle in the pastures. It is squeezed five times (about
 4.5 km end to end, with the stations 600 m to 1 km apart) and the clock runs
 four times as fast, so a round trip takes about half an hour instead of two
 (less if you wait out the layovers with ⏩), and the booked timetable still fits.
@@ -97,6 +116,19 @@ published figures rather than recordings:
 - **At stations:** doors slamming as passengers board, then the guard's whistle
   for the right away. In the yard: buffers and couplings clanking, and your
   footsteps on the ballast.
+
+Every engine has its own voice on top of its class: how sharp or soft its
+exhaust is (the Caprotti Duke of Gloucester's clipped beat, the soft roar of a
+double chimney, the woofly J27 and Q6, the Austerity's harsh bark), how uneven
+its rhythm, its own whistle note (Flying Scotsman's bell whistle, the J72's
+small high one, the S160's American chime), and extras: the GWR pannier's
+vacuum pump, the S160's Westinghouse pump panting at a stand, rods knocking on
+the 8F, Q6 and Austerity when coasting, the Crab's long cylinder-cock roar, the
+injector singing and the fireman's shovel. Diesels too: the Class 40's turbos
+whistling even at idle, the Class 50's "hoover", the 56's grind, the 60's turbo
+scream, the Western's transmission whine, the Hymek's Mekydro gear steps and
+the 08's single horn and gear whine. The Pacer has one long hydraulic rise and
+no gear changes, and its four wheels thump over every joint.
 
 The pitches of whistles and horns are estimates from descriptions of them,
 since no measured figures are published; the beat counts and engine speeds are

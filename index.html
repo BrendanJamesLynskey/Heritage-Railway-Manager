@@ -4733,7 +4733,8 @@ function sndRunStop(r){
 function sndAxles(vehicles, eyeBack){
   const out = []; let d = 0;
   for(const v of vehicles){ const L = v.len, b = Math.min(7.3, L*0.36);
-    for(const z of [-b, b]) for(const dz of [-1.3, 1.3]) out.push(d + L/2 + z + dz - eyeBack);
+    if(v.four) for(const z of [-(L/2 - 3.2), L/2 - 3.2]) out.push(d + L/2 + z - eyeBack);
+    else for(const z of [-b, b]) for(const dz of [-1.3, 1.3]) out.push(d + L/2 + z + dz - eyeBack);
     d += L; }
   return out.filter(x=>x > -3);
 }
@@ -4770,26 +4771,42 @@ const WHISTLES = {
   ner:{notes:[700], parts:[1,.3,.15,.05], breath:.2}, ly:{notes:[800], parts:[1,.3,.15,.05], breath:.22},
   tank:{notes:[1350], parts:[1,.25,.1,.03], breath:.35}, wd:{notes:[1050], parts:[1,.28,.12,.04], breath:.32}, usa:{notes:[330, 415], parts:[1,.2,.08,.02], breath:.3, detune:3}
 };
-const STEAM_SOUND = {   // key: [whistle, cylinders]
-  wd:["wd",2], pannier:["gwr",2], ivatt:["lms",2], j27:["ner",2], "4mt":["br",2], "8f":["lms8f",2], b1:["lner",2], black5:["lms",2], hunslet:["tank",2],
-  jinty:["midland",2], ly27:["ly",2], "2mt78":["br",2], crab:["lms",2], k1:["lner",2], "5mt":["br",2], s160:["usa",2],
-  "g-scot":["chime",3], "g-a4":["chime",3], "g-k4":["lner",3], "g-9f":["br",2], "g-q6":["ner",2], "g-ivatt4":["lms",2], "g-tornado":["chime",3],
-  "g-duchess":["lms",4], "g-royalscot":["lms",3], "g-greenarrow":["lner",3], "g-bahamas":["lms",3], "g-braunton":["sr",3], "g-duke":["br",3], "g-p3":["ner",2]
+// key: [whistle, cylinders, whistle pitch, exhaust bark (soft 0 .. crisp 1), weight of the beat, unevenness, double chimney, extras]
+const STEAM_SOUND = {
+  wd:["wd",2,1,.8,1.3,.25,0,"inj clank"], pannier:["gwr",2,1,.9,.9,.05,0,"gwrpump"], ivatt:["lms",2,1.05,.85,.8,.05], j27:["ner",2,.75,.35,1.1,.1],
+  "4mt":["br",2,1,.8,1,.03], "8f":["lms8f",2,1,.75,1.3,.1,0,"clank"], b1:["lner",2,1,.6,1,.05], black5:["lms",2,1,.85,1,.04],
+  hunslet:["tank",2,1.05,1,.8,.1,0,"safety"], jinty:["midland",2,1,.85,.9,.06], ly27:["ly",2,1,.4,.9,.2], "2mt78":["br",2,1.05,.8,.8,.04],
+  crab:["lms",2,.97,.6,1.2,.18,0,"cocks"], k1:["lner",2,1.03,.8,1,.04], "5mt":["br",2,.98,.85,1,.03], s160:["usa",2,1,.7,1.4,.15,0,"westinghouse clank"],
+  "g-scot":["lner",3,1.07,.4,.9,.12,1], "g-a4":["chime",3,1,.3,.9,.08,1], "g-k4":["lner",3,.97,.7,.9,.12], "g-9f":["br",2,.95,.5,1.4,.04,1],
+  "g-q6":["ner",2,.8,.35,1.3,.08,0,"clank"], "g-ivatt4":["lms",2,1,.95,1.1,.05], "g-tornado":["chime",3,1.04,.35,1,.03,1], "g-duchess":["lms",4,.92,.35,1.2,.03,1],
+  "g-royalscot":["lms",3,.98,.45,1,.03,1], "g-greenarrow":["lner",3,.95,.55,1,.15], "g-bahamas":["lms",3,1.02,.45,1,.03,1],
+  "g-braunton":["sr",3,1,.4,.9,.15,1,"chain"], "g-duke":["br",3,1,1,1,.02,1,"caprotti"], "g-p3":["ner",2,1.35,.9,.7,.05]
 };
-const DIESEL_SOUND = {   // key: [cylinders, stroke, idle rpm, full rpm, turbo, engines, horn high, horn low, horn style]
-  c08:[6,4,300,680,0,1,622,466], c14:[6,4,600,1500,.1,1,622,494], c20:[8,4,450,850,.25,1,660,554], "g-c20":[8,4,450,850,.25,1,660,554],
-  c24:[6,4,350,750,.08,1,587,466], c25:[6,4,350,750,.08,1,587,466], c26:[6,4,350,750,.06,1,587,466], "g-c26":[6,4,350,750,.06,1,587,466],
-  c33:[6,4,350,750,.06,1,587,466], "g-c33":[6,4,350,750,.06,1,587,466], c31:[12,4,450,850,.15,1,587,466], c37:[12,4,450,850,.25,1,660,554],
-  c40:[16,4,450,850,.3,1,587,466], "g-d213":[16,4,450,850,.3,1,587,466], c45:[12,4,350,750,.08,1,587,466], c46:[12,4,350,750,.08,1,587,466],
-  c47:[12,4,350,750,.07,1,523,440,"dark"], "g-c47":[12,4,350,750,.07,1,523,440,"dark"], "g-c50":[16,4,450,850,.2,1,587,494],
-  "g-deltic":[18,2,700,1500,.12,2,554,440,"rasp"], "g-western":[12,4,650,1500,.1,2,700,560], "g-hymek":[16,4,650,1500,.1,1,622,494],
-  "g-c56":[16,4,450,900,.12,1,494,392], "g-c60":[8,4,500,1000,.1,1,494,392]
+// key: [cylinders, stroke, idle rpm, full rpm, turbo, engines, horn high, horn low (or one note), horn style, character]
+// character: turbo pitch tf, turbo heard at idle (idleT), transmission whine, the Class 50's "hoover" intake, roughness, Mekydro gear steps
+const DIESEL_SOUND = {
+  c08:[6,4,300,680,0,1,415,null,null,{gearWhine:.035, rough:.3}], c14:[6,4,600,1500,.1,1,622,494,null,{whine:.06, rough:.4}],
+  c20:[8,4,450,850,.25,1,660,554,null,{tf:1.3}], "g-c20":[8,4,450,850,.25,1,660,554,null,{tf:1.3}],
+  c24:[6,4,350,750,.2,1,622,494,null,{tf:1.2}], c25:[6,4,350,750,.22,1,622,494,null,{tf:1.2}], c26:[6,4,350,750,.15,1,587,466,null,{tf:1.15}], "g-c26":[6,4,350,750,.15,1,587,466,null,{tf:1.15}],
+  c33:[8,4,350,750,.06,1,587,466,null,{rough:.1}], "g-c33":[8,4,350,750,.06,1,587,466,null,{rough:.1}], c31:[12,4,450,850,.12,1,587,466],
+  c37:[12,4,450,850,.3,1,660,554,null,{rough:.25}], c40:[16,4,450,850,.4,1,587,466,null,{tf:1.4, idleT:.35}], "g-d213":[16,4,450,850,.4,1,587,466,null,{tf:1.4, idleT:.35}],
+  c45:[12,4,350,750,.06,1,587,466,null,{rough:.4}], c46:[12,4,350,750,.06,1,587,466,null,{rough:.38}],
+  c47:[12,4,350,800,.1,1,554,466,"dark"], "g-c47":[12,4,350,800,.1,1,554,466,"dark"], "g-c50":[16,4,450,850,.2,1,587,494,null,{hoover:.3}],
+  "g-deltic":[18,2,700,1500,.2,2,554,440,"rasp",{tf:1.6, idleT:.2}], "g-western":[12,4,650,1500,.1,2,700,560,null,{whine:.12}],
+  "g-hymek":[16,4,650,1500,.1,1,622,494,null,{gears:"mekydro", rough:.2}], "g-c56":[16,4,450,900,.12,1,494,392,null,{rough:.55}],
+  "g-c60":[8,4,500,1000,.35,1,494,392,null,{tf:1.5}]
 };
+// units: [idle, full, engine roughness, hydraulic drive (no gear changes), four-wheeled, engine pitch]
+const DMU_SOUND = {c101:[500,1800,.25], c108:[500,1800,.3], c104:[500,1800,.3], c110:[500,1800,.05], c144:[600,2100,.2,true,true], railbus:[600,2100,.35,false,true,1.15]};
 function sndProfile(key){
-  if(STEAM_MODELS[key]){ const [w, cyl] = STEAM_SOUND[key] || ["br", 2]; return {type:"steam", whistle:WHISTLES[w], beats:cyl===3 ? 6 : 4, gresley:cyl===3 && /g-(scot|a4|k4|tornado|greenarrow)/.test(key), D:STEAM_MODELS[key].D || 1.6}; }
-  if(DMU_MODELS[key]) return {type:"dmu", eng:[6,4,500,1800,0,2], horn:[587,440]};
+  if(STEAM_MODELS[key]){ const [w, cyl, pm, bark, weight, uneven, dbl, ex] = STEAM_SOUND[key] || ["br", 2, 1, .7, 1, .05], W = WHISTLES[w];
+    return {type:"steam", whistle:{...W, notes:W.notes.map(f=>f*(pm || 1))}, beats:cyl===3 ? 6 : 4, gresley:cyl===3 && /g-(scot|a4|k4|tornado|greenarrow)/.test(key),
+            D:STEAM_MODELS[key].D || 1.6, bark:bark ?? .7, weight:weight || 1, uneven:uneven || 0, dbl:!!dbl, ex:(ex || "") + " inj coal"}; }
+  if(DMU_MODELS[key]){ const [idle, full, rough, hyd, four, pitch] = DMU_SOUND[key] || [500,1800,.25];
+    const horn = {c101:[587,440], c110:[622,466], c108:[554,415], c104:[587,494], c144:[523,415], railbus:[698,523]}[key] || [587,440];
+    return {type:"dmu", eng:[6,4,idle*(pitch || 1),full*(pitch || 1),0,2], horn, c:{rough, hydraulic:!!hyd, smooth:key==="c110"}, four:!!four}; }
   const d = DIESEL_SOUND[key] || [12,4,450,850,.12,1,587,466];
-  return {type:"diesel", eng:d.slice(0,6), horn:[d[6], d[7]], style:d[8]};
+  return {type:"diesel", eng:d.slice(0,6), horn:d[7] ? [d[6], d[7]] : [d[6]], style:d[8], c:d[9] || {}};
 }
 
 // steam: a beat for every exhaust, made of a thump, the bark and a hiss; drain cocks after starting; the blower and safety valves at a stand
@@ -4807,22 +4824,34 @@ function sndSteamUpdate(r, v, ctl, dt){
   if(reg > 0.02 && v > 0.02){
     r.phase += bps*dt;
     while(r.phase >= 1){ r.phase -= 1; r.n++;
-      const mid = p.gresley && r.n%3===0, odd = r.n%2 ? 1 : 0.9, blur = Math.max(0, 1 - Math.max(0, bps - 11)/8);
-      const g = reg*(0.28 + 0.72*cut)*odd*(mid ? 1 + 0.3*cut : 1)*blur, when = t + (mid ? 0.08*cut/bps : 0) + Math.random()*0.004;
-      const dec = Math.min(0.25, 0.4/Math.max(1, bps));
+      const mid = p.gresley && r.n%3===0, odd = r.n%2 ? 1 : 1 - p.uneven, blur = Math.max(0, 1 - Math.max(0, bps - (p.dbl ? 8 : 11))/8);
+      const g = reg*(0.28 + 0.72*cut)*odd*(mid ? 1 + 0.3*cut : 1)*blur*(p.dbl ? 0.75 : 1);
+      const when = t + (mid ? 0.08*cut/bps : 0) + (Math.random() - 0.5)*p.uneven*0.12/Math.max(1, bps) + Math.random()*0.004;
+      const crisp = p.ex.includes("caprotti") ? 0.55 : 1.3 - 0.6*p.bark, dec = Math.min(0.25, 0.4/Math.max(1, bps))*crisp;
       if(g > 0.01){
-        sndBurst(when, SND.brown, "bandpass", 110, 1, 1.9*g, 0.005, dec*1.2);
-        sndBurst(when, SND.pink, "bandpass", 450 + 450*(1 - cut), 0.8, 1.4*g, 0.004, dec);
-        sndBurst(when, SND.noise, "highpass", 2500, 0.7, 0.18*g*(1.4 - cut), 0.003, dec*0.8); }
-      if(r.drain > 0){ r.drain--; sndBurst(when, SND.noise, "bandpass", 3800, 1, 0.16*Math.min(1, r.drain/8 + 0.3), 0.01, Math.min(0.3, 0.6/Math.max(1, bps))); }
+        sndBurst(when, SND.brown, "bandpass", 95 + 40*(1 - p.weight/1.4), 1, 1.9*g*p.weight, 0.005, dec*1.2);
+        sndBurst(when, SND.pink, "bandpass", (380 + 250*p.bark) + 450*(1 - cut)*(p.dbl ? 0.6 : 1), 0.8, 1.4*g, p.ex.includes("caprotti") ? 0.002 : 0.004, dec);
+        sndBurst(when, SND.noise, "highpass", 2500, 0.7, 0.18*g*(1.4 - cut)*(0.5 + p.bark), 0.003, dec*0.8); }
+      if(p.ex.includes("gwrpump") && r.n%p.beats===0) sndBurst(when, SND.noise, "bandpass", 1800, 3, 0.05, 0.004, 0.05);   // the GWR crosshead vacuum pump
+      if(p.ex.includes("chain") && r.n%2===0) sndBurst(when, SND.noise, "bandpass", 3200, 4, 0.025, 0.002, 0.03);
+      if(r.drain > 0){ r.drain -= p.ex.includes("cocks") ? 0.6 : 1; sndBurst(when, SND.noise, "bandpass", 3800, 1, 0.16*Math.min(1, r.drain/8 + 0.3), 0.01, Math.min(0.3, 0.6/Math.max(1, bps))); }
     }
   }
-  const blurAll = Math.max(0, Math.min(1, (bps - 9)/8));
-  r.roar.g.gain.setTargetAtTime(reg*blurAll*0.08, t, 0.2); r.roar.f.frequency.setTargetAtTime(700 + 300*(1 - cut), t, 0.3);
+  const blurAll = Math.max(0, Math.min(1, (bps - (p.dbl ? 6 : 9))/8));
+  r.roar.g.gain.setTargetAtTime(reg*blurAll*(p.dbl ? 0.13 : 0.08), t, 0.2);
+  // rods knocking when she coasts, the Westinghouse pump panting at a stand, the injector, the fireman's shovel
+  if(p.ex.includes("clank") && reg < 0.02 && v > 0.5){ r.knock = (r.knock || 0) + 2*rev*dt; if(r.knock >= 1){ r.knock -= 1; sndBurst(t, SND.brown, "lowpass", 420, 1, 0.25, 0.003, 0.08); sndBurst(t, SND.noise, "bandpass", 1500, 5, 0.03, 0.002, 0.05); } }
+  if(p.ex.includes("westinghouse") && v < 0.05){ r.pump = (r.pump || 0) - dt; if(r.pump <= 0){ r.pump = 1.1; r.pumpUp = !r.pumpUp;
+      sndBurst(t, SND.pink, "bandpass", r.pumpUp ? 700 : 1050, 1.5, 0.12, 0.02, 0.3); sndBurst(t, SND.brown, "lowpass", 160, 1, 0.3, 0.01, 0.15); } }
+  if(v < 0.05 && !r.inj && r.stand > 8 && Math.random() < dt/45){ r.inj = 6;
+    sndBurst(t, SND.noise, "bandpass", 1000, 1, 0.06, 0.05, 0.7); r.injL = sndLoop(SND.noise, "bandpass", 3000, 4); r.injL.g.gain.setTargetAtTime(0.035, t + 0.7, 0.2); }
+  if(r.inj){ r.inj -= dt; if(r.inj <= 0 || v > 0.5){ r.inj = 0; r.injL.g.gain.setTargetAtTime(0, t, 0.2); r.injL.src.stop(t + 1); } }
+  if(reg > 0.3 && v > 0.5){ r.coal = (r.coal ?? 6) - dt; if(r.coal <= 0){ r.coal = 7 + Math.random()*4;
+      for(let k=0;k<3;k++){ const tk = t + k*0.9; sndBurst(tk, SND.noise, "bandpass", 2600, 1.2, 0.04, 0.05, 0.25); sndBurst(tk + 0.35, SND.brown, "lowpass", 300, 1, 0.18, 0.005, 0.12); } } } r.roar.f.frequency.setTargetAtTime(700 + 300*(1 - cut), t, 0.3);
   r.drainL.g.gain.setTargetAtTime(r.drain > 0 ? 0.03 : 0, t, 0.5);
   r.blower.g.gain.setTargetAtTime(v < 0.5 ? 0.025 : reg < 0.02 ? 0.015 : 0, t, 0.5);
   // the safety valves lift now and then when she's been standing a while, with a flutter as they go
-  if(r.stand > 25 && !r.lift && Math.random() < dt/20){ r.lift = 4 + Math.random()*8;
+  if(r.stand > (p.ex.includes("safety") ? 10 : 25) && !r.lift && Math.random() < dt/(p.ex.includes("safety") ? 10 : 20)){ r.lift = 4 + Math.random()*8;
     r.safety.g.gain.setValueAtTime(0, t); for(let k=0;k<5;k++) r.safety.g.gain.linearRampToValueAtTime(k%2 ? 0.02 : 0.07, t + 0.06*(k+1)); r.safetyLo.g.gain.setTargetAtTime(0.06, t, 0.2); }
   if(r.lift){ r.lift -= dt; if(r.lift <= 0 || v > 0.5){ r.lift = 0; r.safety.g.gain.setTargetAtTime(0, t, 0.25); r.safetyLo.g.gain.setTargetAtTime(0, t, 0.25); } }
 }
@@ -4871,17 +4900,25 @@ function sndDieselStart(p){
   const tw = c.createOscillator(), tg = c.createGain(); tw.type = "sine"; tg.gain.value = 0; tw.connect(tg).connect(SND.bus); tw.start();
   const tn = sndLoop(SND.noise, "bandpass", 3200, 12);
   r.turbo = {tw, tg, tn, amt:turbo};
+  const ch = p.c || {};
+  r.eng.forEach(e=>{ e.chug.g.gain.value = 0.7 + (ch.rough || 0)*0.6; });
+  if(ch.whine || ch.gearWhine){ const o = c.createOscillator(), g = c.createGain(); o.type = "triangle"; g.gain.value = 0; o.connect(g).connect(SND.bus); o.start(); r.whine = {o, g}; }
+  if(ch.hoover) r.hoover = sndLoop(SND.pink, "bandpass", 1300, 0.8);
   return r;
 }
 function sndDieselUpdate(r, v, ctl, dt){
   if(!r) return;
   const c = SND.ctx, t = c.currentTime, [cyl, stroke, idle, full] = r.p.eng, load = Math.max(0, ctl);
   let target = idle + (full - idle)*load;
-  if(r.kind==="dmu"){   // a four-speed gearbox: the revs climb in each gear, drop at the change, and the band goes in with a clunk
-    const mph = v*MPH, gear = mph < 15 ? 1 : mph < 27 ? 2 : mph < 41 ? 3 : 4, lo = [0, 0, 15, 27, 41][gear], hi = [0, 15, 27, 41, 60][gear];
+  const ch = r.p.c || {};
+  if(r.kind==="dmu" && ch.hydraulic){   // the Pacer's Voith drive: one long rise, no gear changes
+    const mph = v*MPH; target = load > 0.05 ? idle + (full - idle)*load*(0.55 + 0.45*Math.min(1, mph/30)) - (mph > 30 && mph < 33 ? 250 : 0) : idle;
+  } else if(r.kind==="dmu" || ch.gears){   // a four-speed gearbox: the revs climb in each gear, drop at the change, and the band goes in with a clunk
+    const G4 = ch.gears ? [0, 0, 18, 32, 50, 75] : [0, 0, 15, 27, 41, 60], mph = v*MPH, gear = mph < G4[2] ? 1 : mph < G4[3] ? 2 : mph < G4[4] ? 3 : 4, lo = G4[gear], hi = G4[gear + 1];
     if(gear!==r.gear){ if(gear > r.gear && load > 0.05){ r.cut = 0.6; sndBurst(t + 0.55, SND.brown, "lowpass", 100, 1, 0.6, 0.002, 0.15); sndBurst(t + 0.55, SND.noise, "bandpass", 600, 3, 0.08, 0.002, 0.08); } r.gear = gear; }
-    target = load > 0.05 ? 1100 + 700*Math.min(1, (mph - lo)/(hi - lo))*load + (gear===1 ? 300*load : 0) : idle;
-    if(r.cut > 0){ r.cut -= dt; target = 1100; }
+    const top = full, low = idle + (full - idle)*0.46;
+    target = load > 0.05 ? low + (top - low)*Math.min(1, (mph - lo)/(hi - lo))*load + (gear===1 ? 0.2*(top - low)*load : 0) : idle;
+    if(r.cut > 0){ r.cut -= dt; target = low; }
   }
   const slew = (r.p.style==="rasp" || full > 1200 ? 400 : 160)*dt;
   r.rpm += Math.max(-slew, Math.min(slew, target - r.rpm));
@@ -4893,8 +4930,12 @@ function sndDieselUpdate(r, v, ctl, dt){
     e.rock.frequency.setTargetAtTime(r.rpm/120, t, 0.2); });
   // the turbo lags the engine: slow to spool up, slower to run down
   const tk = load > r.spool ? dt/3 : dt/6; r.spool += (load*lr - r.spool)*Math.min(1, tk*3);
-  r.turbo.tw.frequency.setTargetAtTime(1800 + 3400*r.spool, t, 0.2); r.turbo.tg.gain.setTargetAtTime(r.turbo.amt*0.08*r.spool, t, 0.2);
-  r.turbo.tn.f.frequency.setTargetAtTime(1800 + 3400*r.spool, t, 0.2); r.turbo.tn.g.gain.setTargetAtTime(r.turbo.amt*0.05*r.spool, t, 0.2);
+  const sp = Math.max(r.spool, ch.idleT || 0), tf = ch.tf || 1;   // the whistlers' turbos sing even at idle
+  r.turbo.tw.frequency.setTargetAtTime((1800 + 3400*sp)*tf, t, 0.2); r.turbo.tg.gain.setTargetAtTime(r.turbo.amt*0.08*sp, t, 0.2);
+  r.turbo.tn.f.frequency.setTargetAtTime((1800 + 3400*sp)*tf, t, 0.2); r.turbo.tn.g.gain.setTargetAtTime(r.turbo.amt*0.05*sp, t, 0.2);
+  if(r.whine){ r.whine.o.frequency.setTargetAtTime(ch.gearWhine ? 400 + v*160 : 250 + v*60, t, 0.1); r.whine.g.gain.setTargetAtTime(((ch.whine || 0) + (ch.gearWhine || 0))*Math.min(1, v/3)*(0.5 + 0.5*load)*0.35, t, 0.15); }
+  if(r.hoover){ r.hoover.g.gain.setTargetAtTime(ch.hoover*0.09*(0.3 + lr), t, 0.2); r.hoover.f.frequency.setTargetAtTime(1000 + 800*lr, t, 0.2); }
+  if(ch.smooth) r.eng.forEach(e=>e.lp.frequency.setTargetAtTime(ff*(5 + 4*load), t, 0.1));
 }
 // two-tone horn: high then low while it's held, a short toot if it's just tapped
 function sndHorn(r, on){
@@ -4908,11 +4949,12 @@ function sndHorn(r, on){
       const os = ["sawtooth", "square"].map((type, i)=>{ const o = c.createOscillator(); o.type = type; o.frequency.setValueAtTime(f*Math.pow(2, -80/1200), t); o.frequency.exponentialRampToValueAtTime(f, t + 0.08);
         const og = c.createGain(); og.gain.value = i ? 0.4 : 0.6; o.connect(og).connect(g); o.start(t); return o; });
       return {g, os}; };
-    const H = voice(hi), L = voice(lo);
-    H.g.gain.setValueAtTime(0, t); H.g.gain.linearRampToValueAtTime(1, t + 0.03); H.g.gain.setValueAtTime(1, t + 0.55); H.g.gain.linearRampToValueAtTime(0, t + 0.6);
-    L.g.gain.setValueAtTime(0, t + 0.6); L.g.gain.linearRampToValueAtTime(1, t + 0.63);
+    const H = voice(hi), L = lo ? voice(lo) : null;
+    if(L){ H.g.gain.setValueAtTime(0, t); H.g.gain.linearRampToValueAtTime(1, t + 0.03); H.g.gain.setValueAtTime(1, t + 0.55); H.g.gain.linearRampToValueAtTime(0, t + 0.6);
+      L.g.gain.setValueAtTime(0, t + 0.6); L.g.gain.linearRampToValueAtTime(1, t + 0.63); }
+    else { H.g.gain.setValueAtTime(0, t); H.g.gain.linearRampToValueAtTime(1, t + 0.03); }   // a single-note horn (the 08)
     let rasp = null; if(style==="rasp"){ rasp = c.createOscillator(); const rg = c.createGain(); rasp.frequency.value = 40; rg.gain.value = 0.3; rasp.connect(rg).connect(out.gain); rasp.start(t); }
-    r.hn = {out, os:[...H.os, ...L.os, ...(rasp ? [rasp] : [])], t0:t};
+    r.hn = {out, os:[...H.os, ...(L ? L.os : []), ...(rasp ? [rasp] : [])], t0:t};
   } else if(!on && r.hn){
     const {out, os, t0} = r.hn, end = Math.max(t, t0 + 0.25); r.hn = null;
     out.gain.setTargetAtTime(0, end, 0.02); os.forEach(o=>o.stop(end + 0.3));
@@ -4925,8 +4967,9 @@ function sndSignal(r, on){ if(!r) return; if(r.kind==="steam") sndWhistle(r, on)
 function sndVoiceStop(r){
   if(!r || !SND.ctx) return; const t = SND.ctx.currentTime;
   sndSignal(r, false);
-  if(r.kind==="steam") for(const n of [r.roar, r.blower, r.drainL, r.safety, r.safetyLo]){ n.g.gain.setTargetAtTime(0, t, 0.1); n.src.stop(t + 0.6); }
+  if(r.kind==="steam") for(const n of [r.roar, r.blower, r.drainL, r.safety, r.safetyLo, ...(r.inj ? [r.injL] : [])]){ n.g.gain.setTargetAtTime(0, t, 0.1); n.src.stop(t + 0.6); }
   else { r.eng.forEach(e=>{ e.g.gain.setTargetAtTime(0, t, 0.1); for(const o of [e.o, e.am, e.rock, e.chug.src]) o.stop(t + 0.6); });
+    if(r.whine){ r.whine.g.gain.setTargetAtTime(0, t, 0.1); r.whine.o.stop(t + 0.6); } if(r.hoover){ r.hoover.g.gain.setTargetAtTime(0, t, 0.1); r.hoover.src.stop(t + 0.6); }
     r.turbo.tg.gain.setTargetAtTime(0, t, 0.1); r.turbo.tw.stop(t + 0.6); r.turbo.tn.src.stop(t + 0.6); }
 }
 
@@ -5065,12 +5108,8 @@ function lineSceneMesh(G){
     const plat = (off) => { for(let s = p0; s < p1; s += DRV.step){ const p = G.at(s + DRV.step/2, off); box(a, p.x, p.y + 0.5, p.z, 4.0, 1.0, DRV.step + 0.05, stone, p.yaw);
         const e = G.at(s + DRV.step/2, off - Math.sign(off)*1.85); box(a, e.x, e.y + 1.01, e.z, 0.3, 0.02, DRV.step, [.95,.92,.8], e.yaw); } };
     plat(3.6); if(loop) plat(-8.2);
-    const mid = (p0 + p1)/2, b = G.at(mid, 7.2);
-    box(a, b.x, b.y + 2.6, b.z, 4.4, 3.2, 12, i===0 || i===STATIONS.length-1 ? brick : stone, b.yaw);
-    box(a, b.x, b.y + 4.5, b.z, 5.0, 0.6, 12.8, slate, b.yaw);
-    const ch = G.at(mid + 4, 7.2); box(a, ch.x, ch.y + 5.3, ch.z, 0.7, 1.2, 0.7, brick, ch.yaw);
+    const mid = (p0 + p1)/2;
     for(const ds of [-60, -35, 30, 60]){ const l = G.at(mid + ds, 4.9); box(a, l.x, l.y + 2.6, l.z, 0.12, 3.2, 0.12, dark, l.yaw); box(a, l.x, l.y + 4.25, l.z, 0.35, 0.35, 0.35, cream, l.yaw); }
-    for(const ds of [-20, 16]){ const q = G.at(mid + ds, 4.6); box(a, q.x, q.y + 1.45, q.z, 0.5, 0.1, 2.0, [.4,.24,.14], q.yaw); }
     for(const ds of [-45, 45]){ const n = G.at(mid + ds, 4.4); for(const dd of [-1.4, 1.4]){ const q = G.at(mid + ds + dd, 4.4); box(a, q.x, q.y + 1.9, q.z, 0.1, 1.8, 0.1, dark, q.yaw); }
       box(a, n.x, n.y + 3.0, n.z, 0.12, 0.7, 3.6, cream, n.yaw); G.boards.push({i, x:n.x, y:n.y + 3.0, z:n.z}); }
     if(loop) for(const dir of [1,-1]){ if((i===0 && dir<0) || (i===STATIONS.length-1 && dir>0)) continue;
@@ -5101,17 +5140,273 @@ function lineSceneMesh(G){
   for(let k=0;k<520;k++){ const x = X0 + rnd()*(X1-X0), z = Z0 + rnd()*(Z1-Z0), t = T.height(x, z);
     if(t.n.d < 22 || t.h < T.nat(x, z, t.n) - 6 || t.h - G.y(t.n.s) > 30) continue;
     const ht = 4 + rnd()*4, y = rnd()*3; box(a, x, t.h + ht/2, z, 0.5, ht, 0.5, [.3,.22,.15], y); box(a, x, t.h + ht + 1.8, z, 3.4 + rnd()*1.5, 4.0, 3.4 + rnd()*1.5, [.17,.31 + rnd()*.1,.15], y); }
-  STATIONS.forEach((st,i)=>{ const mid = (G.plat[i][0] + G.plat[i][1])/2;
-    for(let k=0;k<(i===0 ? 9 : 5);k++){ const o = 22 + rnd()*40, p = G.at(mid - 80 + rnd()*160, o), h = T.height(p.x, p.z).h, w = 5 + rnd()*3;
-      box(a, p.x, h + 2.2, p.z, w, 4.4, 7, rnd() < 0.5 ? stone : [.66,.62,.55], p.yaw); box(a, p.x, h + 4.9, p.z, w + 0.4, 1.0, 7.4, slate, p.yaw); } });
   for(let s = 0; s < G.L; s += 8){ if(s > G.via[0] - 10 && s < G.via[1] + 10 || s > G.tun[0] - 30 && s < G.tun[1] + 30) continue;
     if(G.plat.some(([p0, p1])=>s > p0 - 70 && s < p1 + 70)) continue;
     for(const o of [13, -13]){ const p = G.at(s + 4, o), q0 = G.at(s, o), q1 = G.at(s + 8, o), h = T.height(p.x, p.z).h;
       if(Math.abs(T.height(q0.x, q0.z).h - T.height(q1.x, q1.z).h) > 0.5) continue;   // walls only on the level
       box(a, p.x, h + 0.45, p.z, 0.4, 0.9, 8.1, [.5,.48,.44], p.yaw); } }
+  lineScenery(a, G, T);
   return a;
 }
 const B0 = [.07,.07,.08];
+
+/* ---- the line's scenery: stations, villages, pubs and cafés, level crossings, bridges and the lineside ---- */
+const SC = {stone:[.62,.58,.52], stone2:[.53,.5,.45], stone3:[.7,.66,.58], brick:[.56,.33,.25], slate:[.27,.28,.31], cream:[.88,.83,.66],
+  white:[.9,.9,.88], dark:[.13,.13,.14], glass:[.17,.21,.26], wood:[.42,.28,.16], green:[.13,.32,.2], red:[.62,.12,.1], tar:[.27,.27,.28], gravel:[.5,.47,.42]};
+// a place to build: a world point and a heading; b() puts a box at a local offset (x across, y up, z along), p() gives a local point
+function scFrame(x, y, z, yaw){ const c = Math.cos(yaw), s = Math.sin(yaw);
+  const p = (lx, ly, lz) => [x + c*lx + s*lz, y + ly, z - s*lx + c*lz];
+  return {x, y, z, yaw, p, b:(a, lx, ly, lz, w, h, l, col)=>{ const q = p(lx, ly, lz); box(a, q[0], q[1], q[2], w, h, l, col, yaw); }}; }
+// a pitched roof with its ridge along local z, and gable ends
+function scRoof(a, F, lx, ly, lz, w, l, rise, col, gable){
+  const e = 0.35, P = F.p, L = l/2 + e, W = w/2 + e;
+  quad(a, P(lx - W, ly - 0.15, lz - L), P(lx, ly + rise, lz - L), P(lx, ly + rise, lz + L), P(lx - W, ly - 0.15, lz + L), col, [-1,1,0]);
+  quad(a, P(lx + W, ly - 0.15, lz - L), P(lx, ly + rise, lz - L), P(lx, ly + rise, lz + L), P(lx + W, ly - 0.15, lz + L), col, [1,1,0]);
+  for(const s of [-1,1]) quad(a, P(lx - w/2, ly, lz + s*l/2), P(lx + w/2, ly, lz + s*l/2), P(lx, ly + rise, lz + s*l/2), P(lx, ly + rise, lz + s*l/2), gable || col, [0,0,s]);
+}
+// windows (with white frames) and a door along one face of a block: face = +1 or -1 on local x
+function scWindows(a, F, lx, lz, w, l, floors, face, door, wcol){
+  const x = lx + face*(w/2 + 0.03), n = Math.max(1, Math.floor((l - 1)/2.3));
+  for(let f=0;f<floors;f++) for(let k=0;k<n;k++){ const z = lz - l/2 + (k + 0.5)*l/n, y = 1.5 + f*2.6;
+    if(door && f===0 && k===Math.floor(n/2)){ F.b(a, x, 1.05, z, 0.06, 2.1, 1.0, wcol || SC.green); continue; }
+    F.b(a, x, y, z, 0.05, 1.2, 1.0, SC.white); F.b(a, x + face*0.02, y, z, 0.05, 1.05, 0.85, SC.glass); }
+}
+function scHouse(a, F, lx, lz, w, l, floors, col, face, opt){
+  opt = opt || {}; const h = floors*2.6 + 0.4;
+  F.b(a, lx, h/2, lz, w, h, l, col);
+  scRoof(a, F, lx, h, lz, w, l, opt.rise || w*0.42, opt.roof || SC.slate, col);
+  scWindows(a, F, lx, lz, w, l, floors, face, true, opt.door); scWindows(a, F, lx, lz, w, l, floors, -face, false);
+  if(!opt.noChim) for(const s of opt.chim || [-1, 1]) F.b(a, lx, h + w*0.42 - 0.2, lz + s*(l/2 - 0.5), 0.7, 1.6, 0.9, col);
+  return h;
+}
+function scSign(G, F, lx, ly, lz, text, kind){ const q = F.p(lx, ly, lz); G.signs.push({x:q[0], y:q[1], z:q[2], text, kind}); }
+function scBench(a, F, lx, lz){ F.b(a, lx, 0.45, lz, 0.5, 0.08, 1.8, SC.wood); F.b(a, lx + 0.22, 0.75, lz, 0.06, 0.5, 1.8, SC.wood); for(const dz of [-0.8, 0.8]) F.b(a, lx, 0.22, lz + dz, 0.45, 0.45, 0.08, SC.dark); }
+function scTable(a, F, lx, lz, brolly){
+  F.b(a, lx, 0.75, lz, 1.0, 0.06, 1.6, SC.wood); for(const dx of [-0.7, 0.7]) F.b(a, lx + dx, 0.45, lz, 0.3, 0.05, 1.6, SC.wood);
+  F.b(a, lx, 0.4, lz, 1.6, 0.06, 0.1, SC.wood);
+  if(brolly){ F.b(a, lx, 1.4, lz, 0.05, 1.3, 0.05, SC.dark); for(let k=0;k<4;k++) F.b(a, lx, 2.05 - k*0.06, lz, 2.4 - k*0.5, 0.06, 2.4 - k*0.5, k%2 ? SC.white : brolly); }
+}
+function scCar(a, F, lx, lz, col){
+  F.b(a, lx, 0.55, lz, 1.7, 0.6, 4.1, col); F.b(a, lx, 1.12, lz - 0.2, 1.5, 0.55, 2.1, col); F.b(a, lx, 1.12, lz - 0.2, 1.52, 0.42, 1.9, SC.glass);
+  for(const dx of [-0.75, 0.75]) for(const dz of [-1.3, 1.3]) F.b(a, lx + dx, 0.32, lz + dz, 0.25, 0.6, 0.6, SC.dark);
+}
+const CAR_COLS = [[.6,.1,.1],[.15,.25,.5],[.8,.8,.78],[.2,.35,.25],[.75,.6,.2],[.3,.3,.32],[.5,.5,.55],[.1,.1,.12]];
+function scPub(a, G, F, lx, lz, face, name){
+  scHouse(a, F, lx, lz, 7, 13, 2, SC.stone2, face, {door:[.35,.12,.1]});
+  F.b(a, lx + face*3.7, 3.0, lz, 0.1, 0.5, 6, [.2,.12,.08]);                          // fascia board
+  F.b(a, lx + face*5.0, 1.8, lz + 7.5, 0.12, 3.6, 0.12, SC.dark); F.b(a, lx + face*5.0, 3.1, lz + 7.5, 0.1, 1.0, 1.4, [.2,.3,.22]);   // hanging sign
+  scSign(G, F, lx + face*5.0, 4.0, lz + 7.5, name, "pub");
+  for(let k=0;k<3;k++) scTable(a, F, lx + face*6.5, lz - 4 + k*3.5);
+}
+function scCafe(a, G, F, lx, lz, face, name, col){
+  F.b(a, lx, 1.7, lz, 5, 3.4, 10, SC.cream); scRoof(a, F, lx, 3.4, lz, 5, 10, 1.6, SC.slate, SC.cream);
+  scWindows(a, F, lx, lz, 5, 10, 1, face, true, col);
+  for(let k=0;k<8;k++) F.b(a, lx + face*3.0, 2.8 - 0.02*k, lz - 4.4 + k*1.25, 1.4, 0.08, 1.25, k%2 ? SC.white : col);   // striped awning
+  for(let k=0;k<3;k++) scTable(a, F, lx + face*5.5, lz - 3.5 + k*3.5, col);
+  scSign(G, F, lx + face*2.6, 3.9, lz, name, "cafe");
+}
+function scChurch(a, F, lx, lz){
+  F.b(a, lx, 3, lz, 7, 6, 16, SC.stone2); scRoof(a, F, lx, 6, lz, 7, 16, 3.5, SC.slate, SC.stone2);
+  for(let k=0;k<4;k++) for(const s of [-1,1]){ F.b(a, lx + s*3.53, 3.2, lz - 5 + k*3.2, 0.05, 2.4, 0.9, [.3,.35,.45]); }
+  F.b(a, lx, 7, lz + 9.5, 4.4, 14, 4.4, SC.stone2);
+  for(const dx of [-1.8, 1.8]) for(const dz of [-1.8, 1.8]) F.b(a, lx + dx, 14.4, lz + 9.5 + dz, 0.8, 0.8, 0.8, SC.stone2);   // pinnacles
+  F.b(a, lx, 10.5, lz + 7.27, 0.9, 1.6, 0.06, SC.dark);
+}
+function scFarm(a, F, lx, lz){
+  F.b(a, lx, 3, lz, 9, 6, 16, SC.stone); scRoof(a, F, lx, 6, lz, 9, 16, 3.2, [.33,.25,.2], SC.stone);
+  F.b(a, lx - 4.53, 2.2, lz, 0.06, 4.0, 4.0, SC.wood);
+  scHouse(a, F, lx + 14, lz, 6, 10, 2, SC.stone3, -1);
+  for(let k=0;k<5;k++){ const q = F.p(lx - 9 - (k%2)*2.2, 0.75, lz - 6 + k*2.6); cyl(a,"x", q[0], q[1], q[2], 0.75, 1.2, [.78,.68,.38], 12); }
+}
+function scSheep(a, x, y, z, yaw, cow){
+  const F = scFrame(x, y, z, yaw), body = cow ? [.12,.12,.12] : [.86,.85,.8];
+  if(cow){ F.b(a, 0, 1.0, 0, 0.9, 0.8, 2.0, body); F.b(a, 0.2, 1.05, -0.3, 0.92, 0.5, 0.8, SC.white); F.b(a, 0, 1.05, 1.15, 0.45, 0.45, 0.6, body); }
+  else { F.b(a, 0, 0.55, 0, 0.55, 0.45, 0.9, body); F.b(a, 0, 0.62, 0.55, 0.25, 0.25, 0.35, [.15,.14,.13]); }
+  for(const dx of [-0.2, 0.2]) for(const dz of [-0.3, 0.3]) F.b(a, dx*(cow?1.6:1), cow ? 0.3 : 0.18, dz*(cow?2:1), 0.1, cow ? 0.6 : 0.36, 0.1, [.15,.14,.13]);
+}
+// signal box: brick base, glazed operating floor, slate roof, with its nameboard
+function scSignalBox(a, G, F, lx, lz, name){
+  F.b(a, lx, 1.4, lz, 3.6, 2.8, 6.5, SC.brick); F.b(a, lx, 3.9, lz, 3.8, 2.2, 6.7, SC.cream);
+  for(const s of [-1,1]) F.b(a, lx + s*1.92, 3.95, lz, 0.05, 1.5, 6.3, SC.glass);
+  F.b(a, lx, 3.95, lz - 3.36, 3.4, 1.5, 0.05, SC.glass);
+  scRoof(a, F, lx, 5.0, lz, 3.8, 6.7, 1.4, SC.slate, SC.cream);
+  for(let k=0;k<5;k++) F.b(a, lx + 2.6 - k*0.0, 0.25 + k*0.5, lz + 3.6 + k*0.45, 1.0, 0.1, 0.4, SC.dark);   // steps
+  scSign(G, F, lx - 1.95, 2.95, lz, name, "box");
+}
+// an iron footbridge from one platform over the line to the other, with steps down at each end
+function scFootbridge(a, G, s, o0, o1){
+  const F = scFrame(...(q=>[q.x, q.y, q.z, q.yaw])(G.at(s))), H = 6.6, iron = [.24,.33,.3];
+  const mid = (o0 + o1)/2, span = Math.abs(o1 - o0);
+  F.b(a, mid, H, 0, span, 0.25, 2.0, iron);
+  for(const s2 of [-1,1]){ F.b(a, mid, H + 0.75, s2*0.95, span, 1.3, 0.08, iron); F.b(a, mid, H + 1.42, s2*0.95, span, 0.06, 0.16, iron); }
+  for(const o of [o0, o1]){ for(const dz of [-0.9, 0.9]) F.b(a, o, H/2, dz, 0.3, H, 0.3, iron);
+    for(let k=0;k<12;k++){ const y = H - (k + 1)*H/12; F.b(a, o, y, 1.4 + k*0.55, 1.6, 0.12, 0.6, iron); }
+    for(const dx of [-0.8, 0.8]) beam3(a, F.p(o + dx, H + 1.0, 1.0), F.p(o + dx, 1.0, 1.4 + 12*0.55), 0.08, 0.08, iron); }
+}
+// platform canopy on iron columns, with a fretted valance
+function scCanopy(a, G, s0, s1, off){
+  for(let s = s0; s < s1; s += DRV.step){ const F = scFrame(...(q=>[q.x, q.y, q.z, q.yaw])(G.at(s + DRV.step/2, off)));
+    F.b(a, 0, 4.3, 0, 4.6, 0.18, DRV.step + 0.05, [.36,.36,.38]); F.b(a, -Math.sign(off)*2.25, 3.95, 0, 0.06, 0.5, DRV.step + 0.05, SC.cream); }
+  for(let s = s0 + 3; s < s1; s += 6){ const q = G.at(s, off + Math.sign(off)*0.6); box(a, q.x, q.y + 2.6, q.z, 0.2, 3.4, 0.2, [.36,.12,.12], q.yaw); }
+}
+function scStation(a, G, T, i){
+  const [p0, p1] = G.plat[i], mid = (p0 + p1)/2, loop = G.lp.has(i), term = i===0 || i===STATIONS.length-1, name = STATIONS[i].name;
+  const at = (s, o) => { const q = G.at(s, o); return scFrame(q.x, q.y, q.z, q.yaw); };
+  // the station building behind the platform: booking hall and waiting room, bigger at the termini
+  const B = at(mid, 9.4);
+  scHouse(a, B, 0, 0, 5.2, term ? 22 : 14, term ? 2 : 1, i===0 ? SC.brick : SC.stone, -1, {door:SC.green});
+  F_fence: { for(let s = p0 + 2; s < p1 - 2; s += 2.2){ const q = G.at(s, 5.75); box(a, q.x, q.y + 1.5, q.z, 0.08, 1.1, 0.08, SC.white, q.yaw); }
+    for(const y of [1.3, 1.85]){ const q0 = G.at(p0 + 2, 5.75), q1 = G.at(p1 - 2, 5.75); beam3(a, [q0.x, q0.y + y, q0.z], [q1.x, q1.y + y, q1.z], 0.05, 0.05, SC.white); } }
+  if(term || loop) scCanopy(a, G, mid - 30, mid + 30, 3.6);
+  // furniture: benches, flower tubs, milk churns, a barrow, the clock
+  const P = at(mid, 4.4);
+  for(const dz of [-28, -8, 12, 32]) scBench(a, P, 0.4, dz);
+  for(const dz of [-40, -20, 22, 44]){ P.b(a, 0.4, 1.35, dz, 0.7, 0.7, 0.7, SC.wood); P.b(a, 0.4, 1.75, dz, 0.8, 0.25, 0.8, [.85,.3,.45]); }
+  for(let k=0;k<3;k++){ const q = P.p(0.6 + (k%2)*0.4, 0, -52 + k*0.45); cyl(a,"y", q[0], q[1] + 1.4, q[2], 0.22, 0.85, [.7,.7,.68], 10); }
+  P.b(a, 0.2, 1.35, 52, 1.0, 0.1, 2.2, SC.wood); for(const dz of [-0.9, 0.9]) { const q = P.p(0.2, 1.15, 52 + dz); cyl(a,"x", q[0], q[1], q[2], 0.2, 1.1, SC.dark, 10); }
+  P.b(a, 0.8, 4.0, 0, 0.12, 0.12, 0.12, SC.dark); { const q = P.p(0.8, 4.35, 0); cyl(a,"x", q[0], q[1], q[2], 0.42, 0.14, SC.white, 16); }
+  if(loop){ const L = at(mid, -8.2); for(const dz of [-20, 15]) scBench(a, L, -0.4, dz);
+    L.b(a, -1.0, 2.4, -2, 2.5, 2.8, 6, SC.stone); scRoof(a, L, -1.0, 2.8, -2, 2.5, 6, 0.8, SC.slate);   // waiting shelter on the loop platform
+    if(!term) scFootbridge(a, G, mid + 52, 5.0, -9.8); }
+  // the signal box at the loops, just off the platform end
+  if(loop){ const sb = term ? (i===0 ? p1 + 35 : p0 - 35) : p1 + 22; scSignalBox(a, G, at(sb, 8.5), 0, 0, name); }
+  // car park and the road up to the station
+  const cp = at(mid - 2, 22), n = i===0 ? 14 : term || i===4 ? 7 : 3;
+  for(let k=0;k<n;k++){ cp.b(a, (k%2)*5.5 - 2.7, 0.06, -15 + Math.floor(k/2)*3.2, 4.8, 0.05, 2.6, SC.tar); }
+  let seed = i*97 + 3; const rnd = () => (seed = (seed*16807) % 2147483647)/2147483647;
+  for(let k=0;k<n;k++) if(rnd() < 0.8) scCar(a, cp, (k%2)*5.5 - 2.7, -15 + Math.floor(k/2)*3.2, CAR_COLS[Math.floor(rnd()*CAR_COLS.length)]);
+  // a water column at the loops where engines take water
+  if(i===0 || i===2 || i===STATIONS.length-1){ const w = at(term ? (i===0 ? p1 - 8 : p0 + 8) : p1 - 6, 2.3);
+    w.b(a, 0, 0.4, 0, 0.9, 0.8, 0.9, SC.dark); w.b(a, 0, 2.2, 0, 0.32, 3.2, 0.32, SC.dark); w.b(a, -1.0, 3.7, 0, 2.2, 0.25, 0.25, SC.dark); w.b(a, -2.0, 3.2, 0, 0.18, 1.0, 0.18, [.25,.2,.15]); }
+}
+// a level crossing: the road over the rails, white gates closed across the road, a keeper's cottage and whistle boards
+function scCrossing(a, G, T, s, roadYaw, keeper, name){
+  const q = G.at(s), F = scFrame(q.x, q.y, q.z, q.yaw);
+  F.b(a, 0, 0.47, 0, 12, 0.12, 6.4, SC.tar);
+  for(const o of [-0.75, 0.75]) F.b(a, o, 0.55, 0, 0.1, 0.03, 6.4, [.56,.54,.5]);
+  for(const side of [-1, 1]){ const x = side*5.2;
+    for(const dz of [-3.5, 3.5]){ F.b(a, x, 1.0, dz, 0.3, 2.0, 0.3, SC.white); F.b(a, x, 2.05, dz, 0.36, 0.12, 0.36, SC.dark); }
+    for(const leaf of [-1, 1]){ const z0 = leaf*1.68;
+      for(const y of [0.55, 1.05, 1.55]) F.b(a, x, y, z0, 0.08, 0.1, 3.3, SC.white);
+      for(const dz of [-1.5, 0, 1.5]) F.b(a, x, 1.05, z0 + dz, 0.08, 1.1, 0.08, SC.white);
+      beam3(a, F.p(x, 0.55, z0 - 1.6), F.p(x, 1.55, z0 + 1.6), 0.06, 0.06, SC.white);
+      const d = F.p(x - side*0.05, 1.15, z0); cyl(a,"x", d[0], d[1], d[2], 0.28, 0.04, SC.red, 14);   // red target disc
+      F.b(a, x, 1.9, z0 + leaf*0.2, 0.2, 0.25, 0.2, [.95,.4,.2]); } }   // gate lamp
+  // the road off each side, on the land
+  for(const side of [-1, 1]) for(let k=0;k<12;k++){ const o0 = side*(6 + k*6), o1 = side*(12 + k*6), A = G.at(s, o0), B = G.at(s, o1);
+    const ha = T.height(A.x, A.z).h, hb = T.height(B.x, B.z).h, ya = k ? ha + 0.15 : q.y + 0.4, yb = hb + 0.15, c = Math.cos(q.yaw), sn = Math.sin(q.yaw);
+    quad(a, [A.x - sn*3.2, ya, A.z - c*3.2], [A.x + sn*3.2, ya, A.z + c*3.2], [B.x + sn*3.2, yb, B.z + c*3.2], [B.x - sn*3.2, yb, B.z - c*3.2], SC.tar, [0,1,0]); }
+  if(keeper){ const k = G.at(s + 12, 13); const KF = scFrame(k.x, T.height(k.x, k.z).h, k.z, k.yaw); scHouse(a, KF, 0, 0, 5, 7, 1, SC.stone3, -1, {chim:[1]}); }
+  for(const d of [1, -1]){ const w = G.at(s - d*240, 2.7); box(a, w.x, w.y + 1.0, w.z, 0.1, 2.0, 0.1, SC.dark, w.yaw); box(a, w.x, w.y + 2.1, w.z, 0.05, 0.6, 0.55, SC.white, w.yaw); G.signs.push({x:w.x, y:w.y + 2.1, z:w.z, text:"W", kind:"w"}); }
+}
+// a stone overbridge carrying a lane across the line, with ramps up to it on each side
+function scOverbridge(a, G, T, s){
+  const q = G.at(s), F = scFrame(q.x, q.y, q.z, q.yaw), H = 6.0, st = SC.stone2;
+  for(const side of [-1, 1]){ F.b(a, side*4.6, H/2, 0, 1.6, H, 8.5, st); F.b(a, side*4.6, H/2, 4.6, 1.6, H, 1.0, st); F.b(a, side*4.6, H/2, -4.6, 1.6, H, 1.0, st); }
+  for(let k=0;k<8;k++){ const t0 = Math.PI*k/8, t1 = Math.PI*(k+1)/8, r = 3.8;   // the arch
+    for(const dz of [-4.2, 4.2]) quad(a, F.p(-Math.cos(t0)*r, H - 1.5 + Math.sin(t0)*1.4, dz), F.p(-Math.cos(t1)*r, H - 1.5 + Math.sin(t1)*1.4, dz), F.p(-Math.cos(t1)*r, H + 0.8, dz), F.p(-Math.cos(t0)*r, H + 0.8, dz), st, [0,0,dz]);
+    quad(a, F.p(-Math.cos(t0)*r, H - 1.5 + Math.sin(t0)*1.4, -4.2), F.p(-Math.cos(t1)*r, H - 1.5 + Math.sin(t1)*1.4, -4.2), F.p(-Math.cos(t1)*r, H - 1.5 + Math.sin(t1)*1.4, 4.2), F.p(-Math.cos(t0)*r, H - 1.5 + Math.sin(t0)*1.4, 4.2), [.45,.42,.38], [0,-1,0]); }
+  F.b(a, 0, H + 0.95, 0, 11, 0.3, 7.6, SC.tar);
+  for(const dz of [-3.9, 3.9]) F.b(a, 0, H + 1.6, dz, 11, 1.1, 0.45, st);
+  for(const side of [-1, 1]) for(let k=0;k<8;k++){ const o0 = side*(5.5 + k*6), o1 = side*(11.5 + k*6), A = G.at(s, o0), B = G.at(s, o1), c = Math.cos(q.yaw), sn = Math.sin(q.yaw);
+    const ga = T.height(A.x, A.z).h, gb = T.height(B.x, B.z).h, ya = Math.max(ga, q.y + H + 1.1 - k*0.9), yb = Math.max(gb, q.y + H + 1.1 - (k + 1)*0.9);
+    quad(a, [A.x - sn*3.6, ya, A.z - c*3.6], [A.x + sn*3.6, ya, A.z + c*3.6], [B.x + sn*3.6, yb, B.z + c*3.6], [B.x - sn*3.6, yb, B.z - c*3.6], SC.tar, [0,1,0]);
+    for(const w of [-3.8, 3.8]) quad(a, [A.x + sn*w, ya, A.z + c*w], [B.x + sn*w, yb, B.z + c*w], [B.x + sn*w, Math.min(gb, yb) - 0.5, B.z + c*w], [A.x + sn*w, Math.min(ga, ya) - 0.5, A.z + c*w], [.4,.48,.3], [0,0,1]); }
+}
+function scVillage(a, G, T, cx, cz, n, rnd, extras){
+  const yaw0 = rnd()*Math.PI, put = (x, z, yaw, fn) => { const t = T.height(x, z); if(t.n.d < 26 || t.h < T.nat(x, z, t.n) - 5) return false; fn(scFrame(x, t.h, z, yaw)); return true; };
+  // a street of terraced cottages, then detached houses round about
+  for(let r=0;r<Math.ceil(n/5);r++){ const off = (r - 0.5)*24, c = Math.cos(yaw0), s = Math.sin(yaw0);
+    for(let k=0;k<5;k++){ const along = (k - 2)*5.4; put(cx + c*off + s*along, cz - s*off + c*along, yaw0, F=>{ scHouse(a, F, 0, 0, 6, 5.4, 2, [SC.stone, SC.stone2, SC.stone3][k%3], r ? 1 : -1, {chim:[1], door:CAR_COLS[k%CAR_COLS.length]}); }); }
+    put(cx + c*off*1.0 - c*9, cz - s*off*1.0 + s*9, yaw0, F=>F.b(a, 0, 0.05, 0, 7, 0.06, 30, SC.tar)); }
+  for(let k=0;k<n;k++){ const ang = rnd()*Math.PI*2, d = 40 + rnd()*60; put(cx + Math.cos(ang)*d, cz + Math.sin(ang)*d, rnd()*Math.PI, F=>{
+      scHouse(a, F, 0, 0, 6 + rnd()*2, 8 + rnd()*3, rnd() < 0.7 ? 2 : 1, [SC.stone, SC.stone3, SC.brick][Math.floor(rnd()*3)], 1);
+      for(const dz of [-6.5, 6.5]) F.b(a, 7, 0.45, dz, 8, 0.9, 0.4, SC.stone2); F.b(a, 11, 0.45, 0, 0.4, 0.9, 13, SC.stone2); }); }
+  if(extras) extras(put);
+}
+function lineScenery(a, G, T){
+  G.signs = [];
+  let seed = 2024; const rnd = () => (seed = (seed*16807) % 2147483647)/2147483647;
+  STATIONS.forEach((st,i)=>scStation(a, G, T, i));
+  const near = (s, gap) => G.plat.some(([p0, p1])=>s > p0 - gap && s < p1 + gap) || (s > G.via[0] - 40 && s < G.via[1] + 40) || (s > G.tun[0] - 80 && s < G.tun[1] + 80);
+  const used = [], free = (s, gap) => !near(s, gap) && used.every(u=>Math.abs(u - s) > 120);
+  // level crossings: the lane at Kirkby Thorpe, and wherever the B6481 meets the line
+  const ks = G.plat[1][1] + 32; scCrossing(a, G, T, ks, 0, true, "Kirkby Thorpe"); used.push(ks);
+  const road = ROAD_PTS.map(([x,y])=>{ const p = G.W(x,y); return [p.x,p.z]; });
+  for(let i=0;i<road.length-1;i++){ const [ax,az] = road[i], [bx,bz] = road[i+1], n = Math.ceil(Math.hypot(bx-ax, bz-az)/4);
+    for(let k=0;k<n;k++){ const x = ax + (bx-ax)*k/n, z = az + (bz-az)*k/n, nn = lineNear(G, x, z);
+      if(nn.d < 4 && nn.s > 20 && nn.s < G.L - 20 && free(nn.s, 40)){ scCrossing(a, G, T, nn.s, 0, true); used.push(nn.s); } } }
+  // farm crossings and stone overbridges in the long sections
+  for(const f of [0.5, 2.6, 3.45]){ const s = G.st[Math.floor(f)] + (G.st[Math.floor(f) + 1] - G.st[Math.floor(f)])*(f % 1 || 0.5); if(free(s, 80)){ scCrossing(a, G, T, s, 0, false); used.push(s); } }
+  for(const f of [0.28, 1.6, 3.7, 4.35]){ const s = G.st[Math.floor(f)] + (G.st[Math.floor(f) + 1] - G.st[Math.floor(f)])*(f % 1); if(free(s, 90)){ scOverbridge(a, G, T, s); used.push(s); } }
+  // the villages on the map, each with its own pub, café, church or farm, and a lane down to the station
+  const V = [[118,500,16],[268,492,10],[386,458,9],[566,404,10],[652,352,7],[920,168,6],[200,535,3]];
+  const lane = (x0, z0, x1, z1) => { const n = Math.ceil(Math.hypot(x1-x0, z1-z0)/8), yaw = Math.atan2(x1-x0, z1-z0), c = Math.cos(yaw)*2.6, sn = Math.sin(yaw)*2.6;
+    for(let k=0;k<n;k++){ const xa = x0 + (x1-x0)*k/n, za = z0 + (z1-z0)*k/n, xb = x0 + (x1-x0)*(k+1)/n, zb = z0 + (z1-z0)*(k+1)/n, ya = T.height(xa, za).h + 0.14, yb = T.height(xb, zb).h + 0.14;
+      quad(a, [xa - c, ya, za + sn], [xa + c, ya, za - sn], [xb + c, yb, zb - sn], [xb - c, yb, zb + sn], SC.tar, [0,1,0]); } };
+  V.slice(0, 6).forEach(([mx, my], vi)=>{ const w = G.W(mx, my), st = G.at((G.plat[vi][0] + G.plat[vi][1])/2, 30); lane(st.x, st.z, w.x, w.z); });
+  // cottages round every station, on both sides of the line
+  STATIONS.forEach((st, i)=>{ const mid = (G.plat[i][0] + G.plat[i][1])/2;
+    for(let k=0;k<(i===0 ? 10 : 6);k++){ const side = k%2 ? 1 : -1, o = side*(34 + rnd()*40), q = G.at(mid - 90 + rnd()*180, o), t = T.height(q.x, q.z);
+      if(t.n.d < 28 || t.h < T.nat(q.x, q.z, t.n) - 5) continue;
+      const F = scFrame(q.x, t.h, q.z, q.yaw); scHouse(a, F, 0, 0, 6, 8 + rnd()*4, rnd() < 0.6 ? 2 : 1, [SC.stone, SC.stone3, SC.stone2, SC.brick][Math.floor(rnd()*4)], -side);
+      for(const dz of [-6, 6]) F.b(a, side*6.5, 0.45, dz, 7, 0.9, 0.4, SC.stone2); F.b(a, side*10, 0.45, 0, 0.4, 0.9, 12, SC.stone2); } });
+  // Ravensgill shed and yard: the engine shed, a coaling stage, and wagons in the siding
+  { const r0 = G.plat[0][1] + 70, F = scFrame(...(q=>[q.x, T.height(q.x, q.z).h, q.z, q.yaw])(G.at(r0, -24)));
+    F.b(a, 0, 4, 0, 12, 8, 34, SC.brick); scRoof(a, F, 0, 8, 0, 12, 34, 3.2, SC.slate, SC.brick);
+    for(let k=0;k<4;k++) F.b(a, 0, 11.6, -12 + k*8, 1.2, 1.2, 2.6, [.2,.18,.16]);
+    for(const dx of [-3, 3]) F.b(a, dx, 3, 17.03, 4, 6, 0.06, [.12,.11,.1]);
+    F.b(a, 12, 2.2, 5, 5, 4.4, 9, SC.stone2); F.b(a, 12, 4.6, 5, 6, 0.4, 10, SC.dark);
+    for(let k=0;k<5;k++){ const W = scFrame(...(q=>[q.x, T.height(q.x, q.z).h, q.z, q.yaw])(G.at(r0 + 30 + k*7.2, -15)));
+      for(let t=-3;t<=3;t+=1.5) W.b(a, 0, 0.3, t, 2.6, 0.12, 0.26, [.27,.19,.13]); for(const o of [-0.75, 0.75]) W.b(a, o, 0.48, 0, 0.08, 0.1, 7.2, [.56,.54,.5]);
+      W.b(a, 0, 1.6, 0, 2.5, 1.5, 5.4, k%2 ? [.45,.3,.2] : [.3,.3,.32]); W.b(a, 0, 0.85, 0, 2.2, 0.35, 5.0, SC.dark);
+      for(const dz of [-1.6, 1.6]) for(const sx of [-0.75, 0.75]){ const q = W.p(sx, 0.9, dz); cyl(a,"x", q[0], q[1], q[2], 0.45, 0.1, SC.dark, 10); } } }
+  // hedgerows and hedgerow trees dividing the fields along the lower line
+  for(const off of [-70, -150, 75, 160]) for(let s = 30; s < G.st[4]; s += 14){
+    if(near(s, 20) || Math.floor(s/90)%4===3) continue;
+    const q = G.at(s, off + 6*Math.sin(s*0.013)), t = T.height(q.x, q.z); if(t.h < T.nat(q.x, q.z, t.n) - 5) continue;
+    box(a, q.x, t.h + 0.75, q.z, 1.6, 1.5, 14.5, [.2,.34,.17], q.yaw);
+    if(rnd() < 0.3){ const ht = 4 + rnd()*4; box(a, q.x, t.h + ht/2, q.z, 0.5, ht, 0.5, [.3,.22,.15], 0); box(a, q.x, t.h + ht + 1.8, q.z, 4 + rnd()*2, 4.2, 4 + rnd()*2, [.16,.3 + rnd()*.1,.14], rnd()*3); } }
+  V.forEach(([mx, my, n], vi)=>{ const p = G.W(mx, my);
+    scVillage(a, G, T, p.x, p.z, n, rnd, put=>{
+      if(vi===0){ put(p.x + 60, p.z - 30, 0.4, F=>scChurch(a, F, 0, 0)); put(p.x - 35, p.z + 25, 1.2, F=>scPub(a, G, F, 0, 0, 1, "The Junction Inn")); }
+      if(vi===3){ put(p.x + 50, p.z + 20, 2.0, F=>scChurch(a, F, 0, 0)); put(p.x - 40, p.z - 10, 0.3, F=>scPub(a, G, F, 0, 0, -1, "The Viaduct Inn")); }
+      if(vi===6) put(p.x, p.z, 0.9, F=>scFarm(a, F, 0, 0));
+      if(vi===2) put(p.x + 70, p.z + 40, 2.4, F=>scFarm(a, F, 0, 0));
+    }); });
+  // the station's own: the pub by the crossing, the tea room in Lowerdale goods shed, cafés at the ends of the line
+  { const q = G.at(ks + 30, 26), F = scFrame(q.x, T.height(q.x, q.z).h, q.z, q.yaw); scPub(a, G, F, 0, 0, -1, "The Thorpe Arms"); }
+  { const [p0, p1] = G.plat[2], q = G.at(p0 - 40, 12), F = scFrame(q.x, T.height(q.x, q.z).h, q.z, q.yaw);   // the goods shed, a tea room now
+    F.b(a, 0, 3.2, 0, 9, 6.4, 22, SC.stone); scRoof(a, F, 0, 6.4, 0, 9, 22, 2.6, SC.slate, SC.stone); F.b(a, -4.53, 2.4, 0, 0.06, 4.4, 4.5, SC.wood);
+    for(let k=0;k<3;k++) scTable(a, F, -7, -6 + k*5, [.2,.45,.3]); scSign(G, F, -4.7, 5.3, 0, "Goods Shed Tea Room", "cafe"); }
+  { const q = G.at((G.plat[0][0] + G.plat[0][1])/2 - 40, 14), F = scFrame(q.x, T.height(q.x, q.z).h, q.z, q.yaw); scCafe(a, G, F, 0, 0, -1, "Station Buffet", [.55,.12,.12]); }
+  { const q = G.at(G.plat[4][0] - 10, 16), F = scFrame(q.x, T.height(q.x, q.z).h, q.z, q.yaw); scCafe(a, G, F, 0, 0, -1, "Fellside Café", [.2,.38,.6]);
+    const fp = G.at(G.plat[4][0] - 30, 9); box(a, fp.x, fp.y + 1.3, fp.z, 0.12, 2.6, 0.12, SC.wood, fp.yaw); box(a, fp.x, fp.y + 2.4, fp.z, 0.06, 0.25, 1.3, SC.white, fp.yaw); G.signs.push({x:fp.x, y:fp.y + 2.4, z:fp.z, text:"Raven Force 2 ½", kind:"w"}); }
+  { const q = G.at(G.plat[5][1] + 10, 10), F = scFrame(q.x, T.height(q.x, q.z).h, q.z, q.yaw); F.b(a, 0, 1.4, 0, 3.6, 2.8, 5, SC.wood); scRoof(a, F, 0, 2.8, 0, 3.6, 5, 1.0, SC.green);
+    scSign(G, F, -1.9, 2.3, 0, "Summit Tea Hut", "cafe"); const sm = G.at(G.plat[5][0] + 20, 5.5); box(a, sm.x, sm.y + 1.2, sm.z, 0.12, 2.4, 0.12, SC.dark, sm.yaw); box(a, sm.x, sm.y + 2.3, sm.z, 0.05, 0.6, 1.6, SC.white, sm.yaw);
+    G.signs.push({x:sm.x, y:sm.y + 2.3, z:sm.z, text:"Summit 1,120 ft", kind:"w"}); }
+  { const q = G.at(G.plat[6][0] + 40, 18), F = scFrame(q.x, T.height(q.x, q.z).h, q.z, q.yaw); scCafe(a, G, F, 0, 0, -1, "Reservoir Café", [.15,.4,.45]); }
+  // the lineside: telegraph poles carrying their wires, quarter-mile posts, platelayers' huts
+  let last = null;
+  for(let s = 10; s < G.L - 10; s += 55){ if(s > G.tun[0] - 5 && s < G.tun[1] + 5){ last = null; continue; }
+    const q = G.at(s, 6.8), h = s > G.via[0] && s < G.via[1] ? q.y : T.height(q.x, q.z).h, F = scFrame(q.x, h, q.z, q.yaw);
+    F.b(a, 0, 3.6, 0, 0.22, 7.2, 0.22, [.33,.24,.16]); F.b(a, 0, 6.9, 0, 1.8, 0.12, 0.12, [.33,.24,.16]); F.b(a, 0, 6.3, 0, 1.4, 0.12, 0.12, [.33,.24,.16]);
+    const tops = [-0.8, -0.3, 0.3, 0.8].map(x=>F.p(x, 7.02, 0)).concat([-0.6, 0.6].map(x=>F.p(x, 6.42, 0)));
+    tops.forEach(t=>box(a, t[0], t[1] + 0.06, t[2], 0.07, 0.12, 0.07, SC.white));
+    if(last) tops.forEach((t, k)=>beam3(a, last[k], t, 0.025, 0.025, [.12,.12,.12]));
+    last = tops; }
+  const qm = 1609.34/4/DRV.squeeze;
+  for(let s = qm, k = 1; s < G.L; s += qm, k++){ if(s > G.tun[0] && s < G.tun[1]) continue; const q = G.at(s, -2.9);
+    box(a, q.x, q.y + 0.6, q.z, 0.12, 1.2, 0.12, SC.dark, q.yaw); box(a, q.x, q.y + 1.2, q.z, 0.05, 0.4, 0.55, SC.white, q.yaw); }
+  for(let s = 300; s < G.L - 100; s += 700) if(free(s, 60)){ const q = G.at(s, -7), F = scFrame(q.x, T.height(q.x, q.z).h, q.z, q.yaw);
+    F.b(a, 0, 1.2, 0, 2.6, 2.4, 3.6, SC.brick); scRoof(a, F, 0, 2.4, 0, 2.6, 3.6, 0.9, SC.slate, SC.brick); F.b(a, 1.33, 1.0, 0, 0.05, 1.9, 0.8, SC.green); F.b(a, 0, 3.2, 1.2, 0.35, 0.7, 0.35, SC.brick); }
+  // sheep on the fells and cattle in the lower pastures
+  const xs = G.pts.map(p=>p.x), zs = G.pts.map(p=>p.z);
+  for(let k=0;k<70;k++){ const gi = Math.floor(rnd()*G.pts.length), base = G.pts[gi], side = rnd() < 0.5 ? -1 : 1, off = side*(40 + rnd()*160);
+    const q = G.at(base.s, off), t = T.height(q.x, q.z); if(t.n.d < 30 || t.h < T.nat(q.x, q.z, t.n) - 5) continue;
+    const cow = base.s < G.st[2] && rnd() < 0.6;
+    for(let j=0;j<(cow ? 3 : 5);j++){ const x = q.x + (rnd() - 0.5)*18, z = q.z + (rnd() - 0.5)*18, h = T.height(x, z).h; scSheep(a, x, h, z, rnd()*6.3, cow); } }
+}
 
 /* ---- the day's working: which trips the chosen train makes, call by call ---- */
 function driveWorking(plan, k, from){
@@ -5175,7 +5470,8 @@ function startDrive(k, from){
 function driveConsist(gl, set){
   const out = [], eng = (loco, cat, guest) => { const md = locoModel(cat.key, guest ? null : liveryOf(loco));
     if(md.cars){ const parts = md.cars(0); const open = md.cars(1)[parts.length-1];
-      parts.forEach((c,i)=>out.push({len:c.len, mesh:meshBuffer(gl, i===parts.length-1 ? open.mesh : c.mesh), plain:meshBuffer(gl, c.mesh), eye:i===parts.length-1 ? open.eye : null, front:i===parts.length-1}));
+      const four = DMU_MODELS[cat.key].wheels==="single";
+      parts.forEach((c,i)=>out.push({len:c.len, four, mesh:meshBuffer(gl, i===parts.length-1 ? open.mesh : c.mesh), plain:meshBuffer(gl, c.mesh), eye:i===parts.length-1 ? open.eye : null, front:i===parts.length-1}));
       out.reverse(); return; }
     out.push({len:md.len, mesh:meshBuffer(gl, md.mesh()), eye:engineEye(cat.key, md)}); };
   eng(set.loco, set.lcat, set.trainGuest);
@@ -5376,6 +5672,7 @@ function driveDraw(){
   if(dv.cam===0){ const e = lead.v.eye || [-1.75, 3.5, lead.v.len/2 - 1.7]; eye = [lead.x + c*e[0] + sn*e[2], lead.y + e[1], lead.z - sn*e[0] + c*e[2]]; }
   else { const b = G.at(dv.s - dv.dir*(dv.train.len*0.5 + 22), 9); eye = [b.x, b.y + 11, b.z]; head = Math.atan2(lead.x - b.x, lead.z - b.z); }
   const yaw = head + dv.look, dir = [Math.sin(yaw)*Math.cos(dv.pitch), Math.sin(dv.pitch) - (dv.cam ? 0.22 : 0), Math.cos(yaw)*Math.cos(dv.pitch)];
+  if(dv.camX){ eye = dv.camX.eye; dir.splice(0, 3, ...dv.camX.dir); }   // a fixed camera, for pictures of the line
   const vp = m4mul(m4persp(1.15, cv.width/cv.height, 0.25, 2600), m4look(eye, dir));
   gl.uniformMatrix4fv(YGL.vp, false, vp); gl.uniform3f(YGL.fog, .64,.76,.86); gl.uniform2f(YGL.fr, 350, 1500);
   glDraw(G.mesh, m4at(0,0,0,0));
@@ -5395,6 +5692,13 @@ function driveDraw(){
     if(cw < 2 || cw > 200) continue;
     const sx = (cx/cw + 1)/2*lab.width, sy = (1 - cy/cw)/2*lab.height, txt = STATIONS[b.i].name.toUpperCase(), tw = g.measureText(txt).width + 14*k;
     g.fillStyle = "rgba(250,246,232,.95)"; g.fillRect(sx - tw/2, sy - 12*k, tw, 20*k); g.fillStyle = "#6e1f24"; g.fillText(txt, sx, sy + 3*k); }
+  const SIGN = {pub:["rgba(28,58,38,.95)","#e8c25a","italic 700"], cafe:["rgba(250,244,226,.95)","#5a3418","700"], box:["rgba(250,250,246,.95)","#111","700"], w:["rgba(250,250,246,.95)","#111","700"]};
+  for(const b of G.signs || []){ const cx = vp[0]*b.x+vp[4]*b.y+vp[8]*b.z+vp[12], cy = vp[1]*b.x+vp[5]*b.y+vp[9]*b.z+vp[13], cw = vp[3]*b.x+vp[7]*b.y+vp[11]*b.z+vp[15];
+    if(cw < 2 || cw > (b.kind==="w" ? 90 : 170)) continue;
+    const [bg, fg, wt] = SIGN[b.kind], sz = b.kind==="w" ? 11 : 12;
+    g.font = `${wt} ${Math.round(sz*k)}px Georgia, serif`;
+    const sx = (cx/cw + 1)/2*lab.width, sy = (1 - cy/cw)/2*lab.height, tw = g.measureText(b.text).width + 12*k;
+    g.fillStyle = bg; g.fillRect(sx - tw/2, sy - 11*k, tw, 18*k); g.fillStyle = fg; g.fillText(b.text, sx, sy + 3*k); }
 }
 function dMap(){
   const c = document.getElementById("dmap"), g = c.getContext("2d"), W = c.width, H = c.height;
@@ -5447,7 +5751,7 @@ function driveFrame(ts){
     k.odo += dv.v*dt;
     sndVoiceUpdate(k.voice, dv.v, dv.emerg ? -1 : dv.ctl, dt);
     let cv = G.at(dv.s + 6).yaw - G.at(dv.s - 6).yaw; cv = Math.atan2(Math.sin(cv), Math.cos(cv))/12;
-    sndRunUpdate(k.run, k.odo, dv.v, cv, dv.emerg ? 1 : Math.max(0, -dv.ctl), dv.s > G.tun[0] && dv.s < G.tun[1], 1.2);
+    sndRunUpdate(k.run, k.odo, dv.v, cv, dv.emerg ? 1 : Math.max(0, -dv.ctl), dv.s > G.tun[0] && dv.s < G.tun[1], dv.train[0].four ? 1.6 : 1.2);
     if(ready && !k.ready) sndGuard();
     if(!k.pass && SND.ctx){ k.pass = sndLoop(SND.brown, "lowpass", 200, 0.7); k.pass2 = sndLoop(SND.pink, "bandpass", 650, 0.6); }
     let near = 0; const me = G.at(dv.s);
