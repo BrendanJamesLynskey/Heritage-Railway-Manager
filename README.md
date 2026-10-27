@@ -90,6 +90,32 @@ you change ends of a DMU). Arrive on time on average, with no signal passed at
 danger, no overruns and no long spells over the 25 mph limit, for ★★★ (+2
 reputation). Hand over at any time and another driver finishes the day.
 
+## Coaches and Their Liveries
+
+Every carriage set is built coach by coach from its real make-up, as carefully as
+the engines: BR Mk1 brake compartments, compartments, opens, composites,
+restaurant buffets and an observation car, each with its own window and door
+layout, aluminium window frames with sliding toplights, slam doors with
+droplights, gangways, torpedo roof vents, battery boxes and vacuum cylinders on
+BR1 bogies; Mk2s with their smoother roof and big windows on B4 bogies;
+Gresley teak with its panel joints on double-bolster bogies; Thompson
+steel-panelled coaches with their round lavatory windows; Pullmans with their
+table lamps in the windows; Victorian six-wheelers and four-wheelers with a door
+to every compartment and oil-lamp pots on the roof; BR goods brake vans with
+verandas, duckets and the stove pipe; and the Royal Mail TPO with its pick-up
+net.
+
+Repaint a set in the **Ravensgill Shed** (the carriage volunteers, two weekends)
+or at the **Works** (a week, with a works finish), in the liveries that stock
+really carried: BR maroon, crimson and cream ("blood and custard"), Western
+Region chocolate and cream, Southern Region green and blue and grey for the
+Mk1s; blue and grey, InterCity, Network SouthEast and Regional Railways for the
+Mk2s; LNER teak and its BR successors for the Gresley and Thompson stock; NER
+crimson lake, Midland crimson lake, L&Y brown, GNR teak and GWR chocolate and
+cream for the Victorian set; bauxite, BR grey and LMS grey for the brake vans.
+A 3D preview shows the set in each one, and a well-loved livery draws a few
+more passengers. Visiting sets come in their owners' colours.
+
 ## Sound
 
 Everything you hear is synthesised in the browser with the Web Audio API, from

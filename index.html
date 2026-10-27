@@ -1019,6 +1019,7 @@ function currentPlan(){
       if(pilot.kind==="steam") kind = "steam";   // steam sets the turn-round: water and coal
     }
     if(kind==="steam" && state.upgrades.turntable) draw += 0.03;
+    if(rake) draw += rakeAppeal(rake);
     sets.push({diag:i, lo:route.lo, hi:route.hi, stops:route.stops, label:pilot ? `${pilot.loco.number}+${loco.number}` : loco.number, colour:SET_COLOURS[i%SET_COLOURS.length], kind,
       guest: guest || !!(pilot && pilot.guest), boost, engines: pilot ? [main.kind, pilot.kind] : [kind],
       loco, lcat, pilot: pilot ? pilot.loco : null, pcat: pilot ? pilot.lcat : null, pilotGuest: !!(pilot && pilot.guest), trainGuest: guest,
@@ -1807,7 +1808,8 @@ function renderDepot(){
     return `<div class="card">
       <h3><span class="badge b-rake">coaches</span>${c.name}</h3>
       <p class="sub">${c.blurb}</p>
-      ${busy?`<div class="busy-tag">🔧 In the works until week ${woy(r.busyUntil)}</div>`:""}
+      ${busy?busyTag(r):""}
+      ${rakeLiveryOf(r) ? `<div class="lvrow">${coachSwatch(rakeLiveryOf(r))}<span>${COACH_LIVERIES[rakeLiveryOf(r)].name}${r.finish==="works"?" · works finish":""}</span></div>` : ""}
       <div class="cond-lbl"><span>Condition</span><span>${Math.round(r.condition*100)}%</span></div>
       <div class="bar"><i style="width:${r.condition*100}%;background:${condColour(r.condition)}"></i></div>
       <ul class="specs">
@@ -1815,6 +1817,7 @@ function renderDepot(){
         <li><span>Coaches</span><span>${c.cars}</span></li>
         <li><span>Comfort</span><span>${c.comfort.toFixed(2)}×</span></li>
       </ul>
+      ${rakeLiveries(r.cat).length > 1 ? `<button class="act small" style="margin-bottom:6px" ${busy||onLine(r)?"disabled":""} onclick="openRepaint(${r.id},'shed','rake')">🎨 Repaint in the shed · ${money(rakeRepaintCost(r,"shed").cost)}</button>` : ""}
       <button class="act small warnbtn" ${busy||onLine(r)?"disabled":""} onclick="sellItem('rake',${r.id})">${busy?"In the works":onLine(r)?"Out on the line":`Sell · ${money(sellValue("rake",r))}`}</button>
     </div>`;
   }).join("") : `<div class="empty">No carriage sets. Visit the Carriages market.</div>`;
@@ -1879,6 +1882,8 @@ function renderWorks(){
       <button class="act small warnbtn" style="margin-top:6px" ${busy||it.condition>=0.99||state.cash<w.heavy?"disabled":""} onclick="works('${kind}',${it.id},'heavy')">${kind==="rake"?"Refurbish":"Heavy overhaul"} to as-new (${w.weeks} weeks) · ${money(w.heavy)}</button>
       ${kind==="loco" && liveryOf(it) ? `<div class="lvrow">${lvSwatch(liveryOf(it))}<span>${LIVERIES[liveryOf(it)].name}${it.finish==="works"?" · works finish":""}</span></div>
       <button class="act small" ${busy||hirePending(it)?"disabled":""} onclick="openRepaint(${it.id},'works')">🎨 Repaint at the works · ${money(repaintCost(it,"works").cost)}</button>` : ""}
+      ${kind==="rake" && rakeLiveryOf(it) ? `<div class="lvrow">${coachSwatch(rakeLiveryOf(it))}<span>${COACH_LIVERIES[rakeLiveryOf(it)].name}${it.finish==="works"?" · works finish":""}</span></div>
+      ${rakeLiveries(it.cat).length > 1 ? `<button class="act small" ${busy?"disabled":""} onclick="openRepaint(${it.id},'works','rake')">🎨 Repaint at the works · ${money(rakeRepaintCost(it,"works").cost)}</button>` : ""}` : ""}
     </div>`;
   };
   state.locos.forEach(l=>items.push(card("loco", l, l.number+" <small style='font-weight:400'>"+catOf("loco",l.cat).name+"</small>", kindBadge(l.kind))));
@@ -2995,11 +3000,9 @@ function shuntJob(plan){
   const set = plan.sets.find(x=>x.kind!=="dmu" && x.rcat);
   if(!set) return null;
   const rk = set.rcat.key || "";
-  const liv = rk.includes("teak") ? [[.5,.29,.13],[.72,.52,.3]] : rk.includes("pullman") ? [[.34,.2,.12],[.9,.84,.68]]
-            : rk.includes("mk2") ? [[.16,.3,.55],[.86,.86,.86]] : [[.42,.08,.1],[.86,.8,.62]];
   const num = () => String(10000 + Math.floor(Math.random()*89999));
-  const types = shuffle(["BSK","SK","TSO","RMB","CK","BCK"]);
-  const coach = (t) => ({type:"coach", label:`${t} ${num()}`, len:20, col:liv[0], win:liv[1]});
+  const vs = rakeVehicles(rk, set.rake ? rakeLiveryOf(set.rake) : null);
+  const coach = i => { const v = vs[i % vs.length]; return {type:"coach", label:`${v.use} ${num()}`, len:v.len, col:v.liv.col, win:v.liv.col2 || v.liv.col, coach:v}; };
   const engine = yEngine;
   const need = [engine(set.lcat.key, set.loco.number, set.lcat.name, set.trainGuest ? null : liveryOf(set.loco))];
   if(set.pilot) need.push(engine(set.pcat.key, set.pilot.number, set.pcat.name, set.pilotGuest ? null : liveryOf(set.pilot)));
@@ -3008,7 +3011,7 @@ function shuntJob(plan){
   const decoys = shuffle(state.locos.filter(l=>l!==set.loco && l!==set.pilot && !isAway(l))).slice(0, 4)
     .map(l=>engine(l.cat, l.number, catOf("loco", l.cat).name, liveryOf(l)));
   return {train:`${fmtT(set.deps[0])} ${set.label}`, time:fmtT(set.deps[0]), set:set.label,
-          coaches:[coach(types[0]), coach(types[1]), coach(types[2])], need, decoys};
+          coaches:[coach(0), coach(1), coach(2)], need, decoys};
 }
 function offerShunt(jobs){
   const coach = jobs.find(j=>j.mode!=="dmu"), units = jobs.filter(j=>j.mode==="dmu");
@@ -3467,6 +3470,7 @@ function sceneryMesh(){
 }
 function vehicleMesh(v){
   const a = [], L = v.len, h = L/2, dark = [.11,.11,.12], red = [.62,.12,.1];
+  if(v.type==="coach" && v.coach) return coachMesh(v.coach);
   if(v.type==="coach"){
     box(a, 0,2.25,0, 2.8,2.5,L-0.7, v.col); box(a, 0,3.62,0, 2.6,0.26,L-0.9, [.3,.3,.32]);
     for(const sx of [1.41,-1.41]) box(a, sx,2.75,0, 0.03,0.62,L-3, v.win);
@@ -3742,13 +3746,196 @@ function glDraw(mesh, model){
   gl.drawArrays(gl.TRIANGLES, 0, mesh.count);
 }
 
-let repaint = null;   // the repaint being chosen: {id, where, pick}
-function openRepaint(id, where){
+/* ---- coaches: every carriage type built from its own dimensions, in the liveries it really carried ---- */
+// set: lower body colour col, upper (window band) colour col2, lining colour, roof colour, ends; appeal adds to the train's draw
+const COACH_LIVERIES = {
+  cMaroon:     {name:"BR maroon", era:"BR standard livery 1956–65, lined in gold and black", appeal:0.02, set:{col:[.36,.07,.09], lining:[.85,.7,.3]}},
+  cCrimsonCream:{name:"BR crimson and cream", era:"'Blood and custard', BR's first livery, 1949–56", appeal:0.035, set:{col:[.5,.08,.11], col2:[.88,.8,.58], lining:[.85,.7,.3]}},
+  cChocCream:  {name:"BR (WR) chocolate and cream", era:"Western Region named trains, 1956–65", appeal:0.03, set:{col:[.27,.15,.1], col2:[.9,.84,.66], lining:[.85,.7,.3]}},
+  cSRGreen:    {name:"BR Southern Region green", era:"Southern Region coaches, 1956–66", appeal:0.02, set:{col:[.08,.32,.2], lining:[.85,.7,.3]}},
+  cBlueGrey:   {name:"BR blue and grey", era:"InterCity, 1966–86", appeal:0.015, set:{col:[.16,.27,.44], col2:[.78,.79,.8]}},
+  cIC:         {name:"InterCity", era:"InterCity 'Executive', 1983–97", appeal:0.01, set:{col:[.27,.28,.3], col2:[.82,.8,.74], stripe:[.85,.15,.12]}},
+  cNSE:        {name:"Network SouthEast", era:"London and the south east, 1986–97", appeal:0.01, set:{col:[.15,.17,.3], col2:[.82,.82,.84], stripe:[.85,.15,.12], stripe2:[.9,.9,.92]}},
+  cRR:         {name:"Regional Railways", era:"Provincial services, 1990–97", appeal:0.008, set:{col:[.75,.76,.78], col2:[.25,.3,.45], stripe:[.3,.55,.8]}},
+  cTeak:       {name:"LNER varnished teak", era:"Gresley's LNER, 1923–41, lined in gold", appeal:0.045, set:{col:[.52,.3,.13], lining:[.92,.75,.35], teak:true}},
+  cTeakEffect: {name:"LNER teak-effect", era:"Steel-panelled LNER coaches, grained to look like teak", appeal:0.035, set:{col:[.55,.33,.15], lining:[.92,.75,.35]}},
+  cLMS:        {name:"LMS crimson lake", era:"The LMS, 1923–47, fully lined", appeal:0.035, set:{col:[.42,.07,.09], lining:[.88,.72,.3], lining2:[.1,.1,.1]}},
+  cGWR:        {name:"GWR chocolate and cream", era:"The Great Western, 1923–47", appeal:0.04, set:{col:[.27,.15,.1], col2:[.9,.84,.66], lining:[.85,.7,.3], crest:true}},
+  cSR:         {name:"Southern Railway malachite green", era:"Bulleid's Southern, 1938–47", appeal:0.03, set:{col:[.12,.42,.24], lining:[.88,.82,.4]}},
+  cPullman:    {name:"Pullman umber and cream", era:"The Pullman Car Company's colours", appeal:0.05, set:{col:[.27,.16,.1], col2:[.9,.84,.68], lining:[.88,.72,.3], roof:[.85,.85,.83]}},
+  cBauxite:    {name:"BR bauxite", era:"Fitted goods stock and brake vans, 1964 on", appeal:0.01, set:{col:[.47,.25,.16]}},
+  cBRGrey:     {name:"BR grey", era:"Unfitted goods stock, 1948–64", appeal:0.01, set:{col:[.48,.48,.47]}},
+  cLMSGrey:    {name:"LMS grey", era:"LMS goods stock", appeal:0.012, set:{col:[.42,.42,.42]}},
+  cNERCrimson: {name:"NER crimson lake", era:"The North Eastern Railway, 1900–22", appeal:0.045, set:{col:[.45,.08,.1], lining:[.88,.72,.3], lining2:[.1,.1,.1]}},
+  cMR:         {name:"Midland Railway crimson lake", era:"The Midland, 1883–1922", appeal:0.045, set:{col:[.48,.09,.1], lining:[.88,.72,.3]}},
+  cLY:         {name:"L&Y brown and umber", era:"The Lancashire & Yorkshire, 1880s", appeal:0.045, set:{col:[.32,.2,.12], col2:[.5,.36,.22], lining:[.88,.72,.3]}},
+  cGNR:        {name:"GNR varnished teak", era:"The Great Northern, 1880s", appeal:0.045, set:{col:[.54,.32,.15], lining:[.92,.75,.35], teak:true}},
+  cRM:         {name:"Royal Mail red", era:"Travelling Post Offices, BR 1986 on", appeal:0.03, set:{col:[.68,.08,.08], stripe:[.95,.75,.1]}}
+};
+// what each set is made of, coach by coach, and the liveries that set really carried (the first is as bought)
+const RAKE_SPEC = {
+  mk1x4:  {kind:"mk1", cars:["BSK","TSO","SK","BCK"], liv:["cMaroon","cCrimsonCream","cChocCream","cSRGreen","cBlueGrey"]},
+  mk1x6:  {kind:"mk1", cars:["BSK","SK","TSO","TSO","SK","BSK"], liv:["cMaroon","cCrimsonCream","cChocCream","cSRGreen","cBlueGrey"]},
+  mk1x8:  {kind:"mk1", cars:["BSK","SK","TSO","CK","TSO","SK","TSO","BSK"], liv:["cMaroon","cCrimsonCream","cChocCream","cSRGreen","cBlueGrey"]},
+  mk1rest:{kind:"mk1", cars:["BSK","SK","RMB","TSO","BSK"], liv:["cMaroon","cCrimsonCream","cChocCream","cBlueGrey"]},
+  obs:    {kind:"mk1", cars:["BSK","TSO","SK","OBS"], liv:["cMaroon","cCrimsonCream","cSRGreen","cBlueGrey"]},
+  mk2x7:  {kind:"mk2", cars:["BSO","TSO","TSO","TSO","TSO","FO","BSO"], liv:["cBlueGrey","cIC","cNSE","cRR","cMaroon"]},
+  teak:   {kind:"gresley", cars:["BTK","TK","TO","BTK"], liv:["cTeak","cCrimsonCream","cMaroon"]},
+  thompson:{kind:"thompson", cars:["BTK","TK","TO","TK","BTK"], liv:["cTeakEffect","cCrimsonCream","cMaroon"]},
+  pullman:{kind:"pullman", cars:["PK","PP","PK"], liv:["cPullman"]},
+  brakevans:{kind:"van", cars:["VAN","VAN"], liv:["cBauxite","cBRGrey","cLMSGrey"]},
+  vict:   {kind:"six", cars:["BT","T","C","BT"], liv:["cNERCrimson","cMR","cLY","cGNR","cGWR"]},
+  "v-pullman":{kind:"pullman", cars:["PK","PP","PP","PK","PP","PK"], liv:["cPullman"]},
+  "v-teak":{kind:"gresley", cars:["BTK","TK","TO","TK","BTK"], liv:["cTeak"]},
+  "v-mk1x9":{kind:"mk1", cars:["BSK","SK","TSO","CK","RMB","TSO","SK","TSO","BSK"], liv:["cChocCream"]},
+  "v-obs":{kind:"mk1", cars:["OBS","FO","FO","OBS"], liv:["cLMS"]},
+  "v-vict":{kind:"four", cars:["BT","T","T","C","T","BT"], liv:["cLY"]},
+  "v-pmv":{kind:"mk1", cars:["POS","POS","POT","BG"], liv:["cRM"]}
+};
+const rakeLiveries = key => (RAKE_SPEC[key] || {}).liv || [];
+const rakeLiveryOf = r => r && r.livery && rakeLiveries(r.cat).includes(r.livery) ? r.livery : rakeLiveries(r && r.cat)[0] || null;
+const rakeAppeal = r => { const id = rakeLiveryOf(r); return id ? COACH_LIVERIES[id].appeal + (r.finish==="works" ? 0.01 : 0) : 0; };
+const COACH_LEN = {mk1:20.45, mk2:20.45, gresley:18.9, thompson:19.3, pullman:20.4, six:10.4, four:8.6, van:7.4};
+// the vehicles of a set in a livery: [{type, label, len, spec}]
+function rakeVehicles(key, liv){
+  const R = RAKE_SPEC[key] || RAKE_SPEC.mk1x4, L = COACH_LIVERIES[liv || R.liv[0]] || COACH_LIVERIES.cMaroon;
+  return R.cars.map(use=>({use, kind:use==="OBS" && R.kind!=="mk1" ? "mk1" : R.kind, len:COACH_LEN[R.kind], liv:L.set}));
+}
+function coachMesh(v){
+  const a = [], K = v.kind, use = v.use, Lv = v.liv, L = v.len, h = L/2, col = Lv.col, up = Lv.col2 || col;
+  const B = [.08,.08,.09], UF = [.12,.12,.12], STEEL = [.62,.62,.6], G = [.16,.2,.25], FR = [.75,.76,.74], LAMP = [.95,.8,.45];
+  if(K==="van") return brakeVanMesh(v);
+  const old = K==="six" || K==="four", W = old ? 1.27 : K==="gresley" || K==="thompson" ? 1.38 : 1.41;
+  const y0 = old ? 1.35 : 1.42, yW0 = old ? 2.2 : 2.3, yW1 = old ? 2.95 : 3.2, yC = old ? 3.25 : 3.65, crown = old ? 3.72 : K==="mk2" ? 4.36 : K==="pullman" ? 4.3 : 4.39;
+  const ze = h - (old ? 0.5 : 0.62);
+  // body: straight sides with a little tumblehome below the waist, and the class's own roof
+  const roof = K==="mk2" ? [[W,yC],[1.28,4.02],[0.85,4.27],[0,crown]] : old ? [[W,yC],[1.0,3.52],[0.5,3.66],[0,crown]]
+    : K==="pullman" || K==="gresley" ? [[W,yC],[1.3,3.86],[1.05,4.1],[0.55,4.25],[0,crown]] : [[W,yC],[1.33,3.92],[1.1,4.15],[0.6,4.32],[0,crown]];
+  const right = [[W - 0.07, y0], [W, y0 + 0.45], [W, yW0 - 0.05], [W, yC], ...roof.slice(1)];
+  const P = [...right, ...right.slice(0,-1).reverse().map(([x,y])=>[-x,y])];
+  const RF = Lv.roof || [.32,.32,.33];
+  const edge = (p, q) => (p[1] >= yC - 0.001 && q[1] >= yC - 0.001) ? RF : (p[1] >= yW0 - 0.06 && q[1] >= yW0 - 0.06) ? up : col;
+  extrude(a, P, ()=>-ze, ()=>ze, edge, col, col);
+  // lining at the waist and the cantrail, and the modern stripes
+  for(const sx of [1,-1]){ const x = sx*(W + 0.006);
+    if(Lv.lining) for(const y of [yW0 - 0.07, yC - 0.06]) box(a, x, y, 0, 0.012, 0.035, 2*ze - 0.3, Lv.lining);
+    if(Lv.lining2) box(a, x*1.001, yW0 - 0.12, 0, 0.012, 0.02, 2*ze - 0.3, Lv.lining2);
+    if(Lv.stripe) box(a, x*1.002, yW0 - 0.12, 0, 0.012, 0.1, 2*ze - 0.2, Lv.stripe);
+    if(Lv.stripe2) box(a, x*1.003, yW0 - 0.24, 0, 0.012, 0.05, 2*ze - 0.2, Lv.stripe2);
+    if(Lv.teak) for(let z = -ze + 0.4; z < ze; z += 0.62) box(a, x*1.001, (y0 + 0.4 + yW0)/2, z, 0.012, yW0 - y0 - 0.5, 0.025, [.36,.2,.08]);   // teak panel joints
+  }
+  // the window and door layout of each type, along both sides
+  const door = (x, z, sx) => { for(const dz of [-0.36, 0.36]) box(a, x, (y0 + yC)/2 + 0.05, z + dz, 0.012, yC - y0 - 0.35, 0.025, B);
+      box(a, x, yW0 + 0.42, z, 0.014, 0.6, 0.48, FR); box(a, x*1.002, yW0 + 0.42, z, 0.014, 0.52, 0.4, G); box(a, x*1.003, yW0 - 0.2, z + 0.25, 0.02, 0.05, 0.14, STEEL); };
+  const win = (x, z, w, y_0, y_1, frame) => { box(a, x, (y_0 + y_1)/2, z, 0.014, y_1 - y_0 + 0.06, w + 0.06, frame || FR); box(a, x*1.002, (y_0 + y_1)/2, z, 0.014, y_1 - y_0, w, G); };
+  for(const sx of [1,-1]){ const x = sx*(W + 0.012);
+    const ends = [-(ze - 0.85), ze - 0.85];
+    if(old){   // a door to every compartment, each with its droplight and toplights
+      const n = K==="six" ? 5 : 4, sp = (2*ze - 0.6)/n;
+      for(let k=0;k<n;k++){ const z = -ze + 0.3 + (k + 0.5)*sp;
+        if((use==="BT") && k===n-1){ for(const dz of [-0.45, 0.45]) box(a, x, (y0 + yC)/2, z + dz, 0.012, yC - y0 - 0.3, 0.025, B); win(x, z, 0.5, yW0 + 0.15, yW1 - 0.1); continue; }
+        door(x, z, sx); win(x, z - sp*0.35, 0.42, yW0 + 0.1, yW1 - 0.15); win(x, z + sp*0.35, 0.42, yW0 + 0.1, yW1 - 0.15); } }
+    else if(use==="BG" || use==="POS" || use==="POT"){   // vans: wide doors, a few small windows; the TPOs have the pick-up net
+      for(const z of [-ze*0.5, ze*0.5]){ for(const dz of [-0.62, 0.62]) box(a, x, (y0 + yC)/2, z + dz, 0.012, yC - y0 - 0.4, 0.025, B); }
+      for(const z of [-ze + 1.6, ze - 1.6, 0]) win(x, z, 0.4, yW0 + 0.4, yW1 - 0.2);
+      if(use==="POT" && sx>0){ box(a, x + 0.15, 2.6, 2.5, 0.3, 0.12, 3.2, B); box(a, x + 0.25, 2.1, 2.5, 0.05, 1.0, 2.8, [.22,.22,.22]); }
+    } else {
+      ends.forEach(z=>door(x, z, sx));
+      const z0 = -ze + 1.4, z1 = ze - 1.4, open = /TSO|TO|BSO|FO|PP|PK|RMB|OBS/.test(use), brake = /^B/.test(use) && use!=="BCK" || use==="BCK";
+      let from = z0, to = z1;
+      if(brake){ const bz = use==="BCK" ? z0 + 4.8 : z0 + 6.4;   // the guard's and luggage end: double doors, small windows
+        for(const dz of [-0.6, 0.6]) box(a, x, (y0 + yC)/2, z0 + 2.4 + dz, 0.012, yC - y0 - 0.4, 0.025, B);
+        win(x, z0 + 0.8, 0.45, yW0 + 0.25, yW1 - 0.15); win(x, bz - 0.6, 0.45, yW0 + 0.25, yW1 - 0.15); from = bz; }
+      if(use==="RMB"){ const kz = z0 + 7; for(let z = z0 + 0.6; z < kz; z += 1.4) win(x, z, 0.5, yW0 + 0.45, yW1 - 0.05); from = kz; }
+      if(use==="OBS"){ to = z1 - 0.5; }
+      if(K==="mk2"){ const n = Math.round((to - from)/1.95); for(let k=0;k<n;k++) win(x, from + (k + 0.5)*(to - from)/n, 1.6, yW0, yW1, [.55,.56,.57]); }
+      else if(K==="pullman"){ const n = Math.round((to - from)/2.3); for(let k=0;k<n;k++){ const z = from + (k + 0.5)*(to - from)/n; win(x, z, 1.5, yW0 + 0.02, yW1, Lv.lining);
+          box(a, sx*(W - 0.3), yW0 + 0.15, z, 0.12, 0.25, 0.12, LAMP); }   // the table lamps
+        for(const z of [z0 - 0.1, z1 + 0.1]){ box(a, x, yW0 + 0.55, z, 0.014, 0.5, 0.3, Lv.lining); box(a, x*1.002, yW0 + 0.55, z, 0.014, 0.42, 0.22, G); } }   // oval lavatory lights
+      else { const n = open ? Math.round((to - from)/1.9) : Math.round((to - from)/1.85), w = open ? 1.5 : 1.25;
+        for(let k=0;k<n;k++){ const z = from + (k + 0.5)*(to - from)/n; win(x, z, w, yW0, yW1, K==="mk1" ? FR : Lv.lining || FR);
+          if(K==="mk1") box(a, x*1.004, yW1 - 0.18, z, 0.01, 0.02, w, FR); }   // the sliding toplight
+        if(K==="thompson") for(const z of [z0 - 0.15, z1 + 0.15]) { box(a, x, yW0 + 0.5, z, 0.014, 0.45, 0.45, FR); box(a, x*1.002, yW0 + 0.5, z, 0.014, 0.38, 0.38, G); } }
+      if(use==="OBS"){ for(let z = z1 - 4; z < ze - 0.3; z += 1.2) win(x, z, 1.05, yW0 - 0.25, yC - 0.05, [.5,.5,.5]); }   // panoramic end
+    }
+  }
+  if(use==="OBS"){ for(const xx of [-0.9, 0, 0.9]){ box(a, xx, (yW0 - 0.25 + yC - 0.05)/2, ze + 0.005, 0.8, yC - yW0 + 0.2, 0.014, [.5,.5,.5]); box(a, xx, (yW0 - 0.25 + yC - 0.05)/2, ze + 0.01, 0.72, yC - yW0 + 0.12, 0.014, G); } }
+  // roof: torpedo vents on Mk1s and the old LNER stock, oil-lamp pots on the Victorian coaches
+  if(K==="mk1" || K==="gresley" || K==="thompson") for(let z = -ze + 1.6; z < ze - 1; z += 2.4) cyl(a,"z", 0, crown + 0.07, z, 0.1, 0.55, [.28,.28,.29], 8);
+  if(old) for(let k=0;k<(K==="six" ? 5 : 4);k++){ const z = -ze + 0.3 + (k + 0.5)*(2*ze - 0.6)/(K==="six" ? 5 : 4); cyl(a,"y", 0, crown + 0.08, z, 0.14, 0.2, [.2,.2,.2], 10); cyl(a,"y", 0, crown + 0.22, z, 0.06, 0.12, [.2,.2,.2], 8); }
+  // ends: gangways and buckeyes on corridor stock, buffers all round
+  for(const s of [1,-1]){
+    if(!old && !(use==="OBS" && s>0)){ box(a, 0, (y0 + 0.3 + yC)/2, s*(ze + 0.18), 1.05, yC - y0 - 0.25, 0.36, B); box(a, 0, (y0 + 0.3 + yC)/2, s*(ze + 0.37), 0.85, yC - y0 - 0.45, 0.04, [.18,.18,.19]); }
+    for(const sx of [0.87,-0.87]){ cyl(a,"z", sx, 1.6, s*(ze + 0.25), 0.1, 0.5, B, 10); cyl(a,"z", sx, 1.6, s*(h - 0.04), 0.2, 0.06, STEEL, 12); }
+    box(a, 0, 1.45, s*(ze - 0.05), 2.6, 0.35, 0.18, B);
+  }
+  // underframe: solebars, battery boxes, vacuum cylinders, the dynamo
+  box(a, 0, y0 - 0.06, 0, 2.6, 0.18, 2*ze, UF);
+  if(!old){ for(const sx of [0.8,-0.8]) box(a, sx, 1.08, 1.5*sx, 0.55, 0.5, 2.2, [.16,.16,.16]);
+    for(const z of [-2.2, 2.4]) cyl(a,"x", 0, 1.05, z, 0.28, 0.8, [.15,.15,.15], 12); box(a, 0.5, 1.0, -4.5, 0.4, 0.35, 0.6, [.2,.2,.2]); }
+  // running gear: Mk1 BR1 bogies, Mk2 B4s, Gresley's double-bolster bogies, or the six- and four-wheelers' axles on W-irons
+  const wheel = (z, r) => { for(const sx of [0.76,-0.76]){ cyl(a,"x", sx, 0.53 + r, z, r, 0.12, B, 16); cyl(a,"x", sx*1.08, 0.53 + r, z, r*0.3, 0.05, [.25,.25,.25], 8); } };
+  if(old){ const axles = K==="six" ? [-3.1, 0, 3.1] : [-2.4, 2.4];
+    for(const z of axles){ wheel(z, 0.48); for(const sx of [1.15,-1.15]){ box(a, sx, 1.1, z, 0.08, 0.5, 0.35, B); box(a, sx*1.02, 1.22, z, 0.1, 0.12, 1.6, [.22,.22,.22]); } } }
+  else { const bc = K==="mk1" || K==="mk2" ? 7.08 : K==="pullman" ? 7.3 : 6.55, wb = K==="gresley" || K==="thompson" ? 2.44 : 2.59;
+    for(const s of [1,-1]){ const zc = s*bc;
+      for(const dz of [-wb/2, wb/2]){ wheel(zc + dz, 0.457); for(const sx of [1.13,-1.13]) box(a, sx, 0.99, zc + dz, 0.12, 0.3, 0.3, [.26,.26,.27]); }
+      for(const sx of [1.1,-1.1]){ box(a, sx, 1.02, zc, 0.1, 0.42, wb + 0.9, [.2,.2,.21]);
+        if(K==="mk2") for(const dz of [-0.55, 0.55]) cyl(a,"y", sx, 1.15, zc + dz, 0.12, 0.3, [.3,.3,.3], 8);
+        else for(const dz of [-wb/2, wb/2]) cyl(a,"y", sx*1.04, 1.18, zc + dz, 0.07, 0.3, [.32,.32,.32], 8); }
+      box(a, 0, 1.25, zc, 2.2, 0.12, 0.6, [.18,.18,.19]); } }
+  return a;
+}
+// a BR 20-ton goods brake van: the van body on a long chassis, verandas at each end, the side duckets and the stove pipe
+function brakeVanMesh(v){
+  const a = [], col = v.liv.col, B = [.08,.08,.09], h = v.len/2, W = 1.25, y0 = 1.32, yC = 3.1;
+  box(a, 0, 1.05, 0, 2.4, 0.3, 2*h - 0.5, B);
+  box(a, 0, (y0 + yC)/2, 0, 2*W, yC - y0, 4.9, col);
+  for(let k=0;k<5;k++){ const t = k/4, y = yC + Math.sin(t*Math.PI/2)*0.35, x = W*Math.cos(t*Math.PI/2*0.8); box(a, 0, y, 0, 2*x + 0.15, 0.08, 6.0, [.25,.25,.26]); }
+  for(const s of [1,-1]){ box(a, 0, 1.5, s*2.95, 2.5, 0.08, 1.0, [.3,.24,.18]);   // veranda floors and railings
+    for(const sx of [1,-1]) box(a, sx*1.2, 2.2, s*3.3, 0.06, 1.4, 0.06, B), box(a, sx*1.2, 2.85, s*2.95, 0.05, 0.05, 1.0, B);
+    box(a, 0, 2.85, s*3.45, 2.4, 0.05, 0.05, B);
+    box(a, 0, (y0 + yC)/2 + 0.35, s*2.46, 0.7, 1.6, 0.04, [.15,.15,.15]); box(a, 0.75, 2.6, s*2.47, 0.4, 0.4, 0.03, [.16,.2,.25]); }
+  for(const sx of [1,-1]){ box(a, sx*(W + 0.25), 2.4, 0, 0.5, 1.0, 1.4, col); box(a, sx*(W + 0.5), 2.45, 0, 0.02, 0.4, 0.9, [.16,.2,.25]);   // duckets
+    box(a, sx*1.15, 0.95, 1.6, 0.4, 0.45, 0.8, [.25,.2,.15]); box(a, sx*1.15, 0.95, -1.6, 0.4, 0.45, 0.8, [.25,.2,.15]); }   // sand boxes
+  cyl(a,"y", 0.6, yC + 0.65, -1.2, 0.08, 0.7, B, 8);
+  for(const z of [-2.3, 2.3]) for(const sx of [0.76,-0.76]){ cyl(a,"x", sx, 0.53 + 0.47, z, 0.47, 0.12, B, 16); box(a, sx*1.5, 1.05, z, 0.08, 0.45, 0.5, B); }
+  for(const s of [1,-1]) for(const sx of [0.87,-0.87]){ cyl(a,"z", sx, 1.6, s*(h - 0.3), 0.1, 0.5, B, 10); cyl(a,"z", sx, 1.6, s*(h - 0.04), 0.2, 0.06, [.62,.62,.6], 12); }
+  return a;
+}
+function rakeRepaintCost(r, where){
+  const shop = state.upgrades.workshop ? 0.7 : 1, n = catOf("rake", r.cat).cars;
+  return where==="works" ? {cost:Math.round(650*n*shop), weeks:1} : {cost:250*n, weeks:2};
+}
+const coachSwatch = id => { const s = COACH_LIVERIES[id].set, b = s.col2 || s.lining || s.stripe;
+  return `<span class="lvsw" style="background:${rgb(s.col)}">${b?`<i style="background:${rgb(b)}"></i>`:""}${s.stripe && s.col2 ? `<b style="background:${rgb(s.stripe)}"></b>` : ""}</span>`; };
+// two coaches of a set in a livery, for the repaint picker
+function coachPreview(key, id){
+  const k = "rake|" + key + "|" + id; if(PREVIEWS[k]) return PREVIEWS[k];
+  const gl = yardGL(); if(!gl || yd || dv) return null;
+  const cv = gl.canvas, ow = cv.width, oh = cv.height, W = 560, Hh = 250;
+  cv.width = W; cv.height = Hh; gl.viewport(0, 0, W, Hh);
+  const vs = rakeVehicles(key, id).slice(0, 2), meshes = vs.map(v=>meshBuffer(gl, coachMesh(v)));
+  gl.clearColor(.62,.76,.88,1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  const zc = 32, L = vs[0].len, eye = [-9.5, 3.6, zc - L/2 - 6], at = [0, 2.3, zc + L*0.3], d = at.map((x,i)=>x - eye[i]), dl = Math.hypot(...d);
+  gl.uniformMatrix4fv(YGL.vp, false, m4mul(m4persp(0.62, W/Hh, 0.25, 900), m4look(eye, d.map(x=>x/dl))));
+  gl.uniform3f(YGL.fog, .62,.76,.88); gl.uniform2f(YGL.fr, 90, 380);
+  glDraw(YGL.scene, m4model(0,0,0)); meshes.forEach((m,i)=>glDraw(m, m4model(0, zc + i*vs[0].len, 0)));
+  const url = cv.toDataURL("image/jpeg", 0.85);
+  meshes.forEach(m=>gl.deleteBuffer(m.buf)); cv.width = ow; cv.height = oh;
+  return PREVIEWS[k] = url;
+}
+
+let repaint = null;   // the repaint being chosen: {id, where, pick, kind}
+function openRepaint(id, where, kind){
+  if(kind==="rake"){ const r = state.rakes.find(x=>x.id===id); if(!r || rakeLiveries(r.cat).length < 2) return;
+    repaint = {id, where, kind, pick: rakeLiveryOf(r)}; renderRepaint(); return; }
   const l = state.locos.find(x=>x.id===id); if(!l || !liveriesOf(l.cat).length) return;
   repaint = {id, where, pick: liveryOf(l)};
   renderRepaint();
 }
 function renderRepaint(){
+  if(repaint.kind==="rake") return renderRakeRepaint();
   const l = state.locos.find(x=>x.id===repaint.id), c = catOf("loco", l.cat), cur = liveryOf(l), R = repaintCost(l, repaint.where);
   const pick = repaint.pick, L = LIVERIES[pick], img = liveryPreview(l.cat, pick);
   const same = pick===cur && (repaint.where!=="works" || l.finish==="works");
@@ -3767,7 +3954,32 @@ function renderRepaint(){
       <button class="act greenbtn" style="width:auto" ${blocked || same || state.cash < R.cost ? "disabled" : ""} onclick="doRepaint()">🎨 Repaint in ${L.name} · ${money(R.cost)}</button>
     </div>`);
 }
+function renderRakeRepaint(){
+  const r = state.rakes.find(x=>x.id===repaint.id), c = catOf("rake", r.cat), cur = rakeLiveryOf(r), R = rakeRepaintCost(r, repaint.where);
+  const pick = repaint.pick, L = COACH_LIVERIES[pick], img = coachPreview(r.cat, pick);
+  const same = pick===cur && (repaint.where!=="works" || r.finish==="works");
+  const blocked = isBusy(r) ? busyText(r) : onLine(r) ? "out on the line this weekend" : null;
+  const where = repaint.where==="works"
+    ? `<b>At the works:</b> the carriage works rub the set down, paint and line it and varnish it. ${R.weeks} week, ${money(R.cost)}. A works finish adds a little extra draw.`
+    : `<b>In the shed:</b> the carriage volunteers do it coach by coach over ${R.weeks} weekends, ${money(R.cost)} for paint, lining and transfers.`;
+  openModal(`Repaint the ${c.name}`, `
+    <p class="sub" style="margin-top:0">${c.cars} coaches. Now in <b>${COACH_LIVERIES[cur].name}</b>${r.finish==="works"?" (works finish)":""}.</p>
+    ${img ? `<img class="lvprev" src="${img}" alt="The ${c.name} in ${L.name}">` : ""}
+    <div class="lvlist">${rakeLiveries(r.cat).map(id=>`<label class="lvopt ${id===pick?"on":""}"><input type="radio" name="lv" ${id===pick?"checked":""} onchange="repaint.pick='${id}';renderRepaint()">
+      ${coachSwatch(id)}<span><b>${COACH_LIVERIES[id].name}</b>${id===cur?" <small>(now)</small>":""}<br><small>${COACH_LIVERIES[id].era} · crowd +${Math.round(COACH_LIVERIES[id].appeal*100)}%</small></span></label>`).join("")}</div>
+    <p style="font-size:.85rem">${where}</p>
+    ${blocked ? `<div class="event bad">The set is ${blocked}, so it can't be painted now.</div>` : ""}
+    <div class="toolbar" style="margin-bottom:0">
+      <button class="act greenbtn" style="width:auto" ${blocked || same || state.cash < R.cost ? "disabled" : ""} onclick="doRepaint()">🎨 Repaint in ${L.name} · ${money(R.cost)}</button>
+    </div>`);
+}
 function doRepaint(){
+  if(repaint.kind==="rake"){ const r = state.rakes.find(x=>x.id===repaint.id), R = rakeRepaintCost(r, repaint.where);
+    if(isBusy(r) || onLine(r) || state.cash < R.cost) return;
+    state.cash -= R.cost; r.livery = repaint.pick; r.finish = repaint.where==="works" ? "works" : "shed";
+    r.busyUntil = state.week + R.weeks; r.busyWhy = "paint";
+    logEntry(`Repainted the ${catOf("rake", r.cat).name} in ${COACH_LIVERIES[r.livery].name} (${repaint.where==="works" ? "at the works" : "in the shed"}).`, -R.cost);
+    closeModal(); repaint = null; render(); return; }
   const l = state.locos.find(x=>x.id===repaint.id), R = repaintCost(l, repaint.where);
   if(isBusy(l) || onLine(l) || hirePending(l) || isAway(l) || state.cash < R.cost) return;
   state.cash -= R.cost;
@@ -5476,10 +5688,9 @@ function driveConsist(gl, set){
     out.push({len:md.len, mesh:meshBuffer(gl, md.mesh()), eye:engineEye(cat.key, md)}); };
   eng(set.loco, set.lcat, set.trainGuest);
   if(set.pilot) eng(set.pilot, set.pcat, set.pilotGuest), out.unshift(out.pop());
-  if(set.rcat){ const rk = set.rcat.key || "", liv = rk.includes("teak") ? [[.5,.29,.13],[.72,.52,.3]] : rk.includes("pullman") ? [[.34,.2,.12],[.9,.84,.68]]
-      : rk.includes("mk2") ? [[.16,.3,.55],[.86,.86,.86]] : [[.42,.08,.1],[.86,.8,.62]];
-    const cm = meshBuffer(gl, vehicleMesh({type:"coach", len:20, col:liv[0], win:liv[1]}));
-    for(let i=0;i<(set.rcat.cars || 4);i++) out.push({len:20, mesh:cm, shared:i>0}); }
+  if(set.rcat){ const vs = rakeVehicles(set.rcat.key, set.rake ? rakeLiveryOf(set.rake) : null), cache = {};
+    vs.forEach((v, i)=>{ const m = cache[v.use] || (cache[v.use] = meshBuffer(gl, coachMesh(v)));
+      out.push({len:v.len, mesh:m, four:/four|six|van/.test(v.kind), flip:v.use==="OBS" && i===vs.length-1}); }); }
   out.len = out.reduce((t,v)=>t + v.len, 0);
   return out;
 }
@@ -5676,10 +5887,10 @@ function driveDraw(){
   const vp = m4mul(m4persp(1.15, cv.width/cv.height, 0.25, 2600), m4look(eye, dir));
   gl.uniformMatrix4fv(YGL.vp, false, vp); gl.uniform3f(YGL.fog, .64,.76,.86); gl.uniform2f(YGL.fr, 350, 1500);
   glDraw(G.mesh, m4at(0,0,0,0));
-  mine.forEach((p,i)=>glDraw(dv.cam===0 || !p.v.plain ? p.v.mesh : p.v.plain, m4at(p.x, p.y, p.z, p.yaw)));
+  mine.forEach((p,i)=>glDraw(dv.cam===0 || !p.v.plain ? p.v.mesh : p.v.plain, m4at(p.x, p.y, p.z, p.yaw + (p.v.flip ? Math.PI : 0))));
   // the other trains: in the platforms, out on the line, and through the loops on the loop road as they pass you
   for(const o of dv.others){ const p0 = dOtherPlace(o); if(!p0) continue;
-    trainPoses(G, o.train, p0.s, p0.dir, dLoopOff).forEach(p=>glDraw(p.v.plain || p.v.mesh, m4at(p.x, p.y, p.z, p.yaw))); }
+    trainPoses(G, o.train, p0.s, p0.dir, dLoopOff).forEach(p=>glDraw(p.v.plain || p.v.mesh, m4at(p.x, p.y, p.z, p.yaw + (p.v.flip ? Math.PI : 0)))); }
   // starter signals
   const here = dSignal();
   for(const sg of G.sigs){ const off = sg.dir===dv.dir && (dv.phase==="stand" ? here.here && here.clear && sg.i===dv.work.calls[dv.ci].st : sg.i===dv.leftSt && dv.leftClear), on = !off;
