@@ -36,23 +36,34 @@ first train yourself. Say yes and the laptop folds away: you're in the cab of
 the Class 08 shunter in Ravensgill yard, in first person (a small built-in
 WebGL renderer, so it still works offline).
 
-The yard is a classic *Inglenook* shunting puzzle: a headshunt that holds the
-shunter and three coaches, a three-way point, and three roads (the Platform
-road, Siding A and Siding B). The day's train engine, three of its coaches and
-a few spare vehicles start scattered across the sidings. Form the train on the
-Platform road **in the order shown**, engine nearest the points.
+The coaches are already formed up on the Platform road. The job is to fetch
+the right engine from the **engine shed**: a brick shed with two roads, holding
+the train engine (and the pilot, for a double-header) plus the rest of the
+fleet, every engine standing chimney or nose towards the shunter. Set the
+three-way point for the right shed road, buffer up to the engine, draw it out
+onto the headshunt, set the road for the Platform road and buffer it up to the
+coaches, then uncouple.
+
+Every locomotive class is modelled individually (cylinders and panels as well
+as boxes): steam engines from their real wheel arrangement, wheel diameter,
+length, boiler, tanks or tender, Belpaire firebox, smoke deflectors and livery
+(the A4's wedge front and the Bulleid casing are modelled too); diesels from
+their body style (cab ends, noses, hood and single cab, the Western), bogies
+(Bo-Bo, Co-Co, A1A, 1Co-Co1, coupled rods), warning panels, headcodes and
+livery bands, with the Class 20 and 26 pairs as two locos coupled.
 
 | Control | Keys / on screen |
 |---------|------------------|
 | Drive forward / back | ↑ / ↓ or W / S, or hold ▶ / ◀ |
 | Brake | Space, or hold ■ |
 | Look round | ← / → or A / D, or drag (double-click to recentre) |
-| Points | 1 Platform road · 2 Siding A · 3 Siding B (locked while anything stands over them) |
-| Uncouple | U drops the far vehicle, or click ✂ between any two vehicles |
+| Points | 1 Platform road · 2 Shed road 1 · 3 Shed road 2 (locked while anything stands over them) |
+| Uncouple | U uncouples the shunter, or click ✂ between any two vehicles |
 
-Buffer up at under 2 mph to couple to everything standing in that cut; faster
+Buffer up at under 2 mph to couple (engines in the shed stand apart, so you
+pick up only the one you buffer up to); faster
 is a rough shunt, and over 5 mph is a crash. A mini-map and the job card show
-progress. Finish quickly with no rough shunts for ★★★ (+2 reputation and a
+progress. Finish quickly (under 6 minutes an engine) with no rough shunts for ★★★ (+2 reputation and a
 morale boost), or leave the yard at any time and the shed staff finish the job.
 Then the weekend runs as normal.
 

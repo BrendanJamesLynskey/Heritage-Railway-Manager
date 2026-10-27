@@ -189,6 +189,10 @@
     .ybc{left:8px;right:8px;bottom:8px}
     .ydrive button{width:84px;height:46px}
   }
+  @media(max-height:520px){
+    .ytr .ymore{display:none}
+    .ytr{max-height:calc(100% - 262px);overflow:auto;padding:6px 9px}
+  }
   /* ---- mail ---- */
   #v-mail{height:100%}
   .mail{display:grid;grid-template-columns:290px 1fr;height:100%;background:#fff}
@@ -518,7 +522,7 @@
       <ul style="font-size:.9rem">
         <li><b>The laptop:</b> each part of the railway is an app on the desktop. Double-click an icon (or tap it on a touch screen) to open its window; drag windows by the title bar, resize them from the corner, and switch between them on the taskbar. The <b>Start</b> button (the R&amp;H roundel) lists every app.</li>
         <li><b>Mail:</b> railtour companies and other heritage railways email asking to hire your locomotives. Accept their offer, decline, or send a counter-offer: ask for more, but push too hard and they'll go elsewhere. A hired-out engine is away for the weeks agreed, and comes back a little more worn.</li>
-        <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to marshal the first train: the laptop folds away and you're in the cab. Form the train on the Platform road in the order shown, using the headshunt and Sidings A and B. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the far vehicle. Buffer up gently (under 2 mph) to couple. A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
+        <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to make up the first train: the laptop folds away and you're in the cab. The coaches are already on the Platform road; the train engine (and the pilot, for a double-header) is in the engine shed with the rest of the fleet, every engine facing the shunter. Set the points for the right shed road, buffer up to the engine, draw it out, set the points back to the Platform road and buffer it up to the coaches, then uncouple. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the shunter. Buffer up gently (under 2 mph) to couple. Every class of engine is modelled from its own wheel arrangement, size and livery. A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
         <li><b>Each turn is one week.</b> Plan the weekend in the <b>Timetable</b> app, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week. The weekend then plays out live on the <b>Line Map</b>, all its days together in the time of one (change the speed there, or pause it). You can't start the next week until the last train is home, but you can carry on booking events, buying stock and recruiting while it runs. The takings arrive when the weekend ends.</li>
         <li><b>Timetabling:</b> every train is a round trip from Ravensgill Junction to Moorend and back, about two hours with turn-rounds. Give each loco a set of departure times. If a train isn't back in time, its next trip leaves late.</li>
         <li><b>The printed timetable:</b> the Up and Down tables at the top of the Timetable app are the public timetable, a column for each train. The times are worked out by the signallers' plan, so a train held at a loop shows its real, later time. <b>|</b> means the train runs through without stopping.</li>
@@ -2895,12 +2899,13 @@ function dealCounter(id){
 
 
 /* ============================ THE YARD: SHUNTING IN FIRST PERSON ============================ */
-// An "Inglenook" yard: a headshunt (the lead) and a three-way point to the Platform road,
-// Siding A and Siding B. The shunter can only push and pull, so the order of a train
-// has to be worked out by splitting and re-forming cuts of vehicles.
+// Ravensgill yard: a headshunt (the lead) and a three-way point to the Platform road, where the
+// coaches stand ready, and the two roads of the engine shed. The job is to fetch the train engine
+// from the shed with the shunter and put it on the front of the coaches.
 // Track is measured in metres along each route; the lead (0..LEAD) is shared by all three.
-const YARD = {lead:75, zone:36, sid:[86,64,64], off:[0, 4.6, -10]};
-const ROUTE_NAMES = ["Platform road", "Siding A", "Siding B"];
+const YARD = {lead:75, zone:36, sid:[125,72,72], off:[0, 5.2, 10.4]};
+const ROUTE_NAMES = ["Platform road", "Shed road 1", "Shed road 2"];
+const SHED_GAP = 2.5;   // engines stand apart in the shed, so the shunter picks up only the one it buffers up to
 const MPH = 2.237, COUPLE = 0.9, CRASH = 2.3, VMAX = 6.7;   // m/s
 const YPATH = [1,2,3].map(r=>{
   const off = YARD.off[r-1], pts = [];
@@ -2931,12 +2936,6 @@ function vPose(v){
 
 let yd = null;   // the shunting session
 const shuffle = a => { for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; };
-function locoLivery(key, kind){
-  if(kind==="diesel") return ["c37","c47","c31","c56","c60","c50"].some(k=>key.includes(k)) ? [.16,.32,.56] : [.1,.34,.21];
-  if(key.includes("pannier") || key.includes("duke") || key.includes("braunton")) return [.07,.3,.15];
-  if(["b1","k1","k4","a4","tornado","greenarrow","j27"].some(k=>key.includes(k))) return [.24,.5,.2];
-  return [.09,.09,.1];
-}
 function shuntJob(plan){
   const set = plan.sets.find(x=>x.kind!=="dmu" && x.rcat);
   if(!set) return null;
@@ -2946,18 +2945,19 @@ function shuntJob(plan){
   const num = () => String(10000 + Math.floor(Math.random()*89999));
   const types = shuffle(["BSK","SK","TSO","RMB","CK","BCK"]);
   const coach = (t) => ({type:"coach", label:`${t} ${num()}`, len:20, col:liv[0], win:liv[1]});
-  const loco = {type:set.kind, label:set.label, len:set.kind==="steam"?14:17, col:locoLivery(set.lcat.key||"", set.kind), key:set.lcat.key||""};
-  const coaches = [coach(types[0]), coach(types[1]), coach(types[2])];
-  const target = [...coaches, loco];                     // from the buffer stops out to the points
-  const spares = [coach(types[3]), {type:"van", label:"Brake van", len:8, col:[.38,.29,.22]}];
-  const other = state.locos.find(l=>l.kind!=="dmu" && !plan.sets.some(x=>x.loco===l || x.pilot===l) && !isAway(l));
-  spares.push(other ? {type:other.kind, label:other.number, len:other.kind==="steam"?14:17, col:locoLivery(other.cat, other.kind), key:other.cat}
-                    : {type:"coach", label:`BG ${num()}`, len:18, col:liv[0], win:liv[0]});
-  return {train:`${fmtT(set.deps[0])} ${set.label}`, time:fmtT(set.deps[0]), set:set.label, target, spares};
+  const engine = (key, number, name) => { const md = locoModel(key); return {type:md.kind, label:number, name, len:md.len, col:md.col, key, flip:true}; };
+  const need = [engine(set.lcat.key, set.loco.number, set.lcat.name)];
+  if(set.pilot) need.push(engine(set.pcat.key, set.pilot.number, set.pcat.name));
+  need.forEach(v=>v.need = true);
+  // the rest of the fleet is on shed too
+  const decoys = shuffle(state.locos.filter(l=>l.kind!=="dmu" && l!==set.loco && l!==set.pilot && !isAway(l))).slice(0, 4)
+    .map(l=>engine(l.cat, l.number, catOf("loco", l.cat).name));
+  return {train:`${fmtT(set.deps[0])} ${set.label}`, time:fmtT(set.deps[0]), set:set.label,
+          coaches:[coach(types[0]), coach(types[1]), coach(types[2])], need, decoys};
 }
 function offerShunt(job){
-  openModal("Marshal the First Train?", `<p>Before the ${job.time} departure, <b>${job.set}</b> and its coaches have to be formed up on the Platform road in the right order. The yard's a jumble after last week.</p>
-    <p>Climb into the Class 08 shunter and do it yourself? A clean, quick job lifts reputation and morale. Or the shed staff will sort it out.</p>
+  openModal("Marshal the First Train?", `<p>Before the ${job.time} departure, the coaches are waiting on the Platform road, but <b>${job.need.map(v=>`${v.label} (${v.name})`).join(" and ")}</b> ${job.need.length>1?"are":"is"} still in the engine shed.</p>
+    <p>Climb into the Class 08 shunter, fetch the right engine from the shed and put it on the front of the train? A clean, quick job lifts reputation and morale. Or the shed staff will sort it out.</p>
     <div class="toolbar" style="margin-bottom:0">
       <button class="act greenbtn" style="width:auto" onclick="closeModal();startShunt(pendingJob)">🚜 Drive the shunter</button>
       <button class="act" style="width:auto" onclick="closeModal();advanceWeek({go:true})">Let the shed staff do it ▸</button>
@@ -2970,22 +2970,24 @@ let pendingJob = null;
 function startShunt(job){
   const gl = yardGL();
   if(!gl){ alert("Your browser can't show the 3D yard (WebGL is turned off), so the shed staff will marshal the train."); advanceWeek({go:true}); return; }
-  // lay the vehicles out at random, keeping each siding within its length
-  const veh = [...job.target, ...job.spares].map((v,i)=>({...v, id:i, s:0, route:null}));
-  const targetIds = job.target.map(t=>veh.find(v=>v.label===t.label).id);
-  let lay;
-  for(let tries=0; tries<400; tries++){
-    lay = [[],[],[]]; const room = [YARD.sid[0]-1, YARD.sid[1]-1, YARD.sid[2]-1];
-    let ok = true;
-    for(const v of shuffle([...veh])){
-      const fits = [0,1,2].filter(k=>room[k] >= v.len);
-      if(!fits.length){ ok = false; break; }
-      const k = fits[Math.floor(Math.random()*fits.length)];
-      lay[k].push(v); room[k] -= v.len;
-    }
-    if(ok && !(lay[0].length===targetIds.length && lay[0].every((v,i)=>v.id===targetIds[i]))) break;
-  }
-  lay.forEach((list,k)=>{ let edge = routeEnd(k+1) - 0.4; list.forEach(v=>{ v.route = k+1; v.s = edge - v.len/2; edge -= v.len; }); });
+  // the coaches stand buffered up to the stops on the Platform road, in order
+  const coaches = job.coaches.map(v=>({...v})), need = job.need.map(v=>({...v})), spare = job.decoys.map(v=>({...v}));
+  const veh = [...coaches, ...need, ...spare];
+  veh.forEach((v,i)=>{ v.id = i; v.s = 0; v.route = null; });
+  const targetIds = [...coaches, ...need].map(v=>v.id);
+  let edge = routeEnd(1) - 0.4;
+  coaches.forEach(v=>{ v.route = 1; v.s = edge - v.len/2; edge -= v.len; });
+  // in the shed each wanted engine stands at the door end of a road; the others are stabled behind
+  const roads = shuffle([2,3]), lists = {2:[], 3:[]}, used = {2:0, 3:0};
+  const fits = (r, v) => used[r] + v.len + (lists[r].length ? SHED_GAP : 0) <= YARD.sid[r-1] - 1;
+  const add = (r, v) => { used[r] += v.len + (lists[r].length ? SHED_GAP : 0); lists[r].unshift(v); };
+  need.forEach((v,i)=>add(roads[i%2], v));
+  spare.forEach(v=>{ const r = [...roads].sort((a,b)=>used[a]-used[b]).find(r=>fits(r, v)); if(r) add(r, v); else v.gone = true; });
+  // with one engine wanted, put a spare at the door of the other road so it's a real choice
+  if(need.length===1 && !lists[roads[1]].length){ const sp = lists[roads[0]].find(v=>!v.need); if(sp){ lists[roads[0]].splice(lists[roads[0]].indexOf(sp),1); lists[roads[1]].push(sp); } }
+  [2,3].forEach(r=>{ let e = routeEnd(r) - 0.4; lists[r].forEach(v=>{ v.route = r; v.s = e - v.len/2; e -= v.len + SHED_GAP; }); });
+  for(let i=veh.length-1;i>=0;i--) if(veh[i].gone) veh.splice(i,1);
+  veh.forEach((v,i)=>{ const t = targetIds.indexOf(v.id); v.id = i; if(t>=0) targetIds[t] = i; });
   const sh = {id:-1, type:"shunter", label:"08 773", len:9, col:[.1,.36,.22], s:6.5, route:null};
   yd = {job, veh, sh, string:[sh], targetIds, points:1, v:0, look:0, pitch:-0.06, t:0, rough:0, keys:{}, done:false, raf:0, last:0, msgT:0};
   yd.all = [sh, ...veh];
@@ -2998,7 +3000,7 @@ function startShunt(job){
     yardSize(); yHud();
     requestAnimationFrame(()=>y.classList.add("show"));
     yd.raf = requestAnimationFrame(yardFrame);
-    yMsg(`Form the ${job.set} train on the Platform road`);
+    yMsg(`Fetch ${job.need.map(v=>v.label).join(" and ")} from the shed`);
   }, 550);
 }
 function endShunt(result){
@@ -3038,7 +3040,7 @@ function ySetPoints(r){
 function yUncouple(keep){
   if(Math.abs(yd.v) > 0.05){ yMsg("Stop before uncoupling", true); return; }
   if(yd.string.length<2){ yMsg("Nothing coupled to the shunter", true); return; }
-  if(keep===undefined) keep = yd.string.length-1;
+  if(keep===undefined) keep = 1;
   const left = yd.string.splice(keep);
   yMsg(`Uncoupled ${left.map(v=>v.label).join(", ")}`);
   yHud();
@@ -3088,10 +3090,11 @@ function yCheckDone(){
   if(yd.done || Math.abs(yd.v) > 0.02) return;
   const P = yPlatform();
   if(!(P.length===yd.targetIds.length && P.every((v,i)=>v.id===yd.targetIds[i] && v.s - v.len/2 >= zoneEnd(1) - 0.01))) return;
-  if(P.some(v=>yd.string.includes(v))){ if(!yd.toldUncouple){ yd.toldUncouple = true; yMsg("That's the train! Uncouple the shunter to finish"); } return; }
+  if(P.some(v=>yd.string.includes(v))){ if(!yd.toldUncouple){ yd.toldUncouple = true; yMsg("That's the train! Uncouple the shunter (U) to finish"); } return; }
   {
     yd.done = true; yd.v = 0;
-    const mins = yd.t/60, stars = yd.rough===0 && mins < 12 ? 3 : yd.rough <= 2 && mins < 20 ? 2 : 1;
+    const mins = yd.t/60/yd.veh.filter(v=>v.need).length;   // time allowed per engine fetched
+    const stars = yd.rough===0 && mins < 6 ? 3 : yd.rough <= 2 && mins < 12 ? 2 : 1;
     const time = `${Math.floor(yd.t/60)}:${String(Math.floor(yd.t%60)).padStart(2,"0")}`;
     yd.result = {stars, time, rough:yd.rough};
     const d = document.getElementById("yDone");
@@ -3113,18 +3116,20 @@ function yMsg(text, bad){
 }
 function yHud(){
   if(!yd) return;
-  const want = yd.targetIds.map(id=>yd.veh[id]), P = yPlatform();
-  document.getElementById("yJob").innerHTML = `<b>Form the ${yd.job.train} train on the Platform road</b>
-    <div class="ysub">In this order, from the buffer stops out to the points:</div>
+  const want = yd.targetIds.map(id=>yd.veh[id]), P = yPlatform(), need = yd.veh.filter(v=>v.need);
+  const shed = r => yd.veh.filter(v=>v.route===r && !yd.string.includes(v)).sort((a,b)=>a.s-b.s);
+  document.getElementById("yJob").innerHTML = `<b>Make up the ${yd.job.train} train</b>
+    <div class="ysub ymore">The coaches are ready on the Platform road. Fetch ${need.map(v=>`<b>${v.label}</b> ${v.name}`).join(", then ")} from the shed, buffer up gently to the coaches and uncouple (U).</div>
     <div class="ystrip"><span class="ystop"></span>${want.map(v=>yChip(v,"target")).join("")}<span class="ysub">→ points</span></div>
-    <div class="ysub">On the Platform road now:</div>
-    <div class="ystrip"><span class="ystop"></span>${P.length ? P.map((v,i)=>yChip(v, v.id===yd.targetIds[i]?"ok":"")).join("") : `<span class="ysub">empty</span>`}</div>`;
+    <div class="ymore"><div class="ysub">On the Platform road now:</div>
+    <div class="ystrip"><span class="ystop"></span>${P.length ? P.map((v,i)=>yChip(v, v.id===yd.targetIds[i]?"ok":"")).join("") : `<span class="ysub">empty</span>`}</div>
+    ${[2,3].map(r=>`<div class="ysub">${ROUTE_NAMES[r-1]} (door end first):</div><div class="ystrip">${shed(r).length ? shed(r).map(v=>yChip(v, v.need?"target":"")).join("") : `<span class="ysub">empty</span>`}</div>`).join("")}</div>`;
   const foul = yFoul();
   document.getElementById("yPoints").innerHTML = `<b>Points</b> <span class="ysub">(keys 1 · 2 · 3)</span><div class="ysub" style="margin-top:3px"><span class="ylock ${foul?"on":""}"></span>${foul?"Locked: vehicle over the points":"Free to change"}</div>
-    <div class="ypts">${[2,1,3].map(r=>`<button class="${yd.points===r?"on":""}" onclick="ySetPoints(${r})">${r} ${r===2?"◤":r===1?"▲":"◥"} ${ROUTE_NAMES[r-1]}</button>`).join("")}</div>`;
+    <div class="ypts">${[3,2,1].map(r=>`<button class="${yd.points===r?"on":""}" onclick="ySetPoints(${r})">${r} ${r===3?"◤◤":r===2?"◤":"▲"} ${ROUTE_NAMES[r-1]}</button>`).join("")}</div>`;
   document.getElementById("yConsist").innerHTML = yd.string.map((v,i)=>
       (i ? `<button class="ycut" title="Uncouple here" onclick="yUncouple(${i})">✂</button>` : "") + yChip(v)).join("")
-    + `<span class="ysub" style="margin-left:8px">U uncouples the far end</span>`;
+    + `<span class="ysub" style="margin-left:8px">U uncouples the shunter</span>`;
   yInfo();
 }
 function yInfo(){
@@ -3138,7 +3143,7 @@ function yInfo(){
 }
 function yMap(){
   const c = document.getElementById("ymap"), g = c.getContext("2d"), W = c.width, H = c.height;
-  const zMax = 200, u = z => 14 + z*(W-28)/zMax, v = x => H*0.48 - x*(H/34);
+  const zMax = routeEnd(1) + 8, u = z => 14 + z*(W-28)/zMax, v = x => H*0.72 - x*(H/22);
   g.clearRect(0,0,W,H);
   g.lineCap = "round";
   g.strokeStyle = "rgba(255,255,255,.35)"; g.lineWidth = 4;
@@ -3147,7 +3152,10 @@ function yMap(){
   g.fillStyle = "#c0392b"; g.fillRect(u(0)-6, v(0)-9, 5, 18);
   [1,2,3].forEach(r=>{ const e = pathPos(r, routeEnd(r)); g.fillRect(u(e.z)+1, v(e.x)-9, 5, 18); });
   g.font = "bold 17px Segoe UI, sans-serif"; g.fillStyle = "rgba(255,255,255,.65)";
-  [1,2,3].forEach(r=>{ const e = pathPos(r, zoneEnd(r) + 4); g.fillText(ROUTE_NAMES[r-1], u(e.z), v(e.x) + (r===2?-12:24)); });
+  const s0 = pathPos(2, routeEnd(2) - 50), s1 = pathPos(3, routeEnd(3) + 3);
+  g.strokeStyle = "rgba(255,255,255,.55)"; g.lineWidth = 2; g.strokeRect(u(s0.z), v(13.3), u(s1.z) - u(s0.z), v(2.3) - v(13.3));
+  g.fillText("Engine shed", u(s0.z) + 6, v(13.3) - 6);
+  [1,2,3].forEach(r=>{ const e = pathPos(r, zoneEnd(r) + 4); g.fillText(ROUTE_NAMES[r-1], u(e.z), v(e.x) + (r===1?24:-9)); });
   yd.all.forEach(x=>{
     const a = pathPos(x.route, x.s - x.len/2 + 0.6), b = pathPos(x.route, x.s + x.len/2 - 0.6);
     g.strokeStyle = x.type==="shunter" ? "#ffd24a" : rgb(x.col); g.lineWidth = 12;
@@ -3199,7 +3207,7 @@ function sceneryMesh(){
   const a = [], grass = [.36,.47,.25], cinder = [.36,.33,.29], ballast = [.47,.44,.4], sleeper = [.26,.18,.12], rail = [.55,.53,.5];
   const brick = [.56,.3,.23], slate = [.24,.25,.29], cream = [.86,.8,.62], dark = [.12,.12,.13];
   box(a, 0,-0.1,100, 1400,0.2,1400, grass);
-  box(a, -2,0.01,95, 46,0.02,240, cinder);
+  box(a, -2,0.01,120, 46,0.02,290, cinder);
   const track = (r, s0, s1)=>{
     for(let s=s0; s<s1; s+=2){
       const p = pathPos(r, s+1), q = pathPos(r, s+1.01), yaw = Math.atan2(q.x-p.x, q.z-p.z);
@@ -3228,9 +3236,27 @@ function sceneryMesh(){
   box(a, -6,1.7,YARD.lead-6, 4,3.4,6, brick); box(a, -6,4.6,YARD.lead-6, 4.2,2.4,6.2, cream);
   box(a, -3.88,4.7,YARD.lead-6, 0.05,1.4,5.2, [.18,.22,.27]); box(a, -6,6.1,YARD.lead-6, 5,0.5,7.2, slate);
   box(a, -6,6.6,YARD.lead-6, 0.3,0.3,7.6, slate);
-  // engine shed, water tower and coal stage beside the lead
-  box(a, 16,3.6,18, 12,7.2,34, brick); box(a, 16,7.6,18, 13,0.9,35, slate); box(a, 16,8.4,18, 2,0.8,35, slate);
-  box(a, 9.96,2.8,10, 0.05,5,4.6, [.08,.08,.09]); box(a, 9.96,2.8,24, 0.05,5,4.6, [.08,.08,.09]);
+  // the engine shed over the far end of the two shed roads: brick walls, two open doors, a slate roof
+  {
+    const za = pathPos(2, routeEnd(2) - 50).z, zb = pathPos(2, routeEnd(2) + 3).z, zc = (za+zb)/2, sl = zb - za;
+    const xL = 2.3, xR = 13.3, xm = (xL+xR)/2, H = 6.4, ridge = 9.0, glass = [.16,.19,.22], soot = [.2,.17,.15];
+    box(a, xm, 0.04, zc, xR - xL, 0.04, sl, [.17,.16,.15]);
+    for(const x of [xL, xR]) box(a, x, H/2, zc, 0.5, H, sl, brick);
+    box(a, xm, H/2, zb, xR - xL + 0.5, H, 0.5, brick);
+    // front wall: piers either side of the doors and a lintel over them
+    box(a, (xL - 0.25 + 3.15)/2, H/2, za, 3.15 - xL + 0.25, H, 0.5, brick);
+    box(a, xm, H/2, za, 1.2, H, 0.5, brick);
+    box(a, (12.45 + xR + 0.25)/2, H/2, za, xR + 0.25 - 12.45, H, 0.5, brick);
+    box(a, xm, 5.9, za, xR - xL + 0.5, 1.0, 0.5, brick);
+    box(a, xm, 5.9, za - 0.27, 5.6, 0.55, 0.04, cream);                           // the shed name board
+    for(const z of [za - 0.25, zb + 0.25]) quad(a, [xL-0.25,H,z],[xR+0.25,H,z],[xm,ridge,z],[xm,ridge,z], brick, [0,0,z<zc?-1:1]);
+    quad(a, [xL-0.7,H-0.2,za-0.6],[xm,ridge+0.05,za-0.6],[xm,ridge+0.05,zb+0.6],[xL-0.7,H-0.2,zb+0.6], slate, [-1,1,0]);
+    quad(a, [xR+0.7,H-0.2,za-0.6],[xm,ridge+0.05,za-0.6],[xm,ridge+0.05,zb+0.6],[xR+0.7,H-0.2,zb+0.6], slate, [1,1,0]);
+    for(let z = za + 4; z < zb - 2; z += 7){ box(a, xm, ridge + 0.35, z, 1.3, 0.7, 2.6, soot); box(a, xm, ridge + 0.8, z, 1.8, 0.12, 3.0, slate); }
+    for(let z = za + 4; z < zb - 3; z += 5) for(const x of [xL - 0.27, xR + 0.27, xL + 0.27, xR - 0.27]) box(a, x, 3.4, z, 0.02, 2.0, 1.6, glass);
+    // a water crane by the doors
+    box(a, xm, 0.3, za - 7, 1.2, 0.6, 1.2, dark); box(a, xm, 2.0, za - 7, 0.35, 3.4, 0.35, dark); box(a, xm - 1.3, 3.6, za - 7, 2.6, 0.25, 0.25, dark);
+  }
   for(const [dx,dz] of [[-1.1,-1.1],[1.1,-1.1],[-1.1,1.1],[1.1,1.1]]) box(a, 5.5+dx,2.5,40+dz, 0.3,5,0.3, dark);
   box(a, 5.5,6.2,40, 3.4,2.4,3.4, [.2,.24,.27]); box(a, 4.2,4.8,40, 0.25,0.25,2.6, dark);
   box(a, 6,0.8,56, 4,1.6,8, [.08,.08,.08]);
@@ -3246,7 +3272,7 @@ function sceneryMesh(){
   }
   for(let i=0;i<70;i++){
     const x = (rnd()-0.5)*260, z = -60 + rnd()*340;
-    if(x > -30 && x < 30 && z > -25 && z < 225) continue;
+    if(x > -30 && x < 30 && z > -25 && z < 280) continue;
     const h = 3 + rnd()*3, y = rnd()*Math.PI;
     box(a, x,h/2,z, 0.5,h,0.5, [.3,.22,.15], y);
     box(a, x,h+1.6,z, 3.2+rnd(),3.6,3.2+rnd(), [.17,.32+rnd()*.08,.16], y);
@@ -3265,21 +3291,8 @@ function vehicleMesh(v){
     box(a, 0,1.0,0, 2.2,0.5,L-0.4, dark); box(a, 0,2.25,-0.6, 2.5,2.0,L-2.6, v.col); box(a, 0,3.35,-0.2, 2.6,0.2,L-1.4, [.3,.3,.3]);
     for(const z of [-L*0.3, L*0.3]) box(a, 0,0.75,z, 0.3,1.0,1.0, dark);
     for(const z of [-h, h]) box(a, 0,1.15,z-Math.sign(z)*0.15, 2.4,0.35,0.3, red);
-  } else if(v.type==="steam"){
-    box(a, 0,1.1,0, 2.3,0.6,L-0.4, dark);
-    for(const sx of [1.0,-1.0]) for(const z of [-2.2,0,2.2]) box(a, sx,0.95,z, 0.3,1.5,1.5, dark);
-    box(a, 0,2.55,1.2, 1.7,1.7,L*0.55, v.col); box(a, 0,2.55,h-1.4, 1.75,1.75,1.3, [.07,.07,.07]);
-    box(a, 0,3.7,h-1.4, 0.55,0.8,0.55, dark); box(a, 0,3.55,0.6, 0.8,0.5,0.9, v.col);
-    box(a, 0,2.75,-h+2.1, 2.65,2.7,2.9, v.col); box(a, 0,4.18,-h+2.1, 2.8,0.16,3.2, dark);
-    for(const sx of [1.33,-1.33]) box(a, sx,3.3,-h+2.1, 0.03,0.8,1.2, [.15,.18,.2]);
-    box(a, 0,2.2,-h+0.6, 2.5,1.8,1.2, v.col);
-    for(const z of [-h, h]) box(a, 0,1.35,z-Math.sign(z)*0.15, 2.6,0.4,0.3, red);
-  } else {   // diesel
-    box(a, 0,1.1,0, 2.4,0.5,L-0.6, dark);
-    for(const z of [-L*0.32, L*0.32]) box(a, 0,0.8,z, 2.3,0.6,3.2, dark);
-    box(a, 0,2.45,0, 2.7,2.3,L-1.2, v.col); box(a, 0,3.68,0, 2.5,0.2,L-1.6, [.35,.37,.38]);
-    for(const z of [-(h-0.62), h-0.62]){ box(a, 0,2.35,z, 2.72,2.1,0.1, [.92,.76,.1]); box(a, 0,3.1,z+Math.sign(z)*0.02, 2.0,0.6,0.1, [.12,.15,.18]); }
-    for(const sx of [1.36,-1.36]) box(a, sx,2.9,0, 0.03,0.4,L-6, [.75,.75,.72]);
+  } else if(v.type==="steam" || v.type==="diesel"){
+    return locoModel(v.key).mesh();
   }
   return a;
 }
@@ -3301,6 +3314,330 @@ function shunterMesh(){
   box(a, -0.35,2.58,-1.7, 0.07,0.12,0.07, [.8,.1,.1]); box(a, 0.35,2.58,-1.7, 0.07,0.12,0.07, [.85,.85,.85]);
   return a;
 }
+/* ---- locomotive models: every class built from its own dimensions ---- */
+// Shapes in a vehicle's own frame: x across (left +), y up from the ground, z along (front +).
+// Rail top is at y 0.53. A model's front is drawn facing the shunter (see LOCO flip in yDraw).
+function cyl(a, ax, x,y,z, r, len, col, n){
+  n = n || 14;
+  const P = (ang, t) => { const c = Math.cos(ang)*r, s = Math.sin(ang)*r;
+    return ax==="z" ? [x+c, y+s, z+t] : ax==="x" ? [x+t, y+c, z+s] : [x+c, y+t, z+s]; };
+  const N = ang => { const c = Math.cos(ang), s = Math.sin(ang); return ax==="z" ? [c,s,0] : ax==="x" ? [0,c,s] : [c,0,s]; };
+  const A = ax==="z" ? [0,0,1] : ax==="x" ? [1,0,0] : [0,1,0];
+  const C0 = ax==="z" ? [x,y,z-len/2] : ax==="x" ? [x-len/2,y,z] : [x,y-len/2,z];
+  const C1 = ax==="z" ? [x,y,z+len/2] : ax==="x" ? [x+len/2,y,z] : [x,y+len/2,z];
+  const push = (p,q) => a.push(p[0],p[1],p[2], q[0],q[1],q[2], col[0],col[1],col[2]);
+  const nB = A.map(v=>-v);
+  for(let i=0;i<n;i++){
+    const a0 = i/n*2*Math.PI, a1 = (i+1)/n*2*Math.PI;
+    const p00 = P(a0,-len/2), p01 = P(a0,len/2), p10 = P(a1,-len/2), p11 = P(a1,len/2), n0 = N(a0), n1 = N(a1);
+    push(p00,n0); push(p10,n1); push(p11,n1); push(p00,n0); push(p11,n1); push(p01,n0);
+    push(C1,A); push(p01,A); push(p11,A); push(C0,nB); push(p10,nB); push(p00,nB);
+  }
+}
+// a flat panel through four corners; out is roughly which way it faces (for the lighting)
+function quad(a, p0,p1,p2,p3, col, out){
+  const u = [p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]], v = [p2[0]-p0[0],p2[1]-p0[1],p2[2]-p0[2]];
+  let n = [u[1]*v[2]-u[2]*v[1], u[2]*v[0]-u[0]*v[2], u[0]*v[1]-u[1]*v[0]]; const l = Math.hypot(...n)||1; n = n.map(q=>q/l);
+  if(out && n[0]*out[0]+n[1]*out[1]+n[2]*out[2] < 0) n = n.map(q=>-q);
+  for(const p of [p0,p1,p2,p0,p2,p3]) a.push(p[0],p[1],p[2], n[0],n[1],n[2], col[0],col[1],col[2]);
+}
+// copy a mesh shifted along z, optionally turned end for end
+function placed(src, dz, flip){
+  const o = [], f = flip ? -1 : 1;
+  for(let i=0;i<src.length;i+=9) o.push(src[i]*f, src[i+1], src[i+2]*f+dz, src[i+3]*f, src[i+4], src[i+5]*f, src[i+6], src[i+7], src[i+8]);
+  return o;
+}
+
+const LV = {black:[.16,.16,.17], brgreen:[.06,.29,.17], lner:[.25,.5,.2], gwr:[.07,.31,.16], crimson:[.43,.08,.1],
+  garter:[.12,.21,.44], ner:[.3,.47,.24], blue:[.14,.29,.5], hunslet:[.12,.24,.48], rfgrey:[.56,.58,.6], ews:[.46,.09,.13],
+  maroon:[.4,.08,.11], lime:[.5,.64,.3], ltgreen:[.28,.5,.33], white:[.88,.88,.84], red:[.75,.12,.1], gold:[.85,.64,.18],
+  cream:[.9,.82,.55], orange:[.85,.45,.15]};
+// Steam: wheel arrangement, coupled wheel diameter D (m), engine and tender lengths over buffers (m),
+// boiler radius R, type (tender / tank / saddle / pannier), livery and lining, and the class's features.
+const STEAM_MODELS = {
+  wd:       {arr:"0-6-0", type:"saddle",  D:1.29, eng:9.5,  R:.70, col:LV.black},
+  pannier:  {arr:"0-6-0", type:"pannier", D:1.32, eng:9.6,  R:.66, col:LV.gwr, gwr:true, belp:true},
+  ivatt:    {arr:"2-6-2", type:"tank",    D:1.52, eng:11.3, R:.68, col:LV.black, line:LV.red},
+  j27:      {arr:"0-6-0", type:"tender",  D:1.39, eng:9.6,  tend:6.9, R:.72, col:LV.black},
+  "4mt":    {arr:"2-6-4", type:"tank",    D:1.73, eng:13.6, R:.78, col:LV.black, line:LV.red},
+  "8f":     {arr:"2-8-0", type:"tender",  D:1.43, eng:12.3, tend:7.8, R:.8, col:LV.black, belp:true},
+  b1:       {arr:"4-6-0", type:"tender",  D:1.88, eng:12.4, tend:8.1, R:.8, col:LV.lner, line:LV.white},
+  black5:   {arr:"4-6-0", type:"tender",  D:1.83, eng:12.7, tend:8.1, R:.8, col:LV.black, line:LV.red, belp:true},
+  hunslet:  {arr:"0-6-0", type:"saddle",  D:1.08, eng:8.2,  R:.6,  col:LV.hunslet, line:LV.cream, brass:true},
+  jinty:    {arr:"0-6-0", type:"tank",    D:1.40, eng:9.7,  R:.68, col:LV.black, belp:true},
+  ly27:     {arr:"0-6-0", type:"tender",  D:1.55, eng:9.6,  tend:6.6, R:.7, col:LV.black},
+  "2mt78":  {arr:"2-6-0", type:"tender",  D:1.52, eng:11.0, tend:7.0, R:.7, col:LV.black, line:LV.red, rp:1.75},
+  crab:     {arr:"2-6-0", type:"tender",  D:1.68, eng:12.1, tend:7.8, R:.8, col:LV.black, highCyl:true},
+  k1:       {arr:"2-6-0", type:"tender",  D:1.57, eng:12.2, tend:7.7, R:.78, col:LV.lner, line:LV.white},
+  "5mt":    {arr:"4-6-0", type:"tender",  D:1.88, eng:13.0, tend:8.3, R:.82, col:LV.black, line:LV.red, defl:true, rp:1.8},
+  s160:     {arr:"2-8-0", type:"tender",  D:1.45, eng:11.4, tend:7.6, R:.8, col:LV.black, sand:true, rp:1.8},
+  "g-scot": {arr:"4-6-2", type:"tender",  D:2.03, eng:15.1, tend:8.3, R:.9, col:LV.lner, line:LV.white, defl:true},
+  "g-a4":   {arr:"4-6-2", type:"tender",  D:2.03, eng:15.6, tend:8.3, R:.9, col:LV.garter, wheel:LV.red, stream:"a4"},
+  "g-k4":   {arr:"2-6-0", type:"tender",  D:1.68, eng:12.3, tend:7.7, R:.78, col:LV.lner, line:LV.white},
+  "g-9f":   {arr:"2-10-0",type:"tender",  D:1.52, eng:14.0, tend:8.6, R:.85, col:LV.black, defl:true, rp:1.85},
+  "g-q6":   {arr:"0-8-0", type:"tender",  D:1.40, eng:11.6, tend:7.3, R:.8, col:LV.black},
+  "g-ivatt4":{arr:"2-6-0",type:"tender",  D:1.60, eng:11.6, tend:7.4, R:.78, col:LV.black, rp:1.95},
+  "g-tornado":{arr:"4-6-2",type:"tender", D:2.03, eng:15.3, tend:8.5, R:.9, col:LV.lner, line:LV.white, defl:true},
+  "g-duchess":{arr:"4-6-2",type:"tender", D:2.06, eng:16.5, tend:8.5, R:.92, col:LV.crimson, line:LV.gold, belp:true},
+  "g-royalscot":{arr:"4-6-0",type:"tender",D:2.06, eng:14.5, tend:8.1, R:.88, col:LV.brgreen, line:LV.orange, defl:true, belp:true},
+  "g-greenarrow":{arr:"2-6-2",type:"tender",D:1.88, eng:14.4, tend:8.3, R:.88, col:LV.lner, line:LV.white},
+  "g-bahamas":{arr:"4-6-0",type:"tender", D:2.06, eng:13.9, tend:7.9, R:.85, col:LV.crimson, line:LV.gold, belp:true},
+  "g-braunton":{arr:"4-6-2",type:"tender",D:1.88, eng:14.3, tend:7.6, R:.85, col:LV.brgreen, stream:"bulleid"},
+  "g-duke": {arr:"4-6-2", type:"tender",  D:1.88, eng:15.9, tend:8.5, R:.9, col:LV.brgreen, line:LV.orange, defl:true, rp:1.85},
+  "g-p3":   {arr:"0-6-0", type:"tank",    D:1.25, eng:9.0,  R:.65, col:LV.ner, line:LV.white}
+};
+// Diesels: body style (cab ends, nose ends, hood with a single cab, the Western's curves), length, wheels
+// (Bo-Bo, Co-Co, A1A-A1A, 1Co-Co1 or coupled rods), livery, lower band and stripe, warning panels.
+const DIESEL_MODELS = {
+  c14:  {style:"hood", cab:"mid", len:10.7, bogie:"rod", col:LV.brgreen, yellow:"panel"},
+  c25:  {style:"cab",  len:15.4, bogie:"Bo",  col:LV.brgreen, col2:LV.ltgreen, yellow:"panel"},
+  c31:  {style:"cab",  len:17.3, bogie:"A1A", col:LV.blue, yellow:"full", round:true},
+  c37:  {style:"nose", len:18.8, bogie:"Co",  col:LV.blue, yellow:"full", nose:1.9},
+  c45:  {style:"nose", len:20.7, bogie:"1Co", col:LV.brgreen, yellow:"panel", nose:1.8, head:"split"},
+  c40:  {style:"nose", len:21.2, bogie:"1Co", col:LV.brgreen, yellow:"panel", nose:1.9, head:"discs"},
+  c08:  {style:"hood", cab:"end", len:8.9, bogie:"rod", col:LV.brgreen, yellow:"wasp"},
+  c20:  {style:"hood", cab:"end", len:14.3, bogie:"Bo", col:LV.brgreen, yellow:"panel"},
+  c24:  {style:"cab",  len:15.4, bogie:"Bo",  col:LV.brgreen, yellow:"panel", stripe:LV.white},
+  c26:  {style:"cab",  len:15.5, bogie:"Bo",  col:LV.brgreen, yellow:"panel"},
+  c33:  {style:"cab",  len:15.5, bogie:"Bo",  col:LV.brgreen, yellow:"panel", stripe:LV.white},
+  c47:  {style:"cab",  len:19.4, bogie:"Co",  col:LV.brgreen, col2:LV.ltgreen, yellow:"panel", round:true},
+  c46:  {style:"nose", len:20.7, bogie:"1Co", col:LV.brgreen, yellow:"panel", nose:1.8, head:"split"},
+  "g-deltic": {style:"nose", len:21.2, bogie:"Co", col:LV.brgreen, col2:LV.lime, yellow:"panel", nose:1.6},
+  "g-western":{style:"western", len:20.7, bogie:"Co", col:LV.maroon, yellow:"panel"},
+  "g-c50":    {style:"cab", len:20.9, bogie:"Co", col:LV.blue, yellow:"full", roof:[.5,.52,.53]},
+  "g-c33":    {style:"cab", len:15.5, bogie:"Bo", col:LV.blue, yellow:"full"},
+  "g-c20":    {style:"hood", cab:"end", len:28.6, bogie:"Bo", col:LV.blue, yellow:"full", pair:true},
+  "g-c47":    {style:"cab", len:19.4, bogie:"Co", col:LV.blue, yellow:"full", round:true},
+  "g-d213":   {style:"nose", len:21.2, bogie:"1Co", col:LV.brgreen, yellow:"panel", nose:1.9, head:"discs"},
+  "g-c56":    {style:"cab", len:19.4, bogie:"Co", col:LV.rfgrey, yellow:"full", stripe:LV.red},
+  "g-c60":    {style:"cab", len:21.3, bogie:"Co", col:LV.ews, yellow:"full", stripe:LV.gold},
+  "g-c26":    {style:"cab", len:31.0, bogie:"Bo", col:LV.brgreen, yellow:"panel", pair:true},
+  "g-hymek":  {style:"cab", len:15.6, bogie:"Bo", col:LV.brgreen, col2:LV.ltgreen, stripe:LV.white, yellow:"panel"}
+};
+function locoModel(key){
+  const s = STEAM_MODELS[key]; if(s) return {kind:"steam", len:s.eng + (s.tend||0), col:s.col, mesh:()=>steamMesh(s)};
+  const d = DIESEL_MODELS[key]; if(d) return {kind:"diesel", len:d.len, col:d.col, mesh:()=>dieselMesh(d)};
+  return {kind:"diesel", len:15.5, col:LV.brgreen, mesh:()=>dieselMesh({style:"cab", len:15.5, bogie:"Bo", col:LV.brgreen, yellow:"panel"})};
+}
+
+function steamMesh(m){
+  const a = [], B = [.07,.07,.08], RED = [.62,.1,.08], STEEL = [.66,.66,.64], BRASS = [.8,.62,.24], COPPER = [.74,.4,.2];
+  const GLASS = [.13,.16,.19], COAL = [.05,.05,.05], col = m.col, wc = m.wheel || col;
+  const Le = m.eng, Lt = m.tend||0, L = Le + Lt, zf = L/2, zr = zf - Le, zm = (zf+zr)/2;
+  const rail = 0.53, yRP = m.rp || 1.6, R = m.R, yB = Math.max(yRP + R + 0.1, 2.45);
+  const [nl, nc, nt] = m.arr.split("-").map(n=>Number(n)/2);
+  const tank = m.type!=="tender", rC = m.D/2, rS = 0.46;
+  const zCabB = zr + (tank ? 1.6 : 0.05), zCabF = zCabB + (Le > 12 ? 2.6 : 2.3);
+  const zs0 = zf - 0.7;                                // smokebox front
+  // wheels, laid out from the front and squeezed into the wheelbase there is room for
+  const ax = []; let z = zf - (nl ? 1.4 : rC + 0.8);
+  for(let i=0;i<nl;i++){ ax.push({z, r:rS}); z -= 2.0; }
+  if(nl) z -= rC - rS - 0.6;
+  for(let i=0;i<nc;i++){ ax.push({z, r:rC, cpl:true}); z -= m.D + 0.25; }
+  z += m.D + 0.25;
+  if(nt){ z -= rC + 1.0; for(let i=0;i<nt;i++){ ax.push({z, r:rS*1.08}); z -= 1.5; } z += 1.5; }
+  const room = ax[0].z - (zr + (tank ? 1.0 : 1.3)), span = ax[0].z - z;
+  if(span > room){ const z0 = ax[0].z; ax.forEach(w=>w.z = z0 - (z0 - w.z)*room/span); }
+  const cpl = ax.filter(w=>w.cpl);
+  // frames, running plate and valance
+  box(a, 0, 1.1, zm, 1.2, 0.9, Le-0.5, B);
+  box(a, 0, yRP, zm, 2.62, 0.07, Le-0.25, B);
+  for(const sx of [1.3,-1.3]) box(a, sx, yRP-0.1, zm, 0.05, 0.22, Le-0.3, col);
+  ax.forEach(w=>{
+    const y = rail + w.r;
+    for(const sx of [0.74,-0.74]){ cyl(a,"x", sx, y, w.z, w.r, 0.13, wc, 18); cyl(a,"x", sx*1.07, y, w.z, w.r*0.2, 0.07, B, 8); }
+    if(w.cpl && y + w.r > yRP + 0.02){ const h = y + w.r + 0.07 - yRP; for(const sx of [0.92,-0.92]) box(a, sx, yRP + h/2, w.z, 0.3, h, w.r*1.85, col); }
+  });
+  if(cpl.length > 1) for(const sx of [0.87,-0.87]) box(a, sx, rail + rC*0.9, (cpl[0].z + cpl[cpl.length-1].z)/2, 0.06, 0.12, cpl[0].z - cpl[cpl.length-1].z + 0.3, STEEL);
+  // cylinders and the connecting rod
+  const zcy = Math.min(zf - 0.9, cpl[0].z + rC + 0.75), ycy = rail + rC + (m.highCyl ? 0.55 : 0.08);
+  for(const sx of [1.02,-1.02]){
+    cyl(a,"z", sx, ycy, zcy, 0.33, 1.1, m.highCyl ? col : B, 14);
+    const zc2 = cpl[Math.min(1, cpl.length-1)].z;
+    box(a, sx*0.95, (ycy + rail + rC)/2, (zcy + zc2)/2, 0.07, 0.1, zcy - zc2, STEEL);
+  }
+  // buffer beams and buffers
+  const beam = (zz, s)=>{ box(a, 0, yRP-0.22, zz, 2.6, 0.5, 0.24, RED);
+    for(const sx of [0.87,-0.87]){ cyl(a,"z", sx, yRP-0.22, zz + s*0.3, 0.16, 0.42, B, 10); cyl(a,"z", sx, yRP-0.22, zz + s*0.52, 0.22, 0.05, STEEL, 12); }
+    box(a, 0, yRP-0.3, zz + s*0.25, 0.16, 0.16, 0.3, B); };
+  beam(zf-0.12, 1);
+  if(tank) beam(zr+0.12, -1); else beam(-L/2+0.12, -1);
+  box(a, 0, yRP+0.2, zf-0.3, 0.26, 0.3, 0.22, [.86,.86,.82]);     // headlamp
+  // the cab
+  const yRoof = Math.min(4.15, yB + R + 0.6), zcm = (zCabB + zCabF)/2, cl = zCabF - zCabB;
+  for(const sx of [1.27,-1.27]){
+    box(a, sx, (yRP + yRoof)/2, zcm, 0.08, yRoof - yRP, cl, col);
+    box(a, sx*1.035, yRoof-0.62, zCabF-0.55, 0.02, 0.55, 0.75, GLASS);
+    if(m.line){ box(a, sx*1.04, yRP+0.25, zcm, 0.01, 0.05, cl-0.3, m.line); box(a, sx*1.04, yRoof-0.2, zcm, 0.01, 0.05, cl-0.3, m.line); }
+  }
+  box(a, 0, (yRP + yRoof)/2, zCabF, 2.6, yRoof - yRP, 0.08, col);
+  for(const sx of [0.72,-0.72]) box(a, sx, yB + R*0.75, zCabF+0.05, 0.42, 0.38, 0.02, GLASS);
+  box(a, 0, yRoof+0.04, zcm-0.15, 2.72, 0.08, cl+0.5, [.14,.14,.15]); box(a, 0, yRoof+0.11, zcm-0.15, 1.9, 0.07, cl+0.4, [.14,.14,.15]);
+  const zfb = zCabF + (tank && !m.belp ? 1.3 : 2.3);  // firebox ahead of the cab
+  if(m.stream==="a4"){
+    // the wedge front and streamlined casing
+    const zN = zf - 4.4, top = yB + 1.2, w = 1.3, cm = (zCabF + zN)/2;
+    for(const sx of [w,-w]) box(a, sx, (yRP + yB)/2, cm, 0.05, yB - yRP, zN - zCabF, col);
+    cyl(a,"z", 0, yB, cm, w, zN - zCabF, col, 22);
+    const prof = [[zN, top, w],[zN+1.3, top-0.25, 1.28],[zN+2.5, top-0.85, 1.24],[zN+3.4, yB-0.2, 1.18],[zN+4.0, yRP+0.35, 1.08],[zf-0.05, yRP-0.02, 1.0]];
+    for(let i=0;i<prof.length-1;i++){
+      const [z0,t0,w0] = prof[i], [z1,t1,w1] = prof[i+1];
+      quad(a, [-w0,t0,z0],[w0,t0,z0],[w1,t1,z1],[-w1,t1,z1], col, [0,1,0.4]);
+      for(const s of [1,-1]) quad(a, [s*w0,yRP-0.3,z0],[s*w0,t0,z0],[s*w1,t1,z1],[s*w1,yRP-0.3,z1], col, [s,0,0]);
+    }
+    box(a, 0, top+0.02, zN+0.4, 0.34, 0.07, 0.9, B);                 // the chimney slot
+    box(a, 0, yRP+0.12, zf-0.2, 2.0, 0.2, 0.06, [.85,.85,.85]);        // stainless trim
+  } else if(m.stream==="bulleid"){
+    const cz0 = zCabF, cz1 = zf - 0.55, cm = (cz0+cz1)/2;
+    box(a, 0, (yRP + yB+0.05)/2, cm, 2.56, yB + 0.05 - yRP, cz1 - cz0, col);
+    cyl(a,"z", 0, yB+0.05, cm, 1.28, cz1 - cz0, col, 22);
+    box(a, 0, yB+0.3, cz1+0.03, 1.9, 1.5, 0.05, B);                    // the smoke-lifting cowl
+    cyl(a,"z", 0, yB+0.1, cz1+0.06, 0.38, 0.04, [.85,.85,.85], 16);    // the "Southern" roundel
+    for(const sx of [1.3,-1.3]) box(a, sx*1.002, yB-0.25, cm, 0.01, 0.06, cz1 - cz0 - 0.4, LV.cream);
+  } else {
+    // smokebox, boiler and firebox
+    cyl(a,"z", 0, yB, zs0-0.75, R+0.05, 1.5, B, 20);
+    cyl(a,"z", 0, yB, zs0+0.02, R*0.86, 0.06, [.13,.13,.14], 20);
+    box(a, 0, yB, zs0+0.07, 0.07, 0.07, 0.07, STEEL);
+    box(a, 0, (yRP + yB)/2, zs0-0.75, 1.3, yB - yRP, 1.2, B);
+    const zb0 = zs0 - 1.5;
+    cyl(a,"z", 0, yB, (zb0 + zfb)/2, R, zb0 - zfb, col, 20);
+    if(m.line) for(const zz of [zb0-0.05, (zb0+zfb)/2, zfb+0.05]) cyl(a,"z", 0, yB, zz, R+0.012, 0.05, m.line, 20);
+    if(m.belp) box(a, 0, yB+0.06, (zCabF + zfb)/2, 2*R+0.12, 2*R+0.12, zfb - zCabF, col);
+    else cyl(a,"z", 0, yB, (zCabF + zfb)/2, R+0.02, zfb - zCabF, col, 20);
+    box(a, 0, (yRP + yB-R)/2, (zCabF + zfb)/2, 1.25, yB - R - yRP + 0.2, zfb - zCabF, B);
+    // chimney, dome and safety valves
+    const ch = Math.max(0.32, 4.3 - (yB + R)), zch = zs0 - 0.7;
+    cyl(a,"y", 0, yB + R + ch/2 - 0.08, zch, 0.25, ch, B, 14);
+    cyl(a,"y", 0, yB + R + ch - 0.1, zch, 0.31, 0.12, m.gwr ? COPPER : B, 14);
+    const dh = Math.max(0.2, 4.1 - (yB + R)), zd = m.type==="saddle" ? zb0 - 0.4 : (zb0 + zfb)/2 + 0.3;
+    if(m.type!=="saddle" || m.brass) cyl(a,"y", 0, yB + R + dh/2 - 0.08, zd, 0.34, dh, m.brass ? BRASS : col, 16);
+    if(m.sand) cyl(a,"y", 0, yB + R + dh/2 - 0.1, zd + 1.3, 0.3, dh*0.85, col, 14);
+    cyl(a,"y", 0, yB + R + 0.12, zfb - 0.35, m.gwr ? 0.22 : 0.12, m.gwr ? 0.42 : 0.3, m.gwr ? BRASS : STEEL, 12);
+    // handrails
+    for(const sx of [R+0.12, -R-0.12]) box(a, sx, yB+0.25, (zb0 + zCabF)/2, 0.03, 0.03, zb0 - zCabF, STEEL);
+    if(m.defl) for(const sx of [1.22,-1.22]) box(a, sx, (yRP + yB + R*0.5)/2, zs0-0.75, 0.05, yB + R*0.5 - yRP, 1.9, col);
+  }
+  // tanks and bunker on a tank engine, or the tender behind a tender engine
+  if(m.type==="tank"){
+    const t0 = zCabF, t1 = zs0 - 1.7, tm = (t0+t1)/2, ty1 = yB + 0.2;
+    for(const sx of [1.0,-1.0]){ box(a, sx, (yRP + ty1)/2, tm, 0.62, ty1 - yRP, t1 - t0, col);
+      if(m.line) box(a, sx*1.31, (yRP+ty1)/2, tm, 0.01, 0.05, t1 - t0 - 0.3, m.line); }
+  } else if(m.type==="saddle"){
+    const t0 = zCabF, t1 = zs0 - 1.6, tm = (t0+t1)/2, tr = R + 0.4;
+    box(a, 0, (yRP + 0.35 + yB)/2, tm, 2*tr, yB - yRP - 0.35, t1 - t0, col);
+    cyl(a,"z", 0, yB, tm, tr, t1 - t0, col, 22);
+    if(m.line) for(const sx of [tr+0.005, -tr-0.005]) box(a, sx, yB-0.3, tm, 0.01, 0.05, t1 - t0 - 0.4, m.line);
+  } else if(m.type==="pannier"){
+    const t0 = zCabF, t1 = zs0 - 1.6, tm = (t0+t1)/2;
+    for(const sx of [R+0.29, -R-0.29]) box(a, sx, yB+0.12, tm, 0.56, 1.1, t1 - t0, col);
+  }
+  if(tank){
+    const by1 = yB + 0.45, bz = (zr + 0.15 + zCabB)/2;
+    box(a, 0, (yRP + by1)/2, bz, 2.6, by1 - yRP, zCabB - zr - 0.15, col);
+    box(a, 0, by1 + 0.12, bz + 0.05, 2.2, 0.25, zCabB - zr - 0.45, COAL);
+    box(a, 0, (by1 + yRoof)/2, zCabB, 2.6, yRoof - by1, 0.08, col);
+    for(const sx of [0.7,-0.7]) box(a, sx, (by1 + yRoof)/2, zCabB-0.05, 0.38, 0.36, 0.02, GLASS);
+  } else {
+    const t1 = zr - 0.05, t0 = -L/2 + 0.25, tm = (t0 + t1)/2, tl = t1 - t0, ty1 = 3.35;
+    box(a, 0, 1.15, tm, 1.4, 0.6, tl, B);
+    const n = Lt > 7.9 ? 3 : Lt > 7.2 ? 3 : 2, step = (tl - 2.2)/(n-1||1);
+    for(let i=0;i<n;i++){ const zz = t1 - 1.1 - i*step;
+      for(const sx of [0.74,-0.74]) cyl(a,"x", sx, rail + 0.5, zz, 0.5, 0.12, wc, 16);
+      for(const sx of [1.13,-1.13]) box(a, sx, rail + 0.5, zz, 0.16, 0.36, 0.4, B); }
+    for(const sx of [1.12,-1.12]) box(a, sx, rail + 0.55, tm, 0.06, 0.28, tl - 0.6, B);
+    box(a, 0, (yRP - 0.15 + ty1)/2, tm, 2.62, ty1 - yRP + 0.15, tl, col);
+    box(a, 0, ty1 + 0.05, tm, 2.74, 0.1, tl, col);
+    box(a, 0, ty1 + 0.18, tm + 0.6, 2.3, 0.28, tl - 2.2, COAL);
+    if(m.line) for(const sx of [1.311,-1.311]){ box(a, sx, yRP+0.15, tm, 0.01, 0.05, tl-0.4, m.line); box(a, sx, ty1-0.18, tm, 0.01, 0.05, tl-0.4, m.line); }
+  }
+  return a;
+}
+
+function dieselMesh(m){
+  if(m.pair){   // two locos coupled as one, cabs outwards
+    const half = dieselMesh({...m, pair:false, len:m.len/2});
+    return [...placed(half, m.len/4, true), ...placed(half, -m.len/4, false)].map((v,i)=>v);
+  }
+  const a = [], L = m.len, h = L/2, B = [.07,.07,.08], Y = [.93,.74,.08], G = [.12,.15,.19], col = m.col;
+  const ROOF = m.roof || [.3,.31,.32], GRILLE = [.2,.21,.22], WH = [.9,.9,.86];
+  const yb0 = 1.45, yb1 = 3.95;
+  // underframe, buffer beams and buffers
+  box(a, 0, 1.28, 0, 2.6, 0.32, L-0.3, B);
+  for(const s of [1,-1]){ const zz = s*(h-0.12);
+    box(a, 0, 1.22, zz, 2.62, 0.48, 0.24, m.yellow==="full" ? Y : B);
+    for(const sx of [0.87,-0.87]){ cyl(a,"z", sx, 1.2, zz + s*0.3, 0.16, 0.42, B, 10); cyl(a,"z", sx, 1.2, zz + s*0.52, 0.22, 0.05, [.6,.6,.58], 12); } }
+  // bogies or coupled wheels
+  const wheelset = (z, r)=>{ for(const sx of [0.76,-0.76]) cyl(a,"x", sx, 0.53 + r, z, r, 0.12, B, 14); for(const sx of [1.16,-1.16]) box(a, sx, 0.53 + r, z, 0.12, 0.34, 0.4, [.24,.24,.25]); };
+  let clear = h - 1;
+  if(m.bogie==="rod"){
+    const r = 0.62, sp = 1.45, zc = m.cab==="end" ? 0.5 : 0;
+    for(let i=-1;i<=1;i++) wheelset(zc + i*sp, r);
+    for(const sx of [0.88,-0.88]) box(a, sx, 0.53 + r*0.95, zc, 0.06, 0.12, 2*sp + 0.3, [.6,.6,.58]);
+    box(a, 0, 1.0, zc, 1.3, 0.8, 2*sp + 1.6, B);
+  } else {
+    const n = m.bogie==="Bo" ? 2 : 3, sp = m.bogie==="Bo" ? 2.6 : 1.95, inset = m.bogie==="1Co" ? 4.1 : n===2 ? 3.6 : 3.4;
+    for(const s of [1,-1]){
+      const zc = s*(h - inset);
+      box(a, 0, 1.0, zc, 2.1, 0.16, (n-1)*sp + 1.4, B);
+      for(const sx of [1.07,-1.07]) box(a, sx, 0.98, zc, 0.12, 0.62, (n-1)*sp + 1.2, B);
+      for(let i=0;i<n;i++) wheelset(zc + (i - (n-1)/2)*sp, 0.5);
+      if(m.bogie==="1Co") wheelset(zc + s*((n-1)*sp/2 + 1.05), 0.45);
+      if(m.bogie==="A1A"){ /* the middle axle is unpowered: no change to the look */ }
+      clear = Math.min(clear, h - inset - ((n-1)*sp/2 + 0.9));
+    }
+    if(clear > 0.6) box(a, 0, 0.98, 0, 1.9, 0.62, 2*clear, B);                       // fuel tank
+  }
+  const bands = (z0, z1)=>{ const zm = (z0+z1)/2, l = z1 - z0;
+    if(m.col2) box(a, 0, yb0 + 0.42, zm, 2.77, 0.78, l, m.col2);
+    if(m.stripe) box(a, 0, m.col2 ? yb0 + 0.84 : yb0 + 0.5, zm, 2.78, 0.07, l, m.stripe); };
+  const endFace = (zz, s, y0, y1, w, wins)=>{   // warning panel, windows and lamps on one end
+    if(m.yellow==="full") box(a, 0, (y0+y1)/2, zz + s*0.01, w + 0.01, y1 - y0, 0.02, Y);
+    else if(m.yellow==="panel") box(a, 0, y0 + 0.65, zz + s*0.012, w*0.8, 0.9, 0.02, Y);
+    else if(m.yellow==="wasp") for(let i=0;i<4;i++) box(a, 0, y0 + 0.2 + i*0.36, zz + s*0.012, w*0.95, 0.18, 0.02, i%2 ? B : Y);
+    if(wins) for(const sx of [0.62,-0.62]) box(a, sx, y1 - 0.5, zz + s*0.025, 0.86, 0.55, 0.02, G);
+    for(const sx of [0.8,-0.8]) box(a, sx, y0 + 0.22, zz + s*0.03, 0.18, 0.16, 0.03, WH); };
+  if(m.style==="hood"){
+    const cl = 2.5, cz = m.cab==="end" ? -h + 0.3 + cl/2 : -0.9, hz0 = -h + 0.3, hz1 = h - 0.3, hy1 = 3.4;
+    box(a, 0, yb0, 0, 2.7, 0.08, L-0.3, B);                                        // walkway
+    // hoods either side of the cab
+    const hood = (z0, z1, s)=>{ if(z1 - z0 < 0.5) return; const zm = (z0+z1)/2;
+      box(a, 0, (yb0 + hy1)/2, zm, 2.05, hy1 - yb0, z1 - z0, col); box(a, 0, hy1 + 0.04, zm, 1.85, 0.08, z1 - z0, ROOF);
+      for(let zz = z0 + 0.8; zz < z1 - 0.6; zz += 1.1) for(const sx of [1.03,-1.03]) box(a, sx, (yb0 + hy1)/2 + 0.2, zz, 0.02, 1.0, 0.7, GRILLE);
+      const ze = s > 0 ? z1 : z0; endFace(ze, s, yb0, hy1, 2.05, false); box(a, 0, hy1 - 0.6, ze + s*0.03, 1.2, 0.7, 0.02, GRILLE); };
+    hood(cz + cl/2, hz1, 1); hood(hz0, cz - cl/2, -1);
+    box(a, 0, (yb0 + yb1)/2, cz, 2.74, yb1 - yb0, cl, col); box(a, 0, yb1 + 0.06, cz, 2.8, 0.1, cl + 0.2, ROOF);
+    for(const s of [1,-1]){ for(const sx of [0.7,-0.7]) box(a, sx, yb1 - 0.45, cz + s*(cl/2 + 0.01), 0.75, 0.5, 0.02, G);
+      for(const sx of [1.38,-1.38]) box(a, sx, yb1 - 0.5, cz + s*0.55, 0.02, 0.6, 0.85, G); }
+    if(m.cab==="end") endFace(-h + 0.3, -1, yb0, yb1, 2.74, true);
+    bands(cz - cl/2, cz + cl/2);
+  } else {
+    const nl = m.style==="nose" ? (m.nose || 1.8) : 0, bz = h - 0.25 - nl;
+    box(a, 0, (yb0 + yb1)/2, 0, 2.74, yb1 - yb0, 2*bz, col);
+    box(a, 0, yb1 + 0.08, 0, 2.5, 0.16, 2*bz - 0.3, ROOF);
+    if(m.style==="western" || m.round) cyl(a,"z", 0, yb1 - 1.05, 0, 1.4, 2*bz - 0.1, m.style==="western" ? col : ROOF, 22);
+    for(const zz of [-L*0.17, L*0.17]) cyl(a,"y", 0, yb1 + 0.2, zz, 0.42, 0.08, B, 14);         // roof fans
+    for(let zz = -bz + 2.8; zz < bz - 2.6; zz += 1.6) for(const sx of [1.375,-1.375]) box(a, sx, yb1 - 0.6, zz, 0.02, 0.55, 1.1, GRILLE);
+    bands(-h + 0.25, h - 0.25);
+    for(const s of [1,-1]){
+      for(const sx of [1.38,-1.38]) box(a, sx, yb1 - 0.55, s*(bz - 0.7), 0.02, 0.55, 0.75, G);
+      if(nl){
+        const nz = s*(h - 0.25 - nl/2), ny1 = yb0 + 1.75;
+        box(a, 0, (yb0 + ny1)/2, nz, 2.68, ny1 - yb0, nl, col);
+        box(a, 0, ny1 + 0.03, nz, 2.5, 0.06, nl, ROOF);
+        endFace(s*(h - 0.25), s, yb0, ny1, 2.68, false);
+        endFace(s*bz, s, ny1, yb1, 2.74, true);
+        if(m.head==="split") for(const sx of [0.55,-0.55]) box(a, sx, ny1 - 0.25, s*(h - 0.24), 0.7, 0.3, 0.02, B);
+        if(m.head==="discs") for(const [dx,dy] of [[-0.75,0.5],[0.75,0.5],[0,1.1],[0,0.5]]) cyl(a,"z", dx, yb0 + dy + 0.2, s*(h - 0.22), 0.16, 0.03, WH, 12);
+      } else {
+        endFace(s*bz, s, yb0, yb1, 2.74, true);
+        box(a, 0, yb1 - 0.05, s*(bz + 0.02), 0.9, 0.22, 0.03, B);                              // headcode box
+      }
+    }
+  }
+  return a;
+}
+
 function yardSize(){
   const cv = document.getElementById("ygl"), lab = document.getElementById("ylab");
   const dpr = Math.min(window.devicePixelRatio||1, 1.5);
@@ -3323,8 +3660,9 @@ function yDraw(){
   gl.clearColor(.62,.76,.88,1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   // the driver's seat: in the shunter's cab, looking along the bonnet
   const p = vPose(yd.sh), fwd = [Math.sin(p.yaw), Math.cos(p.yaw)];
-  const eye = [p.x - fwd[0]*2.9, 3.55, p.z - fwd[1]*2.9];
-  const yaw = p.yaw + yd.look, dir = [Math.sin(yaw)*Math.cos(yd.pitch), Math.sin(yd.pitch), Math.cos(yaw)*Math.cos(yd.pitch)];
+  let eye = [p.x - fwd[0]*2.9, 3.55, p.z - fwd[1]*2.9];
+  const yaw = p.yaw + yd.look; let dir = [Math.sin(yaw)*Math.cos(yd.pitch), Math.sin(yd.pitch), Math.cos(yaw)*Math.cos(yd.pitch)];
+  if(yd.cam){ eye = yd.cam.eye; dir = yd.cam.dir; }
   const vp = m4mul(m4persp(1.2, cv.width/cv.height, 0.25, 900), m4look(eye, dir));
   gl.uniformMatrix4fv(YGL.vp, false, vp);
   gl.uniform3f(YGL.fog, .62,.76,.88);
@@ -3337,7 +3675,7 @@ function yDraw(){
     gl.drawArrays(gl.TRIANGLES, 0, mesh.count);
   };
   draw(YGL.scene, m4model(0,0,0));
-  yd.all.forEach(v=>{ const q = vPose(v); draw(v.mesh, m4model(q.x, q.z, q.yaw)); });
+  yd.all.forEach(v=>{ const q = vPose(v); draw(v.mesh, m4model(q.x, q.z, q.yaw + (v.flip ? Math.PI : 0))); });   // engines face the shunter
   // name boards over each vehicle
   const lab = document.getElementById("ylab"), g = lab.getContext("2d");
   g.clearRect(0,0,lab.width,lab.height);
