@@ -100,6 +100,9 @@ you drive it.
 | Hand over | H or Esc, or ✋ Hand over |
 | Whistle or horn | Q (hold), or hold 📯 |
 | Sound on or off | M, or 🔊 Sound |
+| Uncouple (running round) | U, or 🔗 Uncouple |
+| Reverser (running round) | R, or ⇄ Reverser |
+| Points (running round) | P, or 🔀 Points: the set nearer the engine |
 
 Stop with the front of the train near the stop board at each booked call; the
 passengers board, and you get the right away at the booked time. At the loops
@@ -109,8 +112,33 @@ platforms, out on the line, and crossing you at the loops on the loop road. They
 keep to their booked times, but each waits at its loop while you hold the single
 line section it wants, so if you run late they're held for you (and run late
 themselves). You hear them rumble past, and whistle or sound their horns as they
-leave a station near you. At the end of the line the engine runs round its train (or
-you change ends of a DMU). Arrive on time on average, with no signal passed at
+leave a station near you.
+
+**Running round.** Wherever your train turns back (both termini, the far end of
+a shuttle, and the end of a one-way trip out) you run the engine round it
+yourself:
+
+1. Uncouple (U).
+2. Draw forward over the points at that end of the loop. At Ravensgill and
+   Moorend the loop rejoins the main line beyond the platform, and a short
+   headshunt runs on to the buffer stops. Stop clear of the points.
+3. Set the points for the loop (P), reverse (R) and run back along the loop
+   past your coaches.
+4. Set the far points for the loop before you run out over them. Running
+   through points set against you counts against you.
+5. Once you're clear of the far points, set them back to the main line,
+   reverse, and buffer up gently (under 2 mph) to the other end of the coaches
+   to couple on.
+
+A light engine is held to 15 mph. Each set of points has a ground frame and a
+white point indicator beside the line. The engines face up the line: they
+aren't turned, so trains coming down from Moorend run tender first (bunker
+first on a tank engine). The timetabled trains you meet do the same: once
+they've stood at Moorend long enough to run round, they come down tender
+first. With the Moorend turntable, steam engines are turned and run chimney
+first both ways. A DMU simply changes ends.
+
+Arrive on time on average, with no signal passed at
 danger, no overruns and no long spells over the 25 mph limit, for ★★★ (+2
 reputation). Hand over at any time and another driver finishes the day.
 
