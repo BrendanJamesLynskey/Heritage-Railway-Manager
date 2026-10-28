@@ -2991,7 +2991,7 @@ function dealCounter(id){
 // coaches stand ready, and the two roads of the engine shed. The job is to fetch the train engine
 // from the shed with the shunter and put it on the front of the coaches.
 // Track is measured in metres along each route; the lead (0..LEAD) is shared by all three.
-const YARD = {lead:75, zone:36, sid:[125,72,72], off:[0, 5.2, 10.4]};
+const YARD = {lead:75, zone:36, sid:[175,72,72], off:[0, 14.6, 19.8]};   // the shed roads leave beyond the platform ends and lie outside the loop platform
 const ROUTE_NAMES = ["Platform road", "Shed road 1", "Shed road 2"];
 const SHED_GAP = 2.5;   // engines stand apart in the shed, so the shunter picks up only the one it buffers up to
 const MPH = 2.237, COUPLE = 0.9, CRASH = 2.3, VMAX = 6.7;   // m/s
@@ -3020,9 +3020,10 @@ function pathPos(r, s){
 }
 // The engine shed over the far end of the two shed roads, and beside it the works extension where engines under
 // overhaul stand on their own road, the bay road, which leaves Shed road 2 just short of the shed doors.
-const SHED = (()=>{ const za = pathPos(2, routeEnd(2) - 50).z, zb = pathPos(2, routeEnd(2) + 3).z, xL = 2.3, xR = 13.3, xE = 21.0, bayX = 16.2;
+const SHED = (()=>{ const za = pathPos(2, routeEnd(2) - 50).z, zb = pathPos(2, routeEnd(2) + 3).z, [, o1, o2] = YARD.off;
+  const xL = o1 - 2.9, xR = o2 + 2.9, xE = o2 + 10.6, bayX = o2 + 5.8, door1 = o1 - 2.05, door2 = o2 + 2.05;   // walls, and the edges of the two doors
   const z0 = pathPos(3, zoneEnd(3)).z + 1, z1 = za - 1.5;
-  return {za, zb, xL, xR, xE, bayX, z0, z1, bayAt:z=>z <= z0 ? 10.4 : z >= z1 ? bayX : 10.4 + (bayX - 10.4)*(1 - Math.cos(Math.PI*(z - z0)/(z1 - z0)))/2}; })();
+  return {za, zb, xL, xR, xE, bayX, door1, door2, z0, z1, bayAt:z=>z <= z0 ? o2 : z >= z1 ? bayX : o2 + (bayX - o2)*(1 - Math.cos(Math.PI*(z - z0)/(z1 - z0)))/2}; })();
 // Ravensgill yard is laid out along the Platform road, which is the main line out of the terminus: yard z runs back from
 // the headshunt to the buffer stops (at z = YB), where the line starts at s = -16. The one Ravensgill serves both the
 // shunting and the drive: the shed and its roads are built into the line's scenery, and the yard draws the line's world.
@@ -3158,9 +3159,9 @@ function startShunt(job, via){
   yd.snd = {voice:sndVoiceStart(sndProfile(sh===shunter ? "c08" : sh.key)), key:sh===shunter ? "c08" : sh.key, run:sndRunStart([]), odo:0, step:0};
   ySndAxles();
   // walls of the engine shed, to walk round on foot
-  { const za = pathPos(2, routeEnd(2) - 50).z, zb = pathPos(2, routeEnd(2) + 3).z, xL = 2.3, xR = 13.3, xm = (xL+xR)/2;
+  { const {za, zb, xL, xR} = SHED, xm = (xL+xR)/2;
     yd.walls = [[xL-0.4, xL+0.4, za-0.4, zb+0.4], [xR-0.4, xR+0.4, za-0.4, zb+0.4], [xL, xR, zb-0.4, zb+0.4],
-                [xL-0.4, 3.15, za-0.4, za+0.4], [xm-0.6, xm+0.6, za-0.4, za+0.4], [12.45, xR+0.4, za-0.4, za+0.4],
+                [xL-0.4, SHED.door1, za-0.4, za+0.4], [xm-0.6, xm+0.6, za-0.4, za+0.4], [SHED.door2, xR+0.4, za-0.4, za+0.4],
                 [SHED.xE-0.4, SHED.xE+0.4, za-0.4, zb+0.4], [xR, SHED.xE, zb-0.4, zb+0.4],   // and the works extension, in through its own door
                 [xR, SHED.bayX-2.1, za-0.4, za+0.4], [SHED.bayX+2.1, SHED.xE+0.4, za-0.4, za+0.4]]; }
   // fold the laptop away and drop into the cab
@@ -3268,7 +3269,7 @@ function ySndVehicle(){
   sndVoiceStop(k.voice); k.voice = sndVoiceStart(sndProfile(key)); k.key = key;
 }
 function yBlocked(x, z){
-  if(x < -22 || x > 22 || z < -15 || z > routeEnd(1) + 30) return true;
+  if(x < -22 || x > SHED.xE + 4 || z < -15 || z > routeEnd(1) + 30) return true;
   if(yd.walls.some(([x0,x1,z0,z1])=>x > x0 && x < x1 && z > z0 && z < z1)) return true;
   return yd.all.some(v=>(v.parts || [v]).some(c=>{
     const q = vPose(v.parts ? {route:v.route, s:v.s + (v.flip ? -c.off : c.off), len:c.len} : v), dx = x - q.x, dz = z - q.z;
@@ -3421,7 +3422,7 @@ function yInfo(){
 }
 function yMap(){
   const c = document.getElementById("ymap"), g = c.getContext("2d"), W = c.width, H = c.height;
-  const zMax = routeEnd(1) + 8, u = z => 14 + z*(W-28)/zMax, v = x => H*0.8 - x*(H/27);
+  const zMax = routeEnd(1) + 8, u = z => 14 + z*(W-28)/zMax, v = x => H*0.86 - x*(H/37);
   g.clearRect(0,0,W,H);
   g.lineCap = "round";
   g.strokeStyle = "rgba(255,255,255,.35)"; g.lineWidth = 4;
@@ -3431,8 +3432,8 @@ function yMap(){
   [1,2,3].forEach(r=>{ const e = pathPos(r, routeEnd(r)); g.fillRect(u(e.z)+1, v(e.x)-9, 5, 18); });
   g.font = "bold 17px Segoe UI, sans-serif"; g.fillStyle = "rgba(255,255,255,.65)";
   const s0 = pathPos(2, routeEnd(2) - 50), s1 = pathPos(3, routeEnd(3) + 3);
-  g.strokeStyle = "rgba(255,255,255,.55)"; g.lineWidth = 2; g.strokeRect(u(s0.z), v(13.3), u(s1.z) - u(s0.z), v(2.3) - v(13.3));
-  g.fillText("Engine shed", u(s0.z) + 6, v(13.3) - 6);
+  g.strokeStyle = "rgba(255,255,255,.55)"; g.lineWidth = 2; g.strokeRect(u(s0.z), v(SHED.xR), u(s1.z) - u(s0.z), v(SHED.xL) - v(SHED.xR));
+  g.fillText("Engine shed", u(s0.z) + 6, v(SHED.xL) + 17);
   // the works bay beside it, with the engines under repair
   g.strokeStyle = "rgba(255,255,255,.35)"; g.lineWidth = 4; g.beginPath();
   for(let z = SHED.z0 - 2; z <= SHED.zb - 1; z += 2) z > SHED.z0 - 2 ? g.lineTo(u(z), v(SHED.bayAt(z))) : g.moveTo(u(z), v(SHED.bayAt(z))); g.stroke();
@@ -3544,14 +3545,14 @@ function sceneryMesh(){
   // the engine shed over the far end of the two shed roads: brick walls, two open doors, a slate roof
   {
     const za = pathPos(2, routeEnd(2) - 50).z, zb = pathPos(2, routeEnd(2) + 3).z, zc = (za+zb)/2, sl = zb - za;
-    const xL = 2.3, xR = 13.3, xm = (xL+xR)/2, H = 6.4, ridge = 9.0, glass = [.16,.19,.22], soot = [.2,.17,.15];
+    const {xL, xR} = SHED, xm = (xL+xR)/2, H = 6.4, ridge = 9.0, glass = [.16,.19,.22], soot = [.2,.17,.15];
     box(a, xm, 0.04, zc, xR - xL, 0.04, sl, [.17,.16,.15]);
     for(const x of [xL, xR]) box(a, x, H/2, zc, 0.5, H, sl, brick);
     box(a, xm, H/2, zb, xR - xL + 0.5, H, 0.5, brick);
     // front wall: piers either side of the doors and a lintel over them
-    box(a, (xL - 0.25 + 3.15)/2, H/2, za, 3.15 - xL + 0.25, H, 0.5, brick);
+    box(a, (xL - 0.25 + SHED.door1)/2, H/2, za, SHED.door1 - xL + 0.25, H, 0.5, brick);
     box(a, xm, H/2, za, 1.2, H, 0.5, brick);
-    box(a, (12.45 + xR + 0.25)/2, H/2, za, xR + 0.25 - 12.45, H, 0.5, brick);
+    box(a, (SHED.door2 + xR + 0.25)/2, H/2, za, xR + 0.25 - SHED.door2, H, 0.5, brick);
     box(a, xm, 5.9, za, xR - xL + 0.5, 1.0, 0.5, brick);
     box(a, xm, 5.9, za - 0.27, 5.6, 0.55, 0.04, cream);                           // the shed name board
     for(const z of [za - 0.25, zb + 0.25]) quad(a, [xL-0.25,H,z],[xR+0.25,H,z],[xm,ridge,z],[xm,ridge,z], brick, [0,0,z<zc?-1:1]);
@@ -3609,9 +3610,9 @@ function yardWorksMesh(){
   box(a, (xL + xE)/2, 0.3, zc, xE - xL, 0.04, sl, [.17,.16,.15]);
   for(const x of [xL, xR]) box(a, x, H/2, zc, 0.5, H, sl, brick);
   box(a, xm, H/2, zb, xR - xL + 0.5, H, 0.5, brick);
-  box(a, (xL - 0.25 + 3.15)/2, H/2, za, 3.15 - xL + 0.25, H, 0.5, brick);
+  box(a, (xL - 0.25 + SHED.door1)/2, H/2, za, SHED.door1 - xL + 0.25, H, 0.5, brick);
   box(a, xm, H/2, za, 1.2, H, 0.5, brick);
-  box(a, (12.45 + xR + 0.25)/2, H/2, za, xR + 0.25 - 12.45, H, 0.5, brick);
+  box(a, (SHED.door2 + xR + 0.25)/2, H/2, za, xR + 0.25 - SHED.door2, H, 0.5, brick);
   box(a, xm, 5.9, za, xR - xL + 0.5, 1.0, 0.5, brick);
   box(a, xm, 5.9, za - 0.27, 5.6, 0.55, 0.04, cream);                           // the shed name board
   for(const z of [za - 0.25, zb + 0.25]) quad(a, [xL-0.25,H,z],[xR+0.25,H,z],[xm,ridge,z],[xm,ridge,z], brick, [0,0,z<zc?-1:1]);
@@ -5588,7 +5589,10 @@ function line3(){
       const yaw = Math.atan2(nx.x - mid.x, nx.z - mid.z), score = sd => { const x = mid.x + Math.cos(yaw)*sd*A, z = mid.z - Math.sin(yaw)*sd*A;
         return Math.min(polyDist(river, x, z), Math.hypot(x - res.x, z - res.z) - 70*S); };
       bows.push({r0, r1, A, side:score(1) >= score(-1) ? 1 : -1}); } }
+  // dead straight for the first 300 m out of Ravensgill, where the yard's headshunt runs along the main line
+  const d0 = Math.atan2(P0[5].x - P0[0].x, P0[5].z - P0[0].z);
   const P1 = P0.map((p, i)=>{ const q = P0[Math.min(P0.length-1, i+1)], r = P0[Math.max(0, i-1)], yaw = Math.atan2(q.x - r.x, q.z - r.z);
+    const f = smooth01((p.s - 300)/90); p = {x:(P0[0].x + Math.sin(d0)*p.s)*(1 - f) + p.x*f, z:(P0[0].z + Math.cos(d0)*p.s)*(1 - f) + p.z*f, m:p.m, s:p.s};
     let o = 0; for(const w of bows) if(p.s > w.r0 && p.s < w.r1) o += w.side*w.A*(1 - Math.cos(2*Math.PI*(p.s - w.r0)/(w.r1 - w.r0)))/2;
     return {x:p.x + Math.cos(yaw)*o, z:p.z - Math.sin(yaw)*o, m:p.m}; });
   const {L, pts} = resample(P1);
@@ -5975,7 +5979,7 @@ function lineScenery(a, G, T){
   { const p = G.W(200, 535); scVillage(a, G, T, p.x, p.z, 3, rnd, put=>put(p.x, p.z, 0.9, F=>scFarm(a, F, 0, 0))); }
   // cottages round every station, on both sides of the line
   STATIONS.forEach((st, i)=>{ if(halt(i)) return; const mid = (G.plat[i][0] + G.plat[i][1])/2;
-    for(let k=0;k<(i===0 ? 16 : 9);k++){ const side = k%2 ? 1 : -1, o = side*(34 + rnd()*40), q = G.at(mid - 90 + rnd()*180, o), t = T.height(q.x, q.z);
+    for(let k=0;k<(i===0 ? 16 : 9);k++){ const side = k%2 ? 1 : -1, o = side*((i===0 && side<0 ? 40 : 34) + rnd()*40), q = G.at(mid - 90 + rnd()*180, o), t = T.height(q.x, q.z);
       if(t.n.d < 28 || t.h < T.nat(q.x, q.z, t.n) - 5) continue;
       const F = scFrame(q.x, t.h, q.z, q.yaw); scHouse(a, F, 0, 0, 6, 8 + rnd()*4, rnd() < 0.6 ? 2 : 1, [SC.stone, SC.stone3, SC.stone2, SC.brick][Math.floor(rnd()*4)], -side);
       for(const dz of [-6, 6]) F.b(a, side*6.5, 0.45, dz, 7, 0.9, 0.4, SC.stone2); F.b(a, side*10, 0.45, 0, 0.4, 0.9, 12, SC.stone2); } });

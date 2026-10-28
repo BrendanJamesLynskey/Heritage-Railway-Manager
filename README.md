@@ -206,7 +206,9 @@ tower, ground frame and signal box are built into the line's scenery. So the
 shunting view shows the town, the station building and the hills beyond, and
 when you drive a service you pull out past the same shed. While you drive, every
 engine of yours not out on the line that day stands on the shed roads, and you
-see them through the open doors as you pass.
+see them through the open doors as you pass. The shed roads branch off beyond
+the end of the platforms and run in behind the loop platform, so neither
+platform stands in their way.
 
 **The works.** A lean-to extension along the side of the shed, with its own
 road off Shed road 2, its own door, roof lights, a travelling crane over the
