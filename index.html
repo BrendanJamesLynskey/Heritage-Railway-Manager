@@ -512,7 +512,7 @@
   <!-- WORKS -->
   <section class="view" id="v-works">
     <h2>Works &amp; Overhaul</h2>
-    <p class="lede">A running repair is quick. A heavy overhaul restores a loco to as-new but takes it out of traffic for weeks: do them in winter.</p>
+    <p class="lede">A running repair is quick. A heavy overhaul restores a loco to as-new but takes it out of traffic for weeks: do them in winter. Every steam engine also needs a full overhaul once a year to renew its boiler ticket; the bigger the engine, the longer and dearer it is.</p>
     <div class="grid" id="works-list"></div>
   </section>
 
@@ -554,6 +554,7 @@
         <li><b>Events</b> are booked on the calendar, ideally four weeks ahead. Galas need at least three engines of the right type in the timetable: hire guest engines when you book. Beer &amp; music festivals fill the evening trains and the bar. Santa specials are the winter goldmine.</li>
         <li><b>Volunteers</b> crew every train. If a day needs more than turn up, you can't run it. Recruit, and keep morale up with a quiet week or a social.</li>
         <li><b>Condition</b> falls with every mile. Worn locos fail, and a failure blocks the line, refunds fares and costs reputation. Use the <b>Works</b>, and do heavy overhauls in winter.</li>
+        <li><b>Boiler tickets:</b> a steam engine can only run while its boiler certificate is in date, and a certificate lasts a year. Renewing it means a full overhaul in the Works: a few weeks and a few thousand pounds for a small tank engine, three months and nearly £30,000 for a big tender engine like a Black Five or an 8F. The Fleet shows when each ticket runs out and you're warned 12 and 4 weeks ahead. Plan the overhauls for the winter so they're back for the season.</li>
         <li><b>Seasons:</b> spring and autumn are steady, summer is busy and the school holidays busiest of all; winter is dead apart from Santa specials. Weather matters too: check the forecast.</li>
         <li><b>Goal:</b> reach a net worth of <b>£500,000</b> with a reputation of <b>110</b> or more. Finish two weeks in a row overdrawn and the railway closes.</li>
       </ul>
@@ -835,6 +836,7 @@ function newGame(){
   uid = 1;
   const ivatt = mkLoco(catOf("loco","ivatt"), 0.78);
   const rat   = mkLoco(catOf("loco","c25"), 0.8);
+  ivatt.ticket = 62;        // its boiler ticket runs out at the start of next season: overhaul it over the winter
   const r4    = mkRake(catOf("rake","mk1x4"), 0.8);
   const r6    = mkRake(catOf("rake","mk1x6"), 0.75);
   state = {
@@ -929,7 +931,25 @@ function condColour(c){ return c>0.6?"var(--good)":c>0.3?"var(--warn)":"var(--da
 function isBusy(item){ return (item.busyUntil||0) > state.week; }
 // why an item is out of traffic: being repainted, or in the works for repairs
 const busyText = it => it.busyWhy==="paint" ? `being repainted until week ${woy(it.busyUntil)}` : `in the works until week ${woy(it.busyUntil)}`;
-const busyTag = it => `<div class="busy-tag">${it.busyWhy==="paint" ? "🎨 Being repainted" : "🔧 In the works"} until week ${woy(it.busyUntil)}</div>`;
+const busyTag = it => `<div class="busy-tag">${it.busyWhy==="paint" ? "🎨 Being repainted" : it.busyWhy==="overhaul" ? "🔧 Full overhaul" : "🔧 In the works"} until week ${woy(it.busyUntil)}</div>`;
+// Boiler tickets. A steam engine may only run while its boiler certificate is in date, and the certificate
+// only comes with a full overhaul: the engine stripped down, the boiler lifted, examined and repaired.
+// Bigger and more complicated engines (tender engines, eight-coupled ones) cost more and take longer.
+const TICKET_WEEKS = 52;   // a certificate is good for a year
+const ticketLeft = l => l.kind==="steam" ? (l.ticket||0) - state.week : Infinity;
+const ticketOut = l => ticketLeft(l) <= 0;
+function overhaulSpec(cat){
+  const size = Math.max(0, Math.min(1, (cat.cost-20000)/60000));
+  const tender = !/\d-\d-\dS?T\b|Tank/.test(cat.name), coupled = +((cat.name.match(/\d-(\d)-\d/)||[])[1]||6);
+  const cx = Math.min(1, 0.55*size + (tender?0.25:0) + (coupled>=8?0.15:0));
+  const shop = state.upgrades.workshop ? 0.7 : 1;
+  return {weeks: Math.round(5 + 10*cx) - (state.upgrades.workshop?1:0), cost: Math.round((3000 + cat.cost*0.25)*(0.8 + 0.6*cx)*shop), tender, coupled};
+}
+function ticketText(l){
+  const n = ticketLeft(l);
+  return n <= 0 ? "Expired: stopped" : `Until week ${woy(l.ticket)}${yearOf(l.ticket)>yearOf()?` next year`:""} (${n} week${n===1?"":"s"})`;
+}
+const ticketColour = l => { const n = ticketLeft(l); return n<=0 ? "var(--danger)" : n<=10 ? "var(--warn)" : "var(--good)"; };
 // a loco hired out to another railway: away from h.from until (not including) h.until
 function isAway(l){ return !!l.hire && state.week >= l.hire.from && state.week < l.hire.until; }
 function hirePending(l){ return !!l.hire && l.hire.until > state.week; }
@@ -1055,6 +1075,7 @@ function engineFor(ref, ev){
   if(!loco) return {err:"No locomotive chosen."};
   if(isBusy(loco)) return {err:`${loco.number} is ${busyText(loco)} — diagram skipped.`};
   if(isAway(loco)) return {err:`${loco.number} is away on hire to ${loco.hire.org} until week ${woy(loco.hire.until)} — diagram skipped.`};
+  if(ticketOut(loco)) return {err:`${loco.number}'s boiler ticket has run out: it can't steam until it has had a full overhaul.`};
   if(loco.condition<0.15) return {err:`${loco.number} is too run-down to run: send it to the works.`};
   return {loco, lcat:catOf("loco", loco.cat), kind:loco.kind, guest:false, appeal:liveryAppeal(loco)};
 }
@@ -1418,11 +1439,11 @@ function settleWeek(plan, report, mk){
                     + (sim.ecs||[]).filter(e=>e.set===s).reduce((a,e)=>a+e.miles,0);
         const failed = sim.trips.some(t=>t.set===s && t.failed);
         const wearOn = (loco, cat, guest, k) => { if(guest) return;
-          const lw = miles/2600 * cat.wear * (k==="steam"?1.25:1) * (1 + 0.3*Math.min(1,s.cars/s.maxHaul));
+          const lw = miles/3300 * cat.wear * (k==="steam"?1.25:1) * (1 + 0.3*Math.min(1,s.cars/s.maxHaul));
           loco.condition = Math.max(0.03, loco.condition - lw - (failed?0.1:0)); };
         wearOn(s.loco, s.lcat, s.trainGuest, s.loco.kind);
         if(s.pilot) wearOn(s.pilot, s.pcat, s.pilotGuest, s.pilot.kind);
-        if(s.rake) s.rake.condition = Math.max(0.05, s.rake.condition - miles/5200*(state.upgrades.cshed?0.5:1));
+        if(s.rake) s.rake.condition = Math.max(0.05, s.rake.condition - miles/6500*(state.upgrades.cshed?0.5:1));
       });
     }
     repDelta = Math.round(repDelta/runDays);
@@ -1477,6 +1498,12 @@ function settleWeek(plan, report, mk){
   // next week
   state.week++;
   state.weather = rollWeather(state.week);
+  for(const l of state.locos){ if(l.kind!=="steam") continue;
+    const n = ticketLeft(l), w = overhaulSpec(catOf("loco",l.cat));
+    if(n===0){ report.events.push({cls:"bad", text:`🔥 <b>${l.number}'s boiler ticket has run out.</b> It's stopped until it has a full overhaul (${w.weeks} weeks, ${money(w.cost)}) in the Works.`});
+      logEntry(`${l.number}'s boiler ticket expired: stopped for overhaul.`, 0); }
+    else if(n===4 || n===12) report.events.push({cls:"", text:`🔥 ${l.number}'s boiler ticket runs out in ${n} weeks (week ${woy(l.ticket)}). Its full overhaul takes ${w.weeks} weeks: book it into the Works.`});
+  }
   const unread0 = unreadMail();
   mailWeek();
   if(!eventThisWeek() && state.days===4 && !isSchoolHols()) state.days = 2;
@@ -1550,7 +1577,7 @@ function stockOptions(d, field="loco"){
   let html = `<option value="">— choose —</option>`;
   state.locos.forEach(l=>{
     if(pilot && l.kind==="dmu") return;
-    const note = isBusy(l) ? " (in works)" : isAway(l) ? " (on hire)" : l.condition<0.15 ? " (worn out)" : "";
+    const note = isBusy(l) ? " (in works)" : isAway(l) ? " (on hire)" : ticketOut(l) ? " (boiler ticket expired)" : l.condition<0.15 ? " (worn out)" : "";
     const c = catOf("loco",l.cat);
     html += `<option value="${l.id}" ${cur===l.id?"selected":""}>${l.number} · ${c.name}${pilot?` · ${c.maxHaul} coaches`:""}${note}</option>`;
   });
@@ -1796,6 +1823,7 @@ function renderDepot(){
       ${hirePending(l)?`<div class="busy-tag">${hireNote(l)}</div>`:""}
       <div class="cond-lbl"><span>Condition</span><span>${Math.round(l.condition*100)}%</span></div>
       <div class="bar"><i style="width:${l.condition*100}%;background:${condColour(l.condition)}"></i></div>
+      ${l.kind==="steam" ? `<div class="cond-lbl"><span>Boiler ticket</span><span style="color:${ticketColour(l)}">${ticketText(l)}</span></div>` : ""}
       ${liveryOf(l) ? `<div class="lvrow">${lvSwatch(liveryOf(l))}<span>${LIVERIES[liveryOf(l)].name}${l.finish==="works"?" · works finish":""}</span></div>` : ""}
       <ul class="specs">
         <li><span>Public draw</span><span>${(c.draw + liveryAppeal(l)).toFixed(2)}×</span></li>
@@ -1840,6 +1868,7 @@ function locoCard(c, kind){
       <li><span>${kind==="dmu"?"Seats":"Max load on the bank"}</span><span>${kind==="dmu"?c.seats:c.maxHaul+" coaches"}</span></li>
       <li><span>Coal / fuel</span><span>${money(c.runPerMile)}/mi</span></li>
       <li><span>Crew</span><span>${kind==="steam"?3:2}</span></li>
+      ${kind==="steam" ? (o => `<li><span>Yearly overhaul</span><span>${o.weeks} weeks · ${money(o.cost)}</span></li>`)(overhaulSpec(c)) : ""}
       ${liveriesOf(c.key).length ? `<li><span>Arrives in</span><span>${LIVERIES[liveriesOf(c.key)[0]].name}</span></li><li><span>Other liveries</span><span>${liveriesOf(c.key).length-1}</span></li>` : ""}
     </ul>
     <div class="price">${money(c.cost)}</div>
@@ -1870,9 +1899,8 @@ function worksCosts(kind, item){
   const cat = catOf(kind, item.cat);
   const shop = state.upgrades.workshop ? 0.7 : 1;
   if(kind==="rake") return {repair:Math.round(cat.cost*0.04+200), heavy:Math.round(cat.cost*0.2*shop), weeks:2};
-  const heavyF = item.kind==="steam" ? 0.3 : 0.2;
-  const weeks = (item.kind==="steam" ? 6 : 3) - (state.upgrades.workshop?1:0);
-  return {repair:Math.round(cat.cost*0.05*shop+300), heavy:Math.round(cat.cost*heavyF*shop), weeks};
+  if(item.kind==="steam"){ const o = overhaulSpec(cat); return {repair:Math.round(cat.cost*0.05*shop+300), heavy:o.cost, weeks:o.weeks}; }
+  return {repair:Math.round(cat.cost*0.05*shop+300), heavy:Math.round(cat.cost*0.2*shop), weeks:3 - (state.upgrades.workshop?1:0)};
 }
 function renderWorks(){
   const box = document.getElementById("works-list");
@@ -1885,8 +1913,9 @@ function renderWorks(){
       ${kind==="loco" && hirePending(it)?`<div class="busy-tag">${hireNote(it)}</div>`:""}
       <div class="cond-lbl"><span>Condition</span><span>${Math.round(it.condition*100)}%</span></div>
       <div class="bar"><i style="width:${it.condition*100}%;background:${condColour(it.condition)}"></i></div>
+      ${kind==="loco" && it.kind==="steam" ? `<div class="cond-lbl"><span>Boiler ticket</span><span style="color:${ticketColour(it)}">${ticketText(it)}</span></div>` : ""}
       <button class="act small" ${busy||it.condition>=0.95||state.cash<w.repair?"disabled":""} onclick="works('${kind}',${it.id},'repair')">Running repair (+25%, 1 week) · ${money(w.repair)}</button>
-      <button class="act small warnbtn" style="margin-top:6px" ${busy||it.condition>=0.99||state.cash<w.heavy?"disabled":""} onclick="works('${kind}',${it.id},'heavy')">${kind==="rake"?"Refurbish":"Heavy overhaul"} to as-new (${w.weeks} weeks) · ${money(w.heavy)}</button>
+      <button class="act small warnbtn" style="margin-top:6px" ${busy||(it.condition>=0.99 && !(kind==="loco" && it.kind==="steam" && ticketLeft(it)<TICKET_WEEKS-4))||state.cash<w.heavy?"disabled":""} onclick="works('${kind}',${it.id},'heavy')">${kind==="rake"?"Refurbish to as-new":kind==="loco"&&it.kind==="steam"?"Full overhaul &amp; new boiler ticket":"Heavy overhaul to as-new"} (${w.weeks} weeks) · ${money(w.heavy)}</button>
       ${kind==="loco" && liveryOf(it) ? `<div class="lvrow">${lvSwatch(liveryOf(it))}<span>${LIVERIES[liveryOf(it)].name}${it.finish==="works"?" · works finish":""}</span></div>
       <button class="act small" ${busy||hirePending(it)?"disabled":""} onclick="openRepaint(${it.id},'works')">🎨 Repaint at the works · ${money(repaintCost(it,"works").cost)}</button>` : ""}
       ${kind==="rake" && rakeLiveryOf(it) ? `<div class="lvrow">${coachSwatch(rakeLiveryOf(it))}<span>${COACH_LIVERIES[rakeLiveryOf(it)].name}${it.finish==="works"?" · works finish":""}</span></div>
@@ -1988,7 +2017,7 @@ function applyPreset(n){
   ].sort((a,b)=>b.cat.capacity-a.cat.capacity);
   const pool = [];
   if(ev) ev.guests.forEach(k=>pool.push({loco:k, draw:catOf("guest",k).draw+1, kind:catOf("guest",k).kind, maxHaul:catOf("guest",k).maxHaul}));
-  state.locos.filter(l=>!isBusy(l) && !isAway(l) && l.condition>=0.15).forEach(l=>{
+  state.locos.filter(l=>!isBusy(l) && !isAway(l) && !ticketOut(l) && l.condition>=0.15).forEach(l=>{
     const c = catOf("loco",l.cat);
     pool.push({loco:l.id, draw:c.draw, kind:l.kind, maxHaul:c.maxHaul||99});
   });
@@ -2045,6 +2074,7 @@ function buyLoco(key){
   const c = catOf("loco",key); if(state.cash<c.cost) return;
   state.cash -= c.cost;
   const l = mkLoco(c, 1.0, true); state.locos.push(l);
+  if(l.kind==="steam") l.ticket = state.week + TICKET_WEEKS;
   logEntry(`Bought ${c.name}, No. ${l.number}.`, -c.cost);
   render();
 }
@@ -2078,7 +2108,9 @@ function works(kind, id, what){
   item.busyWhy = "works";
   if(what==="repair"){ item.condition = Math.min(1, item.condition+0.25); item.busyUntil = state.week+1; }
   else { item.condition = 1; item.busyUntil = state.week + w.weeks; }
-  logEntry(`${label} into the works for a ${what==="repair"?"running repair":"heavy overhaul"}; back in traffic week ${woy(item.busyUntil)}.`, -cost);
+  const full = kind==="loco" && item.kind==="steam" && what!=="repair";
+  if(full){ item.busyWhy = "overhaul"; item.ticket = item.busyUntil + TICKET_WEEKS; }
+  logEntry(`${label} into the works for a ${what==="repair"?"running repair":full?"full overhaul and boiler certificate":"heavy overhaul"}; back in traffic week ${woy(item.busyUntil)}.`, -cost);
   render();
 }
 function recruit(){
@@ -2749,6 +2781,7 @@ function upgradeState(){
   if(!Array.isArray(state.mail)) state.mail = [];
   if(!state.mailSeq) state.mailSeq = 1;
   for(const l of state.locos || []) if(l.ident===undefined) l.ident = identOf(l.cat, l.number);   // older saves
+  for(const l of state.locos || []) if(l.kind==="steam" && l.ticket===undefined) l.ticket = Math.max(state.week, l.busyUntil||0) + 26 + (l.id*7)%26;
 }
 function unreadMail(){ return state.mail.filter(m=>!m.read).length; }
 function addMail(from, subject, text, deal){
@@ -2771,7 +2804,7 @@ function maybeMail(){
   if(state.mail.filter(m=>m.deal && m.deal.status==="open").length >= 3) return;
   if(Math.random() > 0.3 + state.rep/400) return;
   const promised = new Set(state.mail.filter(m=>m.deal && m.deal.status==="open").map(m=>m.deal.locoId));
-  const free = state.locos.filter(l=>l.kind!=="dmu" && !hirePending(l) && !isBusy(l) && l.condition>=0.4 && !promised.has(l.id));
+  const free = state.locos.filter(l=>l.kind!=="dmu" && !hirePending(l) && !isBusy(l) && ticketLeft(l)>8 && l.condition>=0.4 && !promised.has(l.id));
   if(!free.length) return;
   const winter = seasonName()==="Winter", r = Math.random();
   let kind = winter ? (r<0.6?"loan":"railtour") : (r<0.42?"railtour":r<0.85?"gala":"loan");
@@ -2895,6 +2928,7 @@ function hireProblem(d){
   if(!l) return `${d.number} isn't ours any more.`;
   if(hirePending(l)) return `${d.number} is already promised to ${l.hire.org}.`;
   if((l.busyUntil||0) > d.start) return `${d.number} will still be in the works.`;
+  if(l.kind==="steam" && (l.ticket||0) < d.start+d.weeks) return `${d.number}'s boiler ticket runs out before it would be back.`;
   return null;
 }
 function sendMail(m, myText, reply){

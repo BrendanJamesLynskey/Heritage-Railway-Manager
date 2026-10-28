@@ -412,6 +412,26 @@ works, and the takings and the week report arrive when the weekend ends.
    morale.
 6. **Works.** Condition falls with every mile and worn locos fail at Moorend,
    blocking the line and refunding fares. Do heavy overhauls in winter.
+   Wear is gentle enough that a running repair every few weekends keeps an
+   engine going, but breakdowns still happen at random.
+7. **Boiler tickets.** A steam engine may only run while its boiler
+   certificate is in date, and each certificate lasts a year. Renewing it
+   takes a full overhaul in the Works, which also leaves the engine as new.
+   Size and complexity set the bill: tender engines and eight-coupled
+   engines take longest.
+
+   | Engine | Overhaul |
+   |---|---|
+   | Hunslet 0-6-0ST | 5 weeks, about £6,900 |
+   | Ivatt 2MT 2-6-2T | 7 weeks, about £11,200 |
+   | J27 0-6-0 | 10 weeks, about £15,800 |
+   | Black Five 4-6-0 / 8F 2-8-0 | 13 weeks, about £26,000–£29,000 |
+
+   The Works upgrade takes 30% off and a week out. The Fleet shows each
+   engine's ticket; the week report warns 12 and 4 weeks ahead. The Ivatt's
+   first ticket runs out at the start of your second season, so give it its
+   overhaul over the winter. Engines whose ticket would expire while away
+   can't be hired out.
 
 **Goal:** a net worth of **£500,000** and a reputation of **110**. Steady
 normal service alone won't get you there: reputation fades unless you run
