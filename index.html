@@ -549,7 +549,7 @@
         <li><b>Double-heading:</b> press <b>🚂🚂 Double-head</b> on a diagram to couple a pilot engine on the front. The two engines' loads add together (a 4-coach and a 5-coach engine can take 9 coaches up the bank), so small engines can work long trains and climb faster. The crowd likes the sight, and a double-header counts as two engines for a gala, but it needs two crews, burns both engines' coal and wears both engines, and the train goes at the slower engine's pace.</li>
         <li><b>Single line:</b> trains can only pass at the loops (Lowerdale and Fellside, plus Brackenby and Highmoor Summit once built), and only one train may be on each single-line section. The train graph shows where trains are held. Each loop has one road for each direction (Moorend holds two trains), so too many trains with too few loops means trains are held and run late.</li>
         <li><b>Passengers</b> arrive through the day (mostly late morning and lunchtime) and take the next train. A gap of more than two hours loses them; a full train turns them away. Steam draws more people than diesel, and both draw more than a DMU.</li>
-        <li><b>Visiting stock:</b> any event can bring visiting engines (up to 3) and visiting carriages (up to 2) on hire. For no gala at all, book <b>Visiting Engine Running Days</b>: ordinary running days with guests, on as many days as you like.</li>
+        <li><b>Visiting stock:</b> any event can bring visiting engines (up to 3) and visiting carriages (up to 2) on hire. As well as the star engines, every steam and diesel class in the shop can be hired on loan from another heritage line (a Black Five, a 37, a pannier...), each with its own number. For no gala at all, book <b>Visiting Engine Running Days</b>: ordinary running days with guests, on as many days as you like.</li>
         <li><b>Saving:</b> press <b>💾 Save / Load</b> for a link containing the whole railway. Copy it, email it to yourself or download it as a file, then open it on any device (the Pi included) to carry on.</li>
         <li><b>Events</b> are booked on the calendar, ideally four weeks ahead. Galas need at least three engines of the right type in the timetable: hire guest engines when you book. Beer &amp; music festivals fill the evening trains and the bar. Santa specials are the winter goldmine.</li>
         <li><b>Volunteers</b> crew every train. If a day needs more than turn up, you can't run it. Recruit, and keep morale up with a quiet week or a social.</li>
@@ -2128,9 +2128,11 @@ function drawBooking(){
   if(booking.type && EVENTS[booking.type].guests){
     const kind = EVENTS[booking.type].guests, gala = !!EVENTS[booking.type].need;
     const list = GUESTS.filter(g=>kind==="any" || g.kind===kind).sort((a,b)=>(a.kind!=="steam")-(b.kind!=="steam") || b.fee-a.fee);
-    html += `<h4 style="margin:12px 0 4px;color:var(--br-blue)">Hire visiting engines (up to 3)</h4>`;
-    html += list.map(g=>`<label class="chk"><input type="checkbox" ${booking.guests.includes(g.key)?"checked":""} onchange="toggleGuest('${g.key}')">
-      <span>${kindBadge(g.kind)} <b>${g.number} ${g.name}</b> — hire ${money(g.fee)} · draw ${g.draw.toFixed(2)}× · crowd +${Math.round(g.boost*(gala?100:60))}% · ${g.maxHaul} coaches${liveriesOf(g.key).length ? `<br><span class="lvrow" style="margin:2px 0 0">${lvSwatch(liveriesOf(g.key)[0])}<i class="sub" style="margin:0">visiting in ${LIVERIES[liveriesOf(g.key)[0]].name}</i></span>` : ""}</span></label>`).join("");
+    const row = g=>`<label class="chk"><input type="checkbox" ${booking.guests.includes(g.key)?"checked":""} onchange="toggleGuest('${g.key}')">
+      <span>${kindBadge(g.kind)} <b>${g.number} ${g.name}</b> — hire ${money(g.fee)} · draw ${g.draw.toFixed(2)}× · crowd +${Math.round(g.boost*(gala?100:60))}% · ${g.maxHaul} coaches${liveriesOf(g.key).length ? `<br><span class="lvrow" style="margin:2px 0 0">${lvSwatch(liveriesOf(g.key)[0])}<i class="sub" style="margin:0">visiting in ${LIVERIES[liveriesOf(g.key)[0]].name}</i></span>` : ""}</span></label>`;
+    html += `<h4 style="margin:12px 0 4px;color:var(--br-blue)">Hire visiting engines (up to 3${booking.guests.length ? `, ${booking.guests.length} chosen` : ""})</h4>
+      <div class="sub" style="margin:0 0 4px">Star engines</div>${list.filter(g=>!g.lent).map(row).join("")}
+      <div class="sub" style="margin:8px 0 4px">From other heritage lines: any class from the shop, on loan for the weekend</div>${list.filter(g=>g.lent).map(row).join("")}`;
     html += `<h4 style="margin:12px 0 4px;color:var(--br-blue)">Hire visiting carriages (up to 2)</h4>`;
     html += VISITING_RAKES.map(r=>`<label class="chk"><input type="checkbox" ${booking.rakes.includes(r.key)?"checked":""} onchange="toggleVRake('${r.key}')">
       <span><b>${r.name}</b> — hire ${money(r.fee)} · ${r.capacity} seats · ${r.cars} coaches · comfort ${r.comfort.toFixed(2)}×${r.boost?` · crowd +${Math.round(r.boost*100)}%`:""}${r.vintage?" · vintage":""}<br><i class="sub">${r.blurb}</i></span></label>`).join("");
@@ -6347,6 +6349,18 @@ document.getElementById("rp-play").onclick = ()=>setPlaying(!replay.playing);
 document.getElementById("rp-slider").oninput = e=>{ replay.t = +e.target.value; replayDraw(false); };
 document.getElementById("rp-speed").onchange = e=>{ replay.speed = +e.target.value; };
 document.getElementById("rp-source").onchange = e=>{ replay.source = e.target.value; replayDraw(true); };
+
+// every steam and diesel class in the shop can also be hired for an event, from another heritage line: same key as the
+// class (so its model, liveries, sound and number series come with it), a number of its own, and a fee and crowd pull
+// from its price and draw (the famous visitors above are booked under their own keys)
+for(const c of [...CATALOG_STEAM, ...CATALOG_DIESEL]){
+  if(GUESTS.some(g=>g.key===c.key || g.name===c.name)) continue;
+  const N = NUMBERS[c.key], i0 = identOf(c.key, c.number);
+  GUESTS.push({key:c.key, kind:CATALOG_STEAM.includes(c) ? "steam" : "diesel", lent:true, name:c.name,
+    number:N && i0!=null ? locoNumber(c.key, (i0 + Math.floor(N.n/2)) % N.n, liveriesOf(c.key)[0]) : c.number,
+    fee:Math.max(1000, Math.round(c.cost*0.07/100)*100), draw:c.draw, boost:Math.max(0.03, Math.round((c.draw - 1)*55)/100),
+    reliability:c.reliability, maxHaul:c.maxHaul, runPerMile:c.runPerMile, pace:c.pace});
+}
 
 buildDesktop();
 if(!load()){ newGame(); } else { render(); }

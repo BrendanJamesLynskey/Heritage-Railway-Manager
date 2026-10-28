@@ -418,6 +418,12 @@ carriages** (up to two) on hire for that week. Each draws extra visitors.
   Gloucester*, *The Great Marquess*, 9F, Q6, Ivatt 'Flying Pig', J72.
 - **Diesel:** Deltic, 'Western', 'Hoover', 'Hymek', Class 40 *Andania*, Class
   56, 60, 33, 47, and pairs of Class 20s and 26s.
+- **From other heritage lines:** every steam and diesel class you can buy in
+  the shop can also be hired for an event, on loan from another line: a Black
+  Five, a B1, an 8F, a pannier, a Class 37 or a 'Peak', and the rest. Each comes
+  with a number of its own from its class's series (so it never clashes with
+  your own engine of the same class), a hire fee of about 7% of its price and a
+  crowd pull from its draw. They're listed under the star engines when you book.
 - **Carriages:** a Pullman train, Gresley teak, a Mk1 9-coach rake,
   observation saloons, Victorian four-wheelers and a Royal Mail TPO set.
 
