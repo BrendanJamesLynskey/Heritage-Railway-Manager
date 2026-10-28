@@ -196,7 +196,16 @@ with BFB wheels are modelled too); diesels from their real height and body
 style (cab ends with raked windscreens, noses, hood and single cab, the
 Western), bogies with axleboxes and springs (Bo-Bo, Co-Co, A1A, 1Co-Co1,
 coupled rods), headcode boxes, discs or roof domes, grilles, cab doors,
-warning panels and livery bands, with the Class 20 and 26 pairs as two locos;
+warning panels and livery bands, with the Class 20 and 26 pairs as two locos.
+Each class's cab end has its own shape, from photographs: the Sulzer Type 2s'
+well-rounded corners (a gangway door on the 24, the headcode box between the
+screens on the 25), the BRCW Type 2's sealed gangway and deep roof curve, the
+Class 31's leaning front under its roof dome, the Crompton's flat slab front
+with valance and jumpers, the Class 47's chamfered corners and steeply raked
+screens, the Class 50's square front with the headcode box above the screens,
+the boxy cut-off-cornered Class 56 with its plough and headlight, the Class
+60's long raked face, the Hymek's wrap-round screens and the curved-all-round
+Western;
 the visiting engines from their published dimensions and current liveries (the A3 and V2 banjo domes, Gresley corridor tenders, the 9F's wheel spacing and high firebox, real bogie and trailing wheel sizes; the Deltic's white cab band and nose headcode box, the Western's outside-frame bogies, brow and valance, the Class 40's nose doors, roof fans on the 50 and 56, the Hymek's window band, and the Class 20 and 26 pairs in two liveries); the Class 08 with its stepped radiator end, diagonal wasp stripes on the ends and buffer beams, outside coupling rods on quartered crankpins with balance weights, cab doors with steps, exhaust and horn (the yard shunter is the same model with its cab open, so you drive from the seat behind the control desk); DMUs from their car length and count, bogies or four-wheel axles, window and
 door layout, underfloor engines and their front ends (Metro-Cammell, Derby
 three-window, Calder Valley four-window, Pacer, Wickham railbus).

@@ -3621,6 +3621,35 @@ const DIESEL_MODELS = {
   "g-hymek":  {style:"cab", len:15.76, bogie:"Bo", r:0.57, sp:3.2, inset:3.99, col:LV.railblue, rim:[.9,.9,.86], yellow:"panel", screen:"three", head:"4char",
          grilles:[[0, 2.2, 2.3, 3.6]], cabBand:[.9,.9,.86], feature:2.45}
 };
+// The shape of each class's cab end, from photographs: fr = [plan corner radius, depth of the shaping, roof edge radius,
+// steps] (one step is a flat chamfer, more a curve), how far the lower front leans back and the screens rake back
+const DIESEL_ENDS = {
+  // BR Sulzer Type 2s: well-rounded cab corners and roof; a gangway door between the screens on the 24, a headcode box on the 25
+  c24:  {fr:[0.42, 0.5, 0.42, 5], screen:"gangway", lean:0.06, rake:0.12, winRow:1.6},
+  c25:  {fr:[0.3, 0.4, 0.36, 4], screen:"twoHead", head:"none", lean:0.06, rake:0.16, grilles:[[0, 8.5, 3.38, 3.85], [3.2, 1.0, 2.2, 3.2, true]]},
+  // BRCW Type 2: flat-fronted with a sealed gangway door, the front leaning back into a deep roof curve
+  c26:  {fr:[0.16, 0.3, 0.55, 4], screen:"gangway", lean:0.16, rake:0.2},
+  "g-c26": {fr:[0.16, 0.3, 0.55, 4], screen:"gangway", lean:0.16, rake:0.2},
+  // Brush Type 2: the lower front leans well back to big screens under the roof dome
+  c31:  {fr:[0.26, 0.45, 0.6, 5], screen:"two", paneW:0.86, lean:0.22, rake:0.1},
+  // the Cromptons: a flat slab front leaning back, sharp corners, valance and jumper cables
+  c33:  {fr:[0.07, 0.1, 0.2, 1], lean:0.2, rake:0.2, skirt:true, jumpers:true},
+  "g-c33": {fr:[0.07, 0.1, 0.2, 1], lean:0.2, rake:0.2, skirt:true},
+  // Brush Type 4: chamfered corners, steeply raked screens over an upright lower front
+  c47:  {fr:[0.3, 0.32, 0.24, 1], lean:0.03, rake:0.38, paneW:1.0, doors:[-5.5]},
+  "g-c47": {fr:[0.3, 0.32, 0.24, 1], lean:0.03, rake:0.38, paneW:1.0},
+  // English Electric Class 50: square-cornered, flat front, the headcode box between and above the screens
+  "g-c50": {fr:[0.07, 0.1, 0.12, 1], screen:"headTop", head:"none", lean:0.03, rake:0.22},
+  // Class 56: a boxy cab, corners cut off, screens in a sharply raked face, a snowplough and a headlight
+  "g-c56": {fr:[0.26, 0.26, 0.1, 1], lean:0, rake:0.4, plough:true, headlight:true, grilles:[[0.5, 8.0, 3.35, 3.9], [-4.6, 1.6, 2.2, 3.7], [5.2, 1.2, 2.2, 3.7]], doors:[2.6, -2.6, -6.4]},
+  // Class 60: a long flat face raked right back, big chamfers, ploughs
+  "g-c60": {fr:[0.36, 0.55, 0.14, 1], lean:0.08, rake:0.72, plough:true, headlight:true},
+  // the Hymek: a faceted front with the screens wrapping round the cut-off corners
+  "g-hymek": {fr:[0.45, 0.45, 0.22, 1], lean:0.05, rake:0.28, wrapWin:true, paneW:0.62},
+  // the Western: curved all round, with wrap-round screens
+  "g-western": {fr:[0.62, 0.75, 0.5, 6], wrapWin:true, paneW:0.55}};
+for(const [k, v] of Object.entries(DIESEL_ENDS)) Object.assign(DIESEL_MODELS[k], v);
+
 /* ---- liveries: the real colour schemes each class has carried, and repainting in the shed or the works ---- */
 // appeal is added to the engine's public draw: historic and famous liveries bring a few more people out.
 const LIVERIES = {
@@ -4514,10 +4543,14 @@ function dieselMesh(m){
     quad(a, [x0,y0,zAt(y0)+o],[x1,y0,zAt(y0)+o],[x1,y1,zAt(y1)+o],[x0,y1,zAt(y1)+o], c, [0,0,s]); };
   const pane = (x0, x1, y0, y1, zAt, s)=>{ onFace(x0-0.045, x1+0.045, y0-0.045, y1+0.045, zAt, s, RIM || FR, 0.01); onFace(x0, x1, y0, y1, zAt, s, G, 0.02); };
   const screens = (zAt, s, y0, y1)=>{
-    const st = m.screen || "two";
-    if(st==="three"){ pane(-0.4, 0.4, y0, y1, zAt, s); pane(-1.22, -0.52, y0, y1, zAt, s); pane(0.52, 1.22, y0, y1, zAt, s); }
-    else if(st==="twoHead"){ pane(-1.12, -0.42, y0, y1, zAt, s); pane(0.42, 1.12, y0, y1, zAt, s); headBox(0, (y0+y1)/2 - 0.05, zAt, s, 0.62, 0.3); }
-    else { const pw = m.paneW || 0.95; pane(-0.07 - pw, -0.07, y0, y1, zAt, s); pane(0.07, 0.07 + pw, y0, y1, zAt, s); }
+    const st = m.screen || "two", kx = m.fr && m.style!=="nose" ? Math.min(1, (W - m.fr[0] - 0.06)/1.2) : 1, pn = (x0, x1)=>pane(x0*kx, x1*kx, y0, y1, zAt, s);
+    if(st==="three"){ pn(-0.4, 0.4); pn(-1.22, -0.52); pn(0.52, 1.22); }
+    else if(st==="twoHead"){ pn(-1.12, -0.42); pn(0.42, 1.12); headBox(0, (y0+y1)/2 - 0.05, zAt, s, 0.62*kx, 0.3); }
+    else if(st==="headTop"){ pn(-1.15, -0.1); pn(0.1, 1.15); headBox(0, y1 + 0.02, zAt, s, 0.8, 0.26); }   // Class 50: the headcode box above, between the screens
+    else if(st==="gangway"){   // a screen each side of the gangway door
+      pn(-1.2, -0.5); pn(0.5, 1.2); onFace(-0.36, 0.36, yb0 + 0.35, y1, zAt, s, FR, 0.012); onFace(-0.32, 0.32, yb0 + 0.39, y1 - 0.04, zAt, s, full ? Y : m.col, 0.016);
+      onFace(-0.22, 0.22, y0 + 0.05, y1 - 0.12, zAt, s, G, 0.02); }
+    else { const pw = m.paneW || 0.95; pn(-0.07 - pw, -0.07); pn(0.07, 0.07 + pw); }
   };
   const headBox = (x, y, zAt, s, w, hh)=>{ onFace(x - w/2, x + w/2, y - hh/2, y + hh/2, zAt, s, FR, 0.025);
     for(let k=0;k<4;k++){ const dx = x - w/2 + w*(k+0.5)/4; onFace(dx - 0.05, dx + 0.05, y - 0.08, y + 0.08, zAt, s, WH, 0.03); } };
@@ -4645,8 +4678,28 @@ function dieselMesh(m){
   const yN = 3.3;                                             // nose top
   const fz = nose ? (y => y <= yN + 0.1 ? 0 : rake*(y - yN - 0.1)/(yb1 - yN - 0.1))
                   : (y => y <= ySill ? lean*(y - yb0)/(ySill - yb0) : lean + rake*(y - ySill)/(yb1 - ySill));
-  const P = section(yb0);
-  extrude(a, P, p=>-(bz - fz(p[1])), p=>bz - fz(p[1]), edge, full ? Y : col, full ? Y : col);
+  const P = section(yb0), FR4 = !nose && m.fr;
+  // a cab end lofted from the body section: m.fr = [plan corner radius, depth, roof edge radius, steps (1 = a chamfer)]
+  const cabLoft = s => { const [Rx, D, Ry, K] = FR4, n = P.length, ec = full ? Y : col;
+    const N = P.map((p, i)=>{ const pr = P[(i-1+n)%n], nx = P[(i+1)%n], e1 = [p[1]-pr[1], -(p[0]-pr[0])], e2 = [nx[1]-p[1], -(nx[0]-p[0])];
+      const l1 = Math.hypot(...e1) || 1, l2 = Math.hypot(...e2) || 1; let v = [e1[0]/l1 + e2[0]/l2, Math.max(0, e1[1]/l1 + e2[1]/l2)];
+      const l = Math.hypot(...v); return l < 1e-6 ? [Math.sign(p[0]), 0] : [v[0]/l, v[1]/l]; });
+    const ring = t => { const th = t*Math.PI/2, d = 1 - Math.cos(th);
+      return P.map((p, i)=>{ const y = p[1] - N[i][1]*Ry*d; return [p[0] - N[i][0]*Rx*d, y, s*(bz - D + D*Math.sin(th) - fz(y))]; }); };
+    for(let k=0;k<K;k++){ const r0 = ring(k/K), r1 = ring((k+1)/K);
+      for(let i=0;i<n;i++){ const j = (i+1)%n, p = P[i], q = P[j], top = p[1] >= yb1 - 0.001 && q[1] >= yb1 - 0.001, bot = p[1] < yb0 + 0.01 && q[1] < yb0 + 0.01;
+        quad(a, r0[i], r0[j], r1[j], r1[i], bot ? UF : top ? (full && m.roofYellow ? Y : edge(p, q)) : ec, [(p[0]+q[0])/2, (p[1]+q[1])/2 - 2.6, s*2]); } }
+    const rf = ring(1), cx = 0, cy = rf.reduce((t,p)=>t+p[1],0)/n, cz = rf.reduce((t,p)=>t+p[2],0)/n;
+    for(let i=0;i<n;i++){ const p = rf[i], q = rf[(i+1)%n]; quad(a, [cx,cy,cz], p, q, q, ec, [0,0,s]); } };
+  // a window on the rounded or chamfered corner of the cab, between two fractions of the turn
+  const cornerPane = (sx, s, y0, y1, t0, t1) => { if(!FR4) return; const [Rx, D, , K] = FR4, nn = Math.max(1, Math.round((t1 - t0)*K*2));
+    const pt = (t, y, o) => { const th = t*Math.PI/2, c = K===1 ? 1 - t : Math.cos(th), sn = K===1 ? t : Math.sin(th), x = W - Rx*(1 - c), z = bz - D + D*sn - fz(y), nx = K===1 ? D : D*c, nz = K===1 ? Rx : Rx*sn, l = Math.hypot(nx, nz) || 1;
+      return [sx*(x + nx/l*o), y, s*(z + nz/l*o)]; };
+    for(let k=0;k<nn;k++){ const ta = t0 + (t1 - t0)*k/nn, tb = t0 + (t1 - t0)*(k+1)/nn;
+      quad(a, pt(ta, y0 - 0.04, 0.01), pt(tb, y0 - 0.04, 0.01), pt(tb, y1 + 0.04, 0.01), pt(ta, y1 + 0.04, 0.01), RIM || FR, [sx, 0, s]);
+      quad(a, pt(ta, y0, 0.02), pt(tb, y0, 0.02), pt(tb, y1, 0.02), pt(ta, y1, 0.02), G, [sx, 0, s]); } };
+  if(FR4){ extrude(a, P, p=>-(bz - FR4[1] - fz(p[1])), p=>bz - FR4[1] - fz(p[1]), edge, null, null); cabLoft(1); cabLoft(-1); }
+  else extrude(a, P, p=>-(bz - fz(p[1])), p=>bz - fz(p[1]), edge, full ? Y : col, full ? Y : col);
   bands(-(bz - 0.05), bz - 0.05);
   if(m.yellow==="wrap") for(const s of [1,-1]) for(const sx of [1,-1]) box(a, sx*(W + 0.014), (yb0 + yb1)/2, s*(bz - 0.5), 0.02, yb1 - yb0, 0.9, Y);
   if(m.grilles) grilles(m.grilles);
@@ -4655,21 +4708,25 @@ function dieselMesh(m){
   if(m.winRow) for(let z = -bz + 2.5; z <= bz - 2.5; z += m.winRow) for(const sx of [1,-1]) box(a, sx*(W + 0.012), 3.5, z, 0.02, 0.4, 0.5, G);
   for(const s of [1,-1]){
     const zAt = y => s*(bz - fz(y));
-    sideDoor(bz, s);
+    sideDoor(bz - (FR4 ? FR4[1]*0.8 : 0), s);
     if(!nose){
-      if(full) onFace(-W, W, yb0, ySill, zAt, s, Y, 0.006);
+      const FW = FR4 ? W - FR4[0] : W;
+      if(full && !FR4) onFace(-W, W, yb0, ySill, zAt, s, Y, 0.006);
       warn(zAt, s, -W, W, yb0, ySill);
-      if(m.yellow==="wrap") onFace(-1.25, 1.25, ySill - 0.05, yb1 - 0.02, zAt, s, FR, 0.009);
+      if(m.yellow==="wrap") onFace(-Math.min(1.25, FW), Math.min(1.25, FW), ySill - 0.05, yb1 - 0.02, zAt, s, FR, 0.009);
       screens(zAt, s, ySill + 0.07, yb1 - 0.08);
       lamps(zAt, s, 2.05); cyl(a,"z", 0, 2.25, zAt(2.25) + s*0.02, 0.12, 0.04, WH, 10);
       if(m.head==="4char") headBox(0, 2.75, zAt, s, 0.95, 0.3);
       if(m.head==="discs") discs(zAt, s, 2.2);
       if(m.head==="dome") roofDome(s*(bz - 0.5), s);
-      if(m.winBlack) onFace(-1.25, 1.25, ySill - 0.05, yb1 - 0.02, zAt, s, FR, 0.009);
-      if(m.cabBand) onFace(-W, W, ySill - 0.03, yb1 - 0.01, zAt, s, m.cabBand, 0.008), screens(zAt, s, ySill + 0.07, yb1 - 0.08);
+      if(m.winBlack) onFace(-Math.min(1.25, FW), Math.min(1.25, FW), ySill - 0.05, yb1 - 0.02, zAt, s, FR, 0.009), screens(zAt, s, ySill + 0.07, yb1 - 0.08);
+      if(m.cabBand) onFace(-FW, FW, ySill - 0.03, yb1 - 0.01, zAt, s, m.cabBand, 0.008), screens(zAt, s, ySill + 0.07, yb1 - 0.08);
+      if(m.wrapWin) for(const sx of [1,-1]) cornerPane(sx, s, ySill + 0.1, yb1 - 0.1, 0.18, 0.85);
+      if(m.skirt){ const zv = s*(ze - 0.02); box(a, 0, 1.36, zv - s*0.05, 2.5, 0.5, 0.1, full ? Y : col); }
+      if(m.plough) for(const sx of [1,-1]) quad(a, [0, 0.6, s*(ze + 0.25)], [sx*1.2, 0.6, s*(ze - 0.2)], [sx*1.2, 1.15, s*(ze - 0.15)], [0, 1.15, s*(ze + 0.18)], [.12,.12,.12], [sx, 0, s]);
       if(m.headlight) cyl(a,"z", 0, 2.05, zAt(2.05) + s*0.03, 0.13, 0.05, [.95,.95,.85], 12);
       if(m.jumpers) for(const sx of [0.55,-0.55]){ cyl(a,"y", sx, 2.15, zAt(2.15) + s*0.06, 0.04, 0.5, B, 6); box(a, sx, 2.42, zAt(2.42) + s*0.06, 0.16, 0.1, 0.1, B); }
-      if(m.brow){ const zb = zAt(yb1); box(a, 0, yb1 + 0.08, zb + s*0.05, 2.6, 0.16, 0.3, full ? Y : col); }
+      if(m.brow){ const zb = zAt(yb1); box(a, 0, yb1 + 0.08, zb + s*0.05, 2*FW - 0.1, 0.16, 0.3, full ? Y : col); }
       if(m.valance){ const zv = s*(ze - 0.02); box(a, 0, 1.43, zv, 2.72, 0.66, 0.12, full ? Y : col); }
     } else {
       // the nose: tapered in plan, falling slightly forward, with a chamfered top edge and a raked front
@@ -4700,7 +4757,7 @@ function dieselMesh(m){
     }
   }
   // bodyside details: the white cab window bands carried round the sides, feature lines, nameplates, roof fans, doors
-  if(m.cabBand) for(const s of [1,-1]) for(const sx of [1,-1]) box(a, sx*(W + 0.011), (3.3 + yb1)/2, s*(bz - 0.6), 0.02, yb1 - 3.3, 1.2, m.cabBand);
+  if(m.cabBand) for(const s of [1,-1]) for(const sx of [1,-1]){ const ze2 = bz - (FR4 ? FR4[1] : 0); box(a, sx*(W + 0.011), (3.3 + yb1)/2, s*(ze2 - 0.6), 0.02, yb1 - 3.3, 1.2, m.cabBand); }
   if(m.feature) for(const sx of [1,-1]) box(a, sx*(W + 0.013), m.feature, 0, 0.02, 0.05, 2*bz - 1.2, [.9,.9,.86]);
   if(m.plates) for(const sx of [1,-1]) for(const z of [2.5,-2.5]){ box(a, sx*(W + 0.02), 2.6, z, 0.03, 0.22, 1.5, [.55,.45,.2]); box(a, sx*(W + 0.03), 2.6, z, 0.02, 0.16, 1.4, [.12,.1,.1]); }
   if(m.fans) for(const z of m.fans){ cyl(a,"y", 0, 4.42, z, 0.5, 0.06, [.2,.21,.22], 18); for(let k=0;k<6;k++) box(a, 0, 4.46, z, 0.9, 0.02, 0.06, [.33,.34,.35], k*Math.PI/6); }
@@ -5764,7 +5821,7 @@ function engineEye(key, md){
   const L = md.len, st = STEAM_MODELS[key], d = DIESEL_MODELS[key];
   if(st){ const tank = st.type!=="tender", cl = st.eng > 12 ? 2.6 : 2.35; return [-1.85, 3.85, L/2 - st.eng + (tank ? 1.6 : 0.05) + cl + 0.3]; }
   if(d && d.style==="hood") return [-1.65, 3.7, d.cab==="end" ? -(L/2 - 0.62) + 2.9 : (d.cabZ || 0) + 1.6];
-  return [-1.65, 3.45, L/2 - 0.9];
+  return [-1.65, 3.45, L/2 - 0.9 - (d && d.fr ? d.fr[1] + 0.4*(d.rake || 0) : 0)];
 }
 
 /* ---- physics, signals and the timetable ---- */
