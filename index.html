@@ -540,7 +540,7 @@
       <ul style="font-size:.9rem">
         <li><b>The laptop:</b> each part of the railway is an app on the desktop. Double-click an icon (or tap it on a touch screen) to open its window; drag windows by the title bar, resize them from the corner, and switch between them on the taskbar. The <b>Start</b> button (the R&amp;H roundel) lists every app.</li>
         <li><b>Mail:</b> railtour companies and other heritage railways email asking to hire your locomotives. Accept their offer, decline, or send a counter-offer: ask for more, but push too hard and they'll go elsewhere. A hired-out engine is away for the weeks agreed, and comes back a little more worn.</li>
-        <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to make up the first train: the laptop folds away and you're in the cab. The coaches are already on the Platform road; the train engine (and the pilot, for a double-header) is in the engine shed with the rest of the fleet, every engine facing the shunter. Set the points for the right shed road, buffer up to the engine, draw it out, set the points back to the Platform road and buffer it up to the coaches, then uncouple. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the shunter. Buffer up gently (under 2 mph) to couple. Every class of engine is modelled from its own wheel arrangement, size and livery. <b>Drive a service:</b> or take a train out on the line yourself. Pick a train and the trip to start from, and drive it from the cab for the rest of its day, or just one way out or back, while the weekend runs on behind you (the other trains you meet are the weekend's own, and when you climb down the map carries on from the cab's clock): every booked call, the passing loops (the starter stays at danger until your time and a clear section), Brackenby Viaduct and Highmoor Tunnel. the throttle (the regulator, on steam) and the brake are separate handles that stay where you leave them: W/S (or ↑/↓) open and close the throttle, E/D (or PgDn/PgUp) put the brake on and take it off, Space is the emergency brake, C changes the view (leaning out of the cab, sitting in the driver's seat behind the desk or the backhead, or from the lineside), T waits for the right away, Q (held) sounds the whistle or horn, M turns the sound off and on, H hands the train to another driver to finish the day. Every engine has its own synthesised sound: exhaust beats, diesel engines, whistles and horns. The line is drawn to the map, squeezed to about a quarter of its length, so each way takes about a quarter of an hour; the stations are hidden from each other round bends, the halts stand in the woods and the other stations have their village or town round them. If the timetable runs DMUs, you can drive each unit yourself from its own cab instead: out of the shed onto the headshunt, change ends (E), then into the platform up to the STOP board. Or start in the shunter, climb down (F) and walk over to the unit (hold Shift or ⚡ Sprint to run). A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
+        <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to make up the first train: the laptop folds away and you're in the cab. The coaches are already on the Platform road; the train engine (and the pilot, for a double-header) is in the engine shed with the rest of the fleet, every engine facing the shunter. Set the points for the right shed road, buffer up to the engine, draw it out, set the points back to the Platform road and buffer it up to the coaches, then uncouple. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the shunter. Buffer up gently (under 2 mph) to couple. The yard is Ravensgill station on the line itself, so the shed you shunt in is the one you drive past: engines not out that day stand in it, and engines in the works stand partly taken apart in the works extension beside it. Every class of engine is modelled from its own wheel arrangement, size and livery. <b>Drive a service:</b> or take a train out on the line yourself. Pick a train and the trip to start from, and drive it from the cab for the rest of its day, or just one way out or back, while the weekend runs on behind you (the other trains you meet are the weekend's own, and when you climb down the map carries on from the cab's clock): every booked call, the passing loops (the starter stays at danger until your time and a clear section), Brackenby Viaduct and Highmoor Tunnel. the throttle (the regulator, on steam) and the brake are separate handles that stay where you leave them: W/S (or ↑/↓) open and close the throttle, E/D (or PgDn/PgUp) put the brake on and take it off, Space is the emergency brake, C changes the view (leaning out of the cab, sitting in the driver's seat behind the desk or the backhead, or from the lineside), T waits for the right away, Q (held) sounds the whistle or horn, M turns the sound off and on, H hands the train to another driver to finish the day. Every engine has its own synthesised sound: exhaust beats, diesel engines, whistles and horns. The line is drawn to the map, squeezed to about a quarter of its length, so each way takes about a quarter of an hour; the stations are hidden from each other round bends, the halts stand in the woods and the other stations have their village or town round them. If the timetable runs DMUs, you can drive each unit yourself from its own cab instead: out of the shed onto the headshunt, change ends (E), then into the platform up to the STOP board. Or start in the shunter, climb down (F) and walk over to the unit (hold Shift or ⚡ Sprint to run). A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
         <li><b>Each turn is one week.</b> Plan the weekend in the <b>Timetable</b> app, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week. The weekend then plays out live on the <b>Line Map</b>, all its days together in the time of one (change the speed there, or pause it). You can't start the next week until the last train is home, but you can carry on booking events, buying stock and recruiting while it runs. The takings arrive when the weekend ends.</li>
         <li><b>Timetabling:</b> every train is a round trip from Ravensgill Junction to Moorend and back, about two hours with turn-rounds. Give each loco a set of departure times. If a train isn't back in time, its next trip leaves late.</li>
         <li><b>The printed timetable:</b> the Up and Down tables at the top of the Timetable app are the public timetable, a column for each train. The times are worked out by the signallers' plan, so a train held at a loop shows its real, later time. <b>|</b> means the train runs through without stopping.</li>
@@ -2984,6 +2984,23 @@ function pathPos(r, s){
   const a = P[lo], b = P[hi], f = Math.max(0, Math.min(1, (s - a.s)/((b.s - a.s)||1)));
   return {x: a.x + (b.x-a.x)*f, z: a.z + (b.z-a.z)*f};
 }
+// The engine shed over the far end of the two shed roads, and beside it the works extension where engines under
+// overhaul stand on their own road, the bay road, which leaves Shed road 2 just short of the shed doors.
+const SHED = (()=>{ const za = pathPos(2, routeEnd(2) - 50).z, zb = pathPos(2, routeEnd(2) + 3).z, xL = 2.3, xR = 13.3, xE = 21.0, bayX = 16.2;
+  const z0 = pathPos(3, zoneEnd(3)).z + 1, z1 = za - 1.5;
+  return {za, zb, xL, xR, xE, bayX, z0, z1, bayAt:z=>z <= z0 ? 10.4 : z >= z1 ? bayX : 10.4 + (bayX - 10.4)*(1 - Math.cos(Math.PI*(z - z0)/(z1 - z0)))/2}; })();
+// Ravensgill yard is laid out along the Platform road, which is the main line out of the terminus: yard z runs back from
+// the headshunt to the buffer stops (at z = YB), where the line starts at s = -16. The one Ravensgill serves both the
+// shunting and the drive: the shed and its roads are built into the line's scenery, and the yard draws the line's world.
+const YB = pathPos(1, routeEnd(1)).z;
+function yardPlace(G){
+  const B = G.at(-16), c = Math.cos(B.yaw), s = Math.sin(B.yaw);
+  return {B, yaw:B.yaw,
+    toLine:(x, z)=>({x:B.x + s*(YB - z) - c*x, z:B.z + c*(YB - z) + s*x}),
+    yawToLine:a => a + B.yaw + Math.PI,
+    // drawing the line's world in yard coordinates
+    m:new Float32Array([-c,0,-s,0, 0,1,0,0, s,0,-c,0, c*B.x - s*B.z, 0, YB + s*B.x + c*B.z, 1])};
+}
 function vPose(v){
   const f = pathPos(v.route, v.s + v.len*0.36), r = pathPos(v.route, v.s - v.len*0.36);
   return {x:(f.x+r.x)/2, z:(f.z+r.z)/2, yaw:Math.atan2(f.x-r.x, f.z-r.z)};
@@ -3002,7 +3019,7 @@ const yEngine = (key, number, name, livery) => { const md = locoModel(key, liver
 function dmuJob(set){
   const unit = yEngine(set.lcat.key, set.loco.number, set.lcat.name, set.trainGuest ? null : liveryOf(set.loco));
   unit.need = true;
-  const decoys = shuffle(state.locos.filter(l=>l!==set.loco && !isAway(l))).slice(0, 4)
+  const decoys = shuffle(state.locos.filter(l=>l!==set.loco && !isAway(l) && !isBusy(l))).slice(0, 4)
     .map(l=>yEngine(l.cat, l.number, catOf("loco", l.cat).name, liveryOf(l)));
   return {mode:"dmu", train:`${fmtT(set.deps[0])} ${set.label}`, time:fmtT(set.deps[0]), set:set.label, coaches:[], need:[unit], decoys};
 }
@@ -3018,7 +3035,7 @@ function shuntJob(plan){
   if(set.pilot) need.push(engine(set.pcat.key, set.pilot.number, set.pcat.name, set.pilotGuest ? null : liveryOf(set.pilot)));
   need.forEach(v=>v.need = true);
   // the rest of the fleet is on shed too
-  const decoys = shuffle(state.locos.filter(l=>l!==set.loco && l!==set.pilot && !isAway(l))).slice(0, 4)
+  const decoys = shuffle(state.locos.filter(l=>l!==set.loco && l!==set.pilot && !isAway(l) && !isBusy(l))).slice(0, 4)
     .map(l=>engine(l.cat, l.number, catOf("loco", l.cat).name, liveryOf(l)));
   return {train:`${fmtT(set.deps[0])} ${set.label}`, time:fmtT(set.deps[0]), set:set.label,
           coaches:[coach(0), coach(1), coach(2)], need, decoys};
@@ -3042,10 +3059,37 @@ function offerShunt(jobs){
 }
 let pendingJobs = [], pendingPlan = null;
 
+// engines standing still in the shed and the works, in yard coordinates (a unit car by car): spare engines on the shed
+// roads from the stops back towards the doors, and engines in the works on the bay road, partly taken apart for an
+// overhaul or repair (one being repainted stands there whole)
+function shedStatics(gl, spare, works){
+  const out = [], put = (md, at) => {
+    if(md.cars) md.cars(0).forEach(c=>out.push({mesh:meshBuffer(gl, c.mesh), ...at(c.off, c.len)}));
+    else out.push({mesh:meshBuffer(gl, md.mesh()), ...at(0, md.len)}); };
+  const used = {2:0, 3:0};
+  for(const l of spare){ const md = locoModel(l.cat, liveryOf(l), l.number), r = used[2] <= used[3] ? 2 : 3;
+    if(used[r] + md.len > YARD.sid[r-1] - 4) continue;
+    const sc = routeEnd(r) - 0.4 - used[r] - md.len/2; used[r] += md.len + SHED_GAP;
+    put(md, (off, len)=>{ const q = vPose({route:r, s:sc + off, len}); return {x:q.x, z:q.z, yaw:q.yaw + Math.PI}; }); }
+  let zEnd = SHED.zb - 2.2;
+  for(const l of works){ const md = locoModel(l.cat, liveryOf(l), l.number, l.busyWhy!=="paint");
+    if(zEnd - md.len < SHED.z1 + 3) break;
+    const zc = zEnd - md.len/2; zEnd -= md.len + 3.5;
+    put(md, off=>({x:SHED.bayX, z:zc + off, yaw:0})); }
+  return out;
+}
+const worksEngines = () => state.locos.filter(l=>isBusy(l) && !isAway(l));
+
 function startShunt(job, via){
   sndInit();
   const gl = yardGL();
   if(!gl){ alert("Your browser can't show the 3D yard (WebGL is turned off), so the shed staff will marshal the train."); advanceWeek({go:true}); return; }
+  const G = line3();   // the yard is Ravensgill on the line: the same world as the drive
+  if(!G.mesh){
+    openModal("Laying the Track", `<p>Building Ravensgill yard and the line…</p>`, true);
+    setTimeout(()=>{ G.mesh = meshBuffer(gl, lineSceneMesh(G)); closeModal(); startShunt(job, via); }, 80);
+    return;
+  }
   // the coaches stand buffered up to the stops on the Platform road, in order
   const coaches = job.coaches.map(v=>({...v})), need = job.need.map(v=>({...v})), spare = job.decoys.map(v=>({...v}));
   const veh = [...coaches, ...need, ...spare];
@@ -3067,7 +3111,7 @@ function startShunt(job, via){
   const dmu = job.mode==="dmu", unit = dmu ? veh[targetIds[0]] : null;
   const shunter = !dmu || via ? {id:-1, type:"shunter", label:"08 773", len:DIESEL_MODELS.c08.len, col:[.1,.36,.22], s:6.5, route:null} : null;
   const sh = unit && !via ? unit : shunter;
-  yd = {job, dmu, via:!!via, unit, shunter, veh, sh, string:[sh], targetIds, points:1, v:0, dir:sh===unit?-1:1, foot:null,
+  yd = {job, dmu, via:!!via, unit, shunter, veh, sh, string:[sh], targetIds, points:1, v:0, dir:sh===unit?-1:1, foot:null, G, Y:yardPlace(G), statics:shedStatics(gl, [], worksEngines()),
         look:0, pitch:-0.06, t:0, rough:0, keys:{}, done:false, raf:0, last:0, msgT:0};
   yd.all = shunter ? [shunter, ...veh] : veh;
   yd.all.forEach(v=>{
@@ -3082,7 +3126,9 @@ function startShunt(job, via){
   // walls of the engine shed, to walk round on foot
   { const za = pathPos(2, routeEnd(2) - 50).z, zb = pathPos(2, routeEnd(2) + 3).z, xL = 2.3, xR = 13.3, xm = (xL+xR)/2;
     yd.walls = [[xL-0.4, xL+0.4, za-0.4, zb+0.4], [xR-0.4, xR+0.4, za-0.4, zb+0.4], [xL, xR, zb-0.4, zb+0.4],
-                [xL-0.4, 3.15, za-0.4, za+0.4], [xm-0.6, xm+0.6, za-0.4, za+0.4], [12.45, xR+0.4, za-0.4, za+0.4]]; }
+                [xL-0.4, 3.15, za-0.4, za+0.4], [xm-0.6, xm+0.6, za-0.4, za+0.4], [12.45, xR+0.4, za-0.4, za+0.4],
+                [SHED.xE-0.4, SHED.xE+0.4, za-0.4, zb+0.4], [xR, SHED.xE, zb-0.4, zb+0.4],   // and the works extension, in through its own door
+                [xR, SHED.bayX-2.1, za-0.4, za+0.4], [SHED.bayX+2.1, SHED.xE+0.4, za-0.4, za+0.4]]; }
   // fold the laptop away and drop into the cab
   document.querySelector(".laptop").classList.add("away");
   setTimeout(()=>{
@@ -3099,6 +3145,7 @@ function endShunt(result){
   cancelAnimationFrame(yd.raf);
   if(yd.snd){ sndVoiceStop(yd.snd.voice); sndRunStop(yd.snd.run); }
   const gl = yardGL(); yd.all.forEach(v=>[...(v.parts || [v]), ...(v.open ? [v.open[1], v.open[-1]] : [])].forEach(c=>gl.deleteBuffer(c.mesh.buf)));
+  for(const st of yd.statics) gl.deleteBuffer(st.mesh.buf);
   const job = yd.job; yd = null;
   const y = document.getElementById("yard");
   y.classList.remove("show");
@@ -3340,7 +3387,7 @@ function yInfo(){
 }
 function yMap(){
   const c = document.getElementById("ymap"), g = c.getContext("2d"), W = c.width, H = c.height;
-  const zMax = routeEnd(1) + 8, u = z => 14 + z*(W-28)/zMax, v = x => H*0.72 - x*(H/22);
+  const zMax = routeEnd(1) + 8, u = z => 14 + z*(W-28)/zMax, v = x => H*0.8 - x*(H/27);
   g.clearRect(0,0,W,H);
   g.lineCap = "round";
   g.strokeStyle = "rgba(255,255,255,.35)"; g.lineWidth = 4;
@@ -3352,6 +3399,13 @@ function yMap(){
   const s0 = pathPos(2, routeEnd(2) - 50), s1 = pathPos(3, routeEnd(3) + 3);
   g.strokeStyle = "rgba(255,255,255,.55)"; g.lineWidth = 2; g.strokeRect(u(s0.z), v(13.3), u(s1.z) - u(s0.z), v(2.3) - v(13.3));
   g.fillText("Engine shed", u(s0.z) + 6, v(13.3) - 6);
+  // the works bay beside it, with the engines under repair
+  g.strokeStyle = "rgba(255,255,255,.35)"; g.lineWidth = 4; g.beginPath();
+  for(let z = SHED.z0 - 2; z <= SHED.zb - 1; z += 2) z > SHED.z0 - 2 ? g.lineTo(u(z), v(SHED.bayAt(z))) : g.moveTo(u(z), v(SHED.bayAt(z))); g.stroke();
+  g.strokeStyle = "rgba(255,255,255,.55)"; g.lineWidth = 2; g.strokeRect(u(SHED.za), v(SHED.xE), u(SHED.zb) - u(SHED.za), v(SHED.xR) - v(SHED.xE));
+  g.font = "bold 13px Segoe UI, sans-serif"; g.fillText("Works", u(SHED.zb) - 48, v(SHED.xE) + 15); g.font = "bold 17px Segoe UI, sans-serif";
+  for(const st of yd.statics || []){ g.fillStyle = "rgba(160,150,140,.9)"; g.fillRect(u(st.z) - 14, v(st.x) - 4, 28, 8); }
+  g.fillStyle = "rgba(255,255,255,.65)";
   [1,2,3].forEach(r=>{ const e = pathPos(r, zoneEnd(r) + 4); g.fillText(ROUTE_NAMES[r-1], u(e.z), v(e.x) + (r===1?24:-9)); });
   yd.all.forEach(x=>{
     const a = pathPos(x.route, x.s - x.len/2 + 0.6), b = pathPos(x.route, x.s + x.len/2 - 0.6);
@@ -3495,6 +3549,75 @@ function sceneryMesh(){
     box(a, x,h+1.6,z, 3.2+rnd(),3.6,3.2+rnd(), [.17,.32+rnd()*.08,.16], y);
   }
   return a;
+}
+// the yard's own works, in yard coordinates, for the line's scenery at Ravensgill: the shed roads and the bay road
+// (laid like the main line), buffer stops, the engine shed and its works extension, the water tower and crane, the
+// ground frame, the signal box and the STOP board for the units
+function yardWorksMesh(){
+  const a = [], ballast = [.5,.47,.43], sleeper = [.27,.19,.13], railC = [.56,.54,.5];
+  const brick = [.56,.3,.23], slate = [.24,.25,.29], cream = [.86,.8,.62], dark = [.12,.12,.13], glass = [.16,.19,.22], soot = [.2,.17,.15];
+  const {za, zb, xL, xR, xE, bayX} = SHED, zc = (za + zb)/2, sl = zb - za, xm = (xL + xR)/2, H = 6.4, ridge = 9.0;
+  // a length of track along a yard path given as points
+  const lay = P => { for(let i=0;i<P.length-1;i++){ const p = P[i], q = P[i+1], yaw = Math.atan2(q.x - p.x, q.z - p.z), l = Math.hypot(q.x - p.x, q.z - p.z), mx = (p.x + q.x)/2, mz = (p.z + q.z)/2;
+      box(a, mx, 0.04, mz, 3.8, 0.48, l + 0.05, ballast, yaw);
+      for(const o of [0.75,-0.75]) box(a, mx + Math.cos(yaw)*o, 0.455, mz - Math.sin(yaw)*o, 0.08, 0.15, l + 0.02, railC, yaw);
+      for(let t = 0.4; t < l; t += 0.8){ const f = t/l; box(a, p.x + (q.x - p.x)*f, 0.33, p.z + (q.z - p.z)*f, 2.6, 0.12, 0.26, sleeper, yaw); } } };
+  for(const r of [2,3]){ const P = []; for(let u = YARD.lead; u <= routeEnd(r) + 1.5; u += 2) P.push(pathPos(r, u)); lay(P); }
+  { const P = []; for(let z = SHED.z0 - 2; z <= zb - 1; z += 2) P.push({x:SHED.bayAt(z), z}); lay(P); }
+  const stop = (x, z) => { box(a, x, 0.75, z, 2.4, 1.0, 0.8, [.35,.25,.18]); box(a, x, 1.35, z, 2.8, 0.35, 0.3, [.75,.15,.12]); };
+  [2,3].forEach(r=>{ const e = pathPos(r, routeEnd(r) + 0.6); stop(e.x, e.z); }); stop(bayX, zb - 0.6);
+  // ground frame for the points, the STOP board for a unit drawing into the platform, and the signal box
+  box(a, 3.2,0.5,YARD.lead-4, 1.2,0.8,2.4, [.4,.36,.3]); box(a, 3.2,1.1,YARD.lead-4, 0.15,0.9,0.15, [.85,.85,.85]);
+  { const z = routeEnd(1) - 0.4 - YSTOP; box(a, -1.95,1.9,z, 0.1,1.9,0.1, dark); box(a, -1.95,3.0,z - 0.06, 0.75,0.75,0.05, cream); box(a, -1.95,3.0,z - 0.09, 0.5,0.18,0.02, [.75,.15,.12]); }
+  box(a, -7,1.7,YARD.lead-6, 4,3.4,6, brick); box(a, -7,4.6,YARD.lead-6, 4.2,2.4,6.2, cream);
+  box(a, -4.88,4.7,YARD.lead-6, 0.05,1.4,5.2, [.18,.22,.27]); box(a, -7,6.1,YARD.lead-6, 5,0.5,7.2, slate); box(a, -7,6.6,YARD.lead-6, 0.3,0.3,7.6, slate);
+  // the engine shed: brick walls, two open doors, a slate roof with smoke vents
+  box(a, (xL + xE)/2, 0.3, zc, xE - xL, 0.04, sl, [.17,.16,.15]);
+  for(const x of [xL, xR]) box(a, x, H/2, zc, 0.5, H, sl, brick);
+  box(a, xm, H/2, zb, xR - xL + 0.5, H, 0.5, brick);
+  box(a, (xL - 0.25 + 3.15)/2, H/2, za, 3.15 - xL + 0.25, H, 0.5, brick);
+  box(a, xm, H/2, za, 1.2, H, 0.5, brick);
+  box(a, (12.45 + xR + 0.25)/2, H/2, za, xR + 0.25 - 12.45, H, 0.5, brick);
+  box(a, xm, 5.9, za, xR - xL + 0.5, 1.0, 0.5, brick);
+  box(a, xm, 5.9, za - 0.27, 5.6, 0.55, 0.04, cream);                           // the shed name board
+  for(const z of [za - 0.25, zb + 0.25]) quad(a, [xL-0.25,H,z],[xR+0.25,H,z],[xm,ridge,z],[xm,ridge,z], brick, [0,0,z<zc?-1:1]);
+  quad(a, [xL-0.7,H-0.2,za-0.6],[xm,ridge+0.05,za-0.6],[xm,ridge+0.05,zb+0.6],[xL-0.7,H-0.2,zb+0.6], slate, [-1,1,0]);
+  quad(a, [xR+0.7,H-0.2,za-0.6],[xm,ridge+0.05,za-0.6],[xm,ridge+0.05,zb+0.6],[xR+0.7,H-0.2,zb+0.6], slate, [1,1,0]);
+  for(let z = za + 4; z < zb - 2; z += 7){ box(a, xm, ridge + 0.35, z, 1.3, 0.7, 2.6, soot); box(a, xm, ridge + 0.8, z, 1.8, 0.12, 3.0, slate); }
+  for(let z = za + 4; z < zb - 3; z += 5) for(const x of [xL - 0.27, xL + 0.27]) box(a, x, 3.4, z, 0.02, 2.0, 1.6, glass);
+  // the works extension: a lean-to along the shed, with its own door, roof lights, a travelling crane and benches
+  const eH = 5.0, eTop = 6.0, roofY = x => eTop + (eH - eTop)*(x - xR)/(xE - xR);
+  box(a, xE, eH/2, zc, 0.5, eH, sl, brick);
+  box(a, (xR + xE)/2, eH/2, zb, xE - xR, eH, 0.5, brick);
+  box(a, (xR + bayX - 2.1)/2, eH/2, za, bayX - 2.1 - xR, eH, 0.5, brick);
+  box(a, (bayX + 2.1 + xE + 0.25)/2, eH/2, za, xE + 0.25 - bayX - 2.1, eH, 0.5, brick);
+  box(a, bayX, 4.55, za, 4.2, 0.9, 0.5, brick);
+  box(a, bayX, 4.55, za - 0.27, 3.6, 0.45, 0.04, cream);                       // "WORKS" board
+  for(const z of [za - 0.25, zb + 0.25]) quad(a, [xR,eH,z],[xE+0.25,eH,z],[xE+0.25,eH,z],[xR,eTop,z], brick, [0,0,z<zc?-1:1]);
+  quad(a, [xR+0.25,eTop+0.05,za-0.5],[xR+0.25,eTop+0.05,zb+0.5],[xE+0.6,roofY(xE+0.6),zb+0.5],[xE+0.6,roofY(xE+0.6),za-0.5], slate, [0.15,1,0]);
+  quad(a, [xR+0.25,eTop-0.05,za-0.5],[xE+0.6,roofY(xE+0.6)-0.1,za-0.5],[xE+0.6,roofY(xE+0.6)-0.1,zb+0.5],[xR+0.25,eTop-0.05,zb+0.5], [.3,.28,.26], [0,-1,0]);
+  for(let z = za + 5; z < zb - 4; z += 9) quad(a, [xR+1.6,roofY(xR+1.6)+0.08,z],[xR+1.6,roofY(xR+1.6)+0.08,z+3],[xE-1.5,roofY(xE-1.5)+0.08,z+3],[xE-1.5,roofY(xE-1.5)+0.08,z], [.55,.62,.66], [0.15,1,0]);
+  for(let z = za + 4; z < zb - 3; z += 5) for(const x of [xE + 0.27, xE - 0.27]) box(a, x, 2.8, z, 0.02, 1.6, 1.6, glass);
+  // the travelling crane on its rails along the walls, with the hoist and hook over the bay road
+  for(const x of [xR + 0.5, xE - 0.5]) box(a, x, 4.2, zc, 0.3, 0.3, sl - 1, dark);
+  { const z = zc + 6; box(a, (xR + xE)/2, 4.45, z, xE - xR - 0.6, 0.45, 0.5, [.75,.55,.12]); box(a, bayX, 4.1, z, 0.9, 0.5, 0.9, dark);
+    box(a, bayX, 3.2, z, 0.04, 1.4, 0.04, [.5,.5,.5]); box(a, bayX, 2.45, z, 0.25, 0.2, 0.12, dark); }
+  for(let z = za + 6; z < zb - 6; z += 12){ box(a, xE - 1.0, 0.9, z, 1.2, 0.1, 3.6, [.4,.3,.2]); for(const dz of [-1.6, 1.6]) for(const dx of [-0.5, 0.5]) box(a, xE - 1.0 + dx, 0.45, z + dz, 0.08, 0.9, 0.08, dark);
+    box(a, xE - 1.0, 1.05, z - 0.8, 0.5, 0.2, 0.4, [.5,.5,.52]); box(a, xE - 0.8, 1.0, z + 0.9, 0.3, 0.1, 0.6, [.6,.15,.12]); }   // benches with a vice and a toolbox
+  // a water crane by the doors and the water tower by the headshunt
+  box(a, xm, 0.3, za - 7, 1.2, 0.6, 1.2, dark); box(a, xm, 2.0, za - 7, 0.35, 3.4, 0.35, dark); box(a, xm - 1.3, 3.6, za - 7, 2.6, 0.25, 0.25, dark);
+  for(const [dx,dz] of [[-1.1,-1.1],[1.1,-1.1],[-1.1,1.1],[1.1,1.1]]) box(a, 5.5+dx,2.5,40+dz, 0.3,5,0.3, dark);
+  box(a, 5.5,6.2,40, 3.4,2.4,3.4, [.2,.24,.27]); box(a, 4.2,4.8,40, 0.25,0.25,2.6, dark);
+  box(a, 7,0.8,56, 3,1.6,8, [.08,.08,.08]);
+  return a;
+}
+// a mesh moved from yard coordinates into the line's world (positions and normals; the colours ride along)
+function yardToLine(arr, Y){
+  const c = Math.cos(Y.yaw), s = Math.sin(Y.yaw), out = new Array(arr.length);
+  for(let i=0;i<arr.length;i+=9){ const x = arr[i], z = arr[i+2], nx = arr[i+3], nz = arr[i+5], q = Y.toLine(x, z);
+    out[i] = q.x; out[i+1] = arr[i+1] + Y.B.y; out[i+2] = q.z; out[i+3] = -c*nx - s*nz; out[i+4] = arr[i+4]; out[i+5] = s*nx - c*nz;
+    out[i+6] = arr[i+6]; out[i+7] = arr[i+7]; out[i+8] = arr[i+8]; }
+  return out;
 }
 function vehicleMesh(v){
   const a = [], L = v.len, h = L/2, dark = [.11,.11,.12], red = [.62,.12,.1];
@@ -4122,15 +4245,35 @@ function doRepaint(){
   render();
 }
 
-function locoModel(key, livery, number){
+function locoModel(key, livery, number, strip){   // strip: partly taken apart in the works
   const num = number!=null ? {num:String(number), era:eraOf(key, livery || liveriesOf(key)[0])} : {};
-  const s0 = STEAM_MODELS[key]; if(s0){ const s = {...withLivery(s0, livery, "steam"), ...num}; return {kind:"steam", len:s.eng + (s.tend||0), col:s.col, mesh:()=>steamMesh(s)}; }
+  const s0 = STEAM_MODELS[key]; if(s0){ const s = {...withLivery(s0, livery, "steam"), ...num, strip:!!strip}; return {kind:"steam", len:s.eng + (s.tend||0), col:s.col, mesh:()=>steamMesh(s)}; }
   const u0 = DMU_MODELS[key]; if(u0){ const u = {...withLivery(u0, livery, "dmu"), ...num}; return {kind:"dmu", len:u.carLen*u.cars, col:u.col, mesh:()=>dmuMesh(u),
     cars:open=>Array.from({length:u.cars}, (_,i)=>{ const cut = (open>0 && i===u.cars-1) || (open<0 && i===0) ? open : 0;
-      return {off:(i - (u.cars-1)/2)*u.carLen, len:u.carLen, mesh:dmuCar(u, i===u.cars-1, u.cars===1 || i===0, cut),
+      const car = dmuCar(u, i===u.cars-1, u.cars===1 || i===0, cut);
+      return {off:(i - (u.cars-1)/2)*u.carLen, len:u.carLen, mesh:strip ? stripMesh(car, u.carLen, (x,y)=>y < (u.low ? 0.95 : 1.12) || y > (u.low ? 3.5 : 3.78)) : car,
               eye: cut ? [-0.55, (u.low ? 1.2 : 1.38) + 1.7, cut*(u.carLen/2 - 1.7)] : null}; })}; }
-  const d0 = DIESEL_MODELS[key]; if(d0){ const d = {...withLivery(d0, livery, "diesel"), ...num}; return {kind:"diesel", len:d.len, col:d.col, mesh:()=>dieselMesh(d)}; }
+  const d0 = DIESEL_MODELS[key]; if(d0){ const d = {...withLivery(d0, livery, "diesel"), ...num}; return {kind:"diesel", len:d.len, col:d.col, mesh:()=>strip ? stripDiesel(dieselMesh(d), d) : dieselMesh(d)}; }
   return {kind:"diesel", len:15.5, col:LV.brgreen, mesh:()=>dieselMesh({style:"cab", len:15.5, bogie:"Bo", col:LV.brgreen, yellow:"panel"})};
+}
+
+// an engine partly taken apart for overhaul: whatever cut() picks out is gone (the wheels, bogies, boiler or roof), and
+// what's left stands on timber accommodation stands
+function stripMesh(arr, len, cut){
+  const out = [];
+  for(let i=0;i<arr.length;i+=27){ const x = (arr[i]+arr[i+9]+arr[i+18])/3, y = (arr[i+1]+arr[i+10]+arr[i+19])/3, z = (arr[i+2]+arr[i+11]+arr[i+20])/3;
+    if(!cut(x, y, z)) for(let k=0;k<27;k++) out.push(arr[i+k]); }
+  for(let z = -len/2 + 1.6; z < len/2 - 1.2; z += Math.max(2.8, (len - 2.8)/4)) for(const x of [0.8, -0.8]){
+    box(out, x, 0.62, z, 0.36, 1.24, 0.36, [.36,.27,.18]); box(out, x, 1.27, z, 0.5, 0.06, 0.5, [.3,.22,.15]); }
+  return out;
+}
+// a diesel in the works: off its bogies, the roof sections lifted off and laid on the floor, a spare wheelset beside it
+function stripDiesel(arr, d){
+  const out = stripMesh(arr, d.len, (x,y)=>y < 1.3 || y > 3.98), roof = d.roof || [.32,.33,.34], L = d.len;
+  for(let k=0;k<3;k++) box(out, 3.0, 0.12 + k*0.16, -L/4 + k*0.4, 2.3, 0.14, 3.2, k===2 ? d.col : roof);
+  for(const sx of [0.75,-0.75]) cyl(out,"x", 3.0 + sx, 0.53, L/4, 0.53, 0.13, [.1,.1,.1], 18);
+  cyl(out,"x", 3.0, 0.53, L/4, 0.09, 1.6, [.3,.3,.3], 10);
+  return out;
 }
 
 // a square-section beam between two points in any direction (rods, pipes, slanted plates)
@@ -4424,7 +4567,15 @@ function steamMesh(m){
       for(const sx of [0.6,-0.6]) cyl(a,"z", sx, top + 0.5, t1 - 0.04, 0.2, 0.02, GLASS, 14); }
     if(m.line) for(const sx of [hw+0.001,-hw-0.001]){ box(a, sx, bodyLo + 0.2, tm, 0.01, 0.05, tl - 0.4, m.line); box(a, sx, top - 0.18, tm, 0.01, 0.05, tl - 0.4, m.line); }
   }
-  return a;
+  if(!m.strip) return a;
+  // in the works: the wheels out from under it, and the boiler, smokebox and tanks lifted off the frames and set down
+  // on trestles beside, the barrel and the smokebox, with the chimney still on
+  const out = stripMesh(a, L, (x,y,z)=>y < 1.22 || (z > zCabF + 0.15 && y > yRP + 0.32)), bl = zs0 - zCabF - 0.4, bz = zCabF + 0.2 + bl/2, by = 0.75 + Rf;
+  for(const z of [bz - bl*0.3, bz + bl*0.3]) box(out, 3.0, 0.38, z, Rf*2 + 0.2, 0.75, 0.45, [.36,.27,.18]);
+  cyl(out,"z", 3.0, by, bz - 0.4, R, bl - 0.8, col, 20);
+  cyl(out,"z", 3.0, by, zs0 - 0.4, Rf + 0.06, 0.8, B, 20); cyl(out,"y", 3.0, by + Rf + 0.25, zs0 - 0.4, 0.28, 0.6, B, 14);
+  for(const z of [zCabF + 0.6, bz]) cyl(out,"z", 3.0, by, z, R + 0.015, 0.06, [.55,.4,.25], 20);   // rust-brown where the cladding is off
+  return out;
 }
 
 // Diesel multiple units: car length and count, wheels (bogies or the four-wheelers' single axles),
@@ -4907,8 +5058,8 @@ function yDraw(){
   let eye, head;
   const cab = yCab();
   if(!yd.sh){
-    const f = yd.foot, plat = f.x > -8.45 && f.x < -1.55 && f.z > zoneEnd(1) + 2 && f.z < routeEnd(1) + 4;
-    eye = [f.x, 1.7 + (plat ? 0.94 : 0), f.z]; head = f.yaw;
+    const f = yd.foot, plat = f.x > -5.6 && f.x < -1.6 && f.z > YB - 156 && f.z < YB + 6;   // the line's platform
+    eye = [f.x, 1.7 + (plat ? 1.0 : 0), f.z]; head = f.yaw;
   } else if(cab){
     const {q, Y, e} = cab, c = Math.cos(Y), sn = Math.sin(Y);
     eye = [q.x + c*e[0] + sn*e[2], e[1], q.z - sn*e[0] + c*e[2]]; head = Y + (cab.me<0 ? Math.PI : 0);
@@ -4918,11 +5069,12 @@ function yDraw(){
   }
   const yaw = head + yd.look; let dir = [Math.sin(yaw)*Math.cos(yd.pitch), Math.sin(yd.pitch), Math.cos(yaw)*Math.cos(yd.pitch)];
   if(yd.cam){ eye = yd.cam.eye; dir = yd.cam.dir; }
-  const vp = m4mul(m4persp((yd.cam && yd.cam.fov) || 1.2, cv.width/cv.height, 0.25, 900), m4look(eye, dir));
+  const vp = m4mul(m4persp((yd.cam && yd.cam.fov) || 1.2, cv.width/cv.height, 0.25, 2600), m4look(eye, dir));
   gl.uniformMatrix4fv(YGL.vp, false, vp);
-  gl.uniform3f(YGL.fog, .62,.76,.88); gl.uniform2f(YGL.fr, 90, 380);
+  gl.uniform3f(YGL.fog, .62,.76,.88); gl.uniform2f(YGL.fr, 350, 1500);
   const draw = glDraw;
-  draw(YGL.scene, m4model(0,0,0));
+  draw(yd.G.mesh, yd.Y.m);   // Ravensgill and the line beyond, the same world you drive through
+  for(const st of yd.statics) draw(st.mesh, m4model(st.x, st.z, st.yaw));   // engines in the works
   yd.all.forEach(v=>{   // engines face the shunter
     const turn = v.flip ? Math.PI : 0;
     if(v.parts) v.parts.forEach((c,i)=>{ const q = vPose({route:v.route, s:v.s + (v.flip ? -c.off : c.off), len:c.len});
@@ -5394,7 +5546,7 @@ function line3(){
   const river = RIVER_PTS.map(([x,y])=>{ const p = W(x,y); return [p.x,p.z]; }), res = W(880,70);
   const keep = [[miles[VIADUCT[0]], miles[VIADUCT[1]], 90], [miles[TUNNEL[0]], miles[TUNNEL[1]], 90]].map(([a,b,g])=>[sAt(a) - g, sAt(b) + g]);
   const bows = [];
-  for(let i=0;i<STATIONS.length-1;i++){ const a = sAt(STATIONS[i].mile) + (i===0 ? DRV.plat : DRV.plat/2) + 45, b = sAt(STATIONS[i+1].mile) - (i+1===STATIONS.length-1 ? DRV.plat : DRV.plat/2) - 45;
+  for(let i=0;i<STATIONS.length-1;i++){ const a = sAt(STATIONS[i].mile) + (i===0 ? DRV.plat + 130 : DRV.plat/2 + 45), b = sAt(STATIONS[i+1].mile) - (i+1===STATIONS.length-1 ? DRV.plat : DRV.plat/2) - 45;
     let runs = [[a, b]];
     for(const [k0, k1] of keep) runs = runs.flatMap(([r0, r1])=>k1 <= r0 || k0 >= r1 ? [[r0, r1]] : [[r0, k0], [k1, r1]].filter(([u,v])=>v - u > 0));
     for(const [r0, r1] of runs){ const len = r1 - r0; if(len < 260) continue;
@@ -5774,7 +5926,7 @@ function lineScenery(a, G, T){
       quad(a, [xa - c, ya, za + sn], [xa + c, ya, za - sn], [xb + c, yb, zb - sn], [xb - c, yb, zb + sn], SC.tar, [0,1,0]); } };
   const wet = (x, z) => polyDist(T.river, x, z) < 45 || ((x - T.res.x)/(70*G.S))**2 + ((z - T.res.z)/(30*G.S))**2 < 1.6;
   const TOWNS = [
-    {i:0, parts:[[-40, -1, 150, 22], [140, 1, 150, 16], [300, -1, 175, 12], [40, 1, 260, 10]], church:"Ravensgill", pub:"The Junction Inn"},
+    {i:0, parts:[[-60, 1, 150, 22], [160, 1, 170, 16], [330, 1, 190, 12], [40, 1, 290, 10]], church:"Ravensgill", pub:"The Junction Inn"},   // all on the station side, clear of the yard
     {i:2, parts:[[20, -1, 140, 14], [-120, 1, 160, 6]], church:"Lowerdale", pub:"The Black Bull", farm:true},
     {i:4, parts:[[-30, -1, 130, 12]], pub:"The Fleece", farm:true},
     {i:6, parts:[[-60, 1, 130, 10], [-200, -1, 150, 5]], church:"Moorend"}];
@@ -5793,12 +5945,9 @@ function lineScenery(a, G, T){
       if(t.n.d < 28 || t.h < T.nat(q.x, q.z, t.n) - 5) continue;
       const F = scFrame(q.x, t.h, q.z, q.yaw); scHouse(a, F, 0, 0, 6, 8 + rnd()*4, rnd() < 0.6 ? 2 : 1, [SC.stone, SC.stone3, SC.stone2, SC.brick][Math.floor(rnd()*4)], -side);
       for(const dz of [-6, 6]) F.b(a, side*6.5, 0.45, dz, 7, 0.9, 0.4, SC.stone2); F.b(a, side*10, 0.45, 0, 0.4, 0.9, 12, SC.stone2); } });
-  // Ravensgill shed and yard: the engine shed, a coaling stage, and wagons in the siding
-  { const r0 = G.plat[0][1] + 70, F = scFrame(...(q=>[q.x, T.height(q.x, q.z).h, q.z, q.yaw])(G.at(r0, -24)));
-    F.b(a, 0, 4, 0, 12, 8, 34, SC.brick); scRoof(a, F, 0, 8, 0, 12, 34, 3.2, SC.slate, SC.brick);
-    for(let k=0;k<4;k++) F.b(a, 0, 11.6, -12 + k*8, 1.2, 1.2, 2.6, [.2,.18,.16]);
-    for(const dx of [-3, 3]) F.b(a, dx, 3, 17.03, 4, 6, 0.06, [.12,.11,.1]);
-    F.b(a, 12, 2.2, 5, 5, 4.4, 9, SC.stone2); F.b(a, 12, 4.6, 5, 6, 0.4, 10, SC.dark);
+  // Ravensgill shed and yard: the shunting yard's own shed roads, engine shed and works, and wagons in the siding
+  for(const v of yardToLine(yardWorksMesh(), yardPlace(G))) a.push(v);
+  { const r0 = G.plat[0][1] + 70;
     for(let k=0;k<5;k++){ const W = scFrame(...(q=>[q.x, T.height(q.x, q.z).h, q.z, q.yaw])(G.at(r0 + 30 + k*7.2, -15)));
       for(let t=-3;t<=3;t+=1.5) W.b(a, 0, 0.3, t, 2.6, 0.12, 0.26, [.27,.19,.13]); for(const o of [-0.75, 0.75]) W.b(a, o, 0.48, 0, 0.08, 0.1, 7.2, [.56,.54,.5]);
       W.b(a, 0, 1.6, 0, 2.5, 1.5, 5.4, k%2 ? [.45,.3,.2] : [.3,.3,.32]); W.b(a, 0, 0.85, 0, 2.2, 0.35, 5.0, SC.dark);
@@ -5924,6 +6073,9 @@ function startDrive(k, from, mode){
     return {a, d:0, dir:1, train:driveConsist(gl, st), prof:sndProfile(st.pilot ? st.pcat.key : st.lcat.key)}; });
   { const lead = dv.train[0], eye = lead.eye || [0, 0, lead.len/2 - 1.7], key = set.pilot ? set.pcat.key : set.lcat.key;
     dv.snd = {voice:sndVoiceStart(sndProfile(key)), run:sndRunStart(sndAxles(dv.train, lead.len/2 - eye[2])), odo:0}; }
+  { // the engines not out today stand in the shed as you pass, and those in the works stand in the works bay
+    const running = new Set(plan.sets.flatMap(s=>[s.loco, s.pilot]));
+    dv.yard = {Y:yardPlace(G), statics:shedStatics(gl, state.locos.filter(l=>!running.has(l) && !isAway(l) && !isBusy(l)), worksEngines())}; }
   dv.sigMesh = {r:meshBuffer(gl, (()=>{ const m = []; box(m, 0,0,0, 0.22,0.22,0.06, [1,.12,.08]); return m; })()), g:meshBuffer(gl, (()=>{ const m = []; box(m, 0,0,0, 0.22,0.22,0.06, [.2,1,.35]); return m; })())};
   document.querySelector(".laptop").classList.add("away");
   const y = document.getElementById("yard"); y.classList.add("drv");
@@ -6121,6 +6273,7 @@ function endDrive(result){
   const gl = yardGL(), seen = new Set();
   [dv.train, ...dv.others.map(o=>o.train)].forEach(t=>t.forEach(v=>{ for(const m of [v.mesh, v.plain]) if(m && !seen.has(m)){ seen.add(m); gl.deleteBuffer(m.buf); } }));
   for(const m of Object.values(dv.sigMesh)) gl.deleteBuffer(m.buf);
+  for(const st of dv.yard.statics) gl.deleteBuffer(st.mesh.buf);
   if(dv.snd){ sndVoiceStop(dv.snd.voice); sndRunStop(dv.snd.run);
     for(const n of [dv.snd.pass, dv.snd.pass2]) if(n){ n.g.gain.setTargetAtTime(0, SND.ctx.currentTime, 0.1); n.src.stop(SND.ctx.currentTime + 0.5); } }
   dv = null;
@@ -6169,6 +6322,7 @@ function driveDraw(){
   const vp = m4mul(m4persp(1.15, cv.width/cv.height, seat && !dv.camX ? seat.near : 0.25, 2600), m4look(eye, dir));
   gl.uniformMatrix4fv(YGL.vp, false, vp); gl.uniform3f(YGL.fog, .64,.76,.86); gl.uniform2f(YGL.fr, 350, 1500);
   glDraw(G.mesh, m4at(0,0,0,0));
+  { const Y = dv.yard.Y; for(const st of dv.yard.statics){ const q = Y.toLine(st.x, st.z); glDraw(st.mesh, m4at(q.x, Y.B.y, q.z, Y.yawToLine(st.yaw))); } }
   mine.forEach((p,i)=>glDraw(dv.cam!==1 || !p.v.plain ? p.v.mesh : p.v.plain, m4at(p.x, p.y, p.z, p.yaw + (p.v.flip ? Math.PI : 0))));
   // the other trains: in the platforms, out on the line, and through the loops on the loop road as they pass you
   for(const o of dv.others){ const p0 = dOtherPlace(o); if(!p0) continue;

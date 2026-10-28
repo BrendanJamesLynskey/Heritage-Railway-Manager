@@ -44,8 +44,8 @@ summit, the B6481 and Highmoor Reservoir. Along it:
 - **Stations:** booking halls with windows, doors and chimneys, canopies on
   iron columns, white palings, benches, flower tubs, milk churns, barrows and
   clocks; signal boxes, footbridges and waiting shelters at the loops; water
-  columns; car parks full of cars; Ravensgill's engine shed, coaling stage and
-  a siding of wagons.
+  columns; car parks full of cars; Ravensgill's engine shed and works (the same
+  yard you shunt in), and a siding of wagons.
 - **Places to eat and drink:** the Thorpe Arms by Kirkby Thorpe crossing, the
   Goods Shed Tea Room at Lowerdale, the Viaduct Inn at Brackenby, the Junction
   Inn and the Station Buffet at Ravensgill, the Fellside Café, the Summit Tea
@@ -198,6 +198,27 @@ fleet, every engine standing chimney or nose towards the shunter. Set the
 three-way point for the right shed road, buffer up to the engine, draw it out
 onto the headshunt, set the road for the Platform road and buffer it up to the
 coaches, then uncouple.
+
+**One Ravensgill for shunting and driving.** The yard is Ravensgill station on
+the line itself: the Platform road is the main line out of the terminus, the
+headshunt runs out along it, and the two shed roads, the engine shed, the water
+tower, ground frame and signal box are built into the line's scenery. So the
+shunting view shows the town, the station building and the hills beyond, and
+when you drive a service you pull out past the same shed. While you drive, every
+engine of yours not out on the line that day stands on the shed roads, and you
+see them through the open doors as you pass.
+
+**The works.** A lean-to extension along the side of the shed, with its own
+road off Shed road 2, its own door, roof lights, a travelling crane over the
+road and benches along the wall, is where engines in the works stand, in both
+the yard and the drive. An engine in for repairs or an overhaul is shown
+partly taken apart: a steam engine is off its wheels and up on timber stands
+with its boiler, smokebox and tanks lifted off the frames, and the boiler and
+smokebox laid on trestles beside it; a diesel is off its bogies on stands with
+its roof sections lifted off and laid on the floor, with a spare wheelset
+beside it; a DMU is off its bogies with its roof off. One being repainted
+stands there whole. Engines in the works no longer turn up on the shed roads to
+be shunted round.
 
 Every locomotive class is modelled individually, checked against photographs
 of the real engines and their published dimensions (cylinders and panels as well
