@@ -34,7 +34,7 @@ New Game. On a phone, windows open full screen.
 When you press **Run the Weekend**, you can also take a train out on the line
 yourself. Pick any train in the timetable and the trip to start from, and drive
 it from the cab (leaning out of the cab side of a steam or diesel engine, or from
-a DMU's driving seat) for the rest of its day.
+a DMU's driving seat) for the rest of its day, or just one way.
 
 The 3D line is built from the map's own alignment: all seven stations with
 their platforms and nameboards, the passing loops, Brackenby Viaduct's twelve
@@ -50,18 +50,28 @@ summit, the B6481 and Highmoor Reservoir. Along it:
   Goods Shed Tea Room at Lowerdale, the Viaduct Inn at Brackenby, the Junction
   Inn and the Station Buffet at Ravensgill, the Fellside Café, the Summit Tea
   Hut and the Reservoir Café, each with its sign.
-- **Villages:** terraces of stone cottages, houses with garden walls,
-  churches with towers, farms with barns and bales, and lanes down to every
-  station.
+- **Towns, villages and woods:** Ravensgill is a small town round its
+  junction, and Lowerdale, Fellside and Moorend are villages round their
+  stations: terraces of stone cottages, houses with garden walls, churches
+  with towers, farms with barns and bales, and lanes down to every station.
+  The halts (Kirkby Thorpe, Brackenby and Highmoor Summit) stand on their own
+  in the woods, with a conifer plantation up at the summit.
+- **Curves before the stations:** between stations the line swings out round
+  a bend and back, with a wood on the inside of the curve, so the next station
+  only comes into sight as you round the last bend.
 - **Crossings and bridges:** level crossings with white gates, red targets and
   lamps, keepers' cottages and whistle boards; farm crossings; stone arched
   overbridges with their approach ramps.
 - **The lineside:** telegraph poles with their wires, quarter-mile posts,
   platelayers' huts, stone walls, hedgerows and hedgerow trees, sheep on the
-  fells and cattle in the pastures. It is squeezed five times (about
-4.5 km end to end, with the stations 600 m to 1 km apart) and the clock runs
-four times as fast, so a round trip takes about half an hour instead of two
-(less if you wait out the layovers with ⏩), and the booked timetable still fits.
+  fells and cattle in the pastures. It is squeezed 3.8 times (about
+6 km end to end, with the stations 0.8 to 1.3 km apart), so each way takes
+about a quarter of an hour. The clock runs a little over three times as fast
+while you're moving, so the booked timetable still fits at line speed, and
+faster while you stand at a station with no other train about, so the dwells
+and layovers don't drag (wait them out altogether with ⏩).
+In the Drive a Service picker choose **the rest of its day** (from any of its
+trips), or **one way**: out to Moorend, or back from Moorend to Ravensgill.
 Each engine's best speed on each section is the one the timetable was worked
 out from, for its load, its pace and the climb; downhill the train will run
 away with you if you let it.

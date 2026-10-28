@@ -540,7 +540,7 @@
       <ul style="font-size:.9rem">
         <li><b>The laptop:</b> each part of the railway is an app on the desktop. Double-click an icon (or tap it on a touch screen) to open its window; drag windows by the title bar, resize them from the corner, and switch between them on the taskbar. The <b>Start</b> button (the R&amp;H roundel) lists every app.</li>
         <li><b>Mail:</b> railtour companies and other heritage railways email asking to hire your locomotives. Accept their offer, decline, or send a counter-offer: ask for more, but push too hard and they'll go elsewhere. A hired-out engine is away for the weeks agreed, and comes back a little more worn.</li>
-        <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to make up the first train: the laptop folds away and you're in the cab. The coaches are already on the Platform road; the train engine (and the pilot, for a double-header) is in the engine shed with the rest of the fleet, every engine facing the shunter. Set the points for the right shed road, buffer up to the engine, draw it out, set the points back to the Platform road and buffer it up to the coaches, then uncouple. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the shunter. Buffer up gently (under 2 mph) to couple. Every class of engine is modelled from its own wheel arrangement, size and livery. <b>Drive a service:</b> or take a train out on the line yourself. Pick a train and the trip to start from, and drive it from the cab for the rest of its day: every booked call, the passing loops (the starter stays at danger until your time and a clear section), Brackenby Viaduct and Highmoor Tunnel. ↑/↓ (or W/S) move the power and brake lever, Space is the emergency brake, C changes the view, T waits for the right away, Q (held) sounds the whistle or horn, M turns the sound off and on, H hands the train to another driver to finish the day. Every engine has its own synthesised sound: exhaust beats, diesel engines, whistles and horns. The line is drawn to the map but squeezed five times and the clock runs four times as fast, so a round trip takes about half an hour. If the timetable runs DMUs, you can drive each unit yourself from its own cab instead: out of the shed onto the headshunt, change ends (E), then into the platform up to the STOP board. Or start in the shunter, climb down (F) and walk over to the unit (hold Shift or ⚡ Sprint to run). A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
+        <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to make up the first train: the laptop folds away and you're in the cab. The coaches are already on the Platform road; the train engine (and the pilot, for a double-header) is in the engine shed with the rest of the fleet, every engine facing the shunter. Set the points for the right shed road, buffer up to the engine, draw it out, set the points back to the Platform road and buffer it up to the coaches, then uncouple. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the shunter. Buffer up gently (under 2 mph) to couple. Every class of engine is modelled from its own wheel arrangement, size and livery. <b>Drive a service:</b> or take a train out on the line yourself. Pick a train and the trip to start from, and drive it from the cab for the rest of its day, or just one way out or back: every booked call, the passing loops (the starter stays at danger until your time and a clear section), Brackenby Viaduct and Highmoor Tunnel. ↑/↓ (or W/S) move the power and brake lever, Space is the emergency brake, C changes the view, T waits for the right away, Q (held) sounds the whistle or horn, M turns the sound off and on, H hands the train to another driver to finish the day. Every engine has its own synthesised sound: exhaust beats, diesel engines, whistles and horns. The line is drawn to the map, squeezed to about a quarter of its length, so each way takes about a quarter of an hour; the stations are hidden from each other round bends, the halts stand in the woods and the other stations have their village or town round them. If the timetable runs DMUs, you can drive each unit yourself from its own cab instead: out of the shed onto the headshunt, change ends (E), then into the platform up to the STOP board. Or start in the shunter, climb down (F) and walk over to the unit (hold Shift or ⚡ Sprint to run). A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
         <li><b>Each turn is one week.</b> Plan the weekend in the <b>Timetable</b> app, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week. The weekend then plays out live on the <b>Line Map</b>, all its days together in the time of one (change the speed there, or pause it). You can't start the next week until the last train is home, but you can carry on booking events, buying stock and recruiting while it runs. The takings arrive when the weekend ends.</li>
         <li><b>Timetabling:</b> every train is a round trip from Ravensgill Junction to Moorend and back, about two hours with turn-rounds. Give each loco a set of departure times. If a train isn't back in time, its next trip leaves late.</li>
         <li><b>The printed timetable:</b> the Up and Down tables at the top of the Timetable app are the public timetable, a column for each train. The times are worked out by the signallers' plan, so a train held at a loop shows its real, later time. <b>|</b> means the train runs through without stopping.</li>
@@ -5186,11 +5186,12 @@ function sndVoiceStop(r){
 }
 
 /* ============================ DRIVING A SERVICE ============================ */
-// The 3D line is the map's own track (LINE_PTS), squeezed five times so a round trip takes minutes, not hours.
-// The clock runs faster while you drive (a little less than the squeeze, as starting and stopping take
-// as long as ever), so the booked timetable still fits.
-const DRV = {squeeze:5, clock:4, step:4, plat:150, lim:25};
-const STN_H = [0, 6, 13, 19, 28, 60, 53];   // each station's height above Ravensgill in the squeezed world, metres
+// The 3D line is the map's own track (LINE_PTS), squeezed 3.8 times so a one-way trip takes about a quarter of an hour.
+// The clock runs a little slower than the squeeze while the train is moving, so the booked running times can
+// be kept at line speed, and faster while it stands at a station with no other train about, so the dwells
+// and layovers don't drag.
+const DRV = {squeeze:3.8, clock:3.25, standClock:9, step:4, plat:150, lim:25};
+const STN_H = [0, 8, 17, 25, 37, 79, 70];   // each station's height above Ravensgill in the squeezed world, metres
 const RIVER_PTS = [[845,94],[750,192],[612,298],[487,404],[360,478],[190,560],[70,620]];
 const ROAD_PTS = [[0,492],[120,478],[240,500],[360,462],[480,440],[600,385],[700,300],[760,262],[860,190],[960,120]];
 const smooth01 = t => { t = Math.max(0, Math.min(1, t)); return t*t*(3 - 2*t); };
@@ -5206,12 +5207,32 @@ function line3(){
   for(let k=0;k<4;k++){ const Q = [P[0]];
     for(let i=0;i<P.length-1;i++){ const a = P[i], b = P[i+1], mix = f => ({x:a.x + (b.x-a.x)*f, z:a.z + (b.z-a.z)*f, m:a.m + (b.m-a.m)*f}); Q.push(mix(0.25), mix(0.75)); }
     Q.push(P[P.length-1]); P = Q; }
-  const cum = [0]; for(let i=1;i<P.length;i++) cum.push(cum[i-1] + Math.hypot(P[i].x-P[i-1].x, P[i].z-P[i-1].z));
-  const L = cum[cum.length-1], pts = [];
-  for(let s=0, j=0; s<=L; s+=DRV.step){ while(j < P.length-2 && cum[j+1] < s) j++;
-    const f = (s - cum[j])/((cum[j+1] - cum[j]) || 1), a = P[j], b = P[j+1];
-    pts.push({x:a.x + (b.x-a.x)*f, z:a.z + (b.z-a.z)*f, m:a.m + (b.m-a.m)*f, s}); }
+  const resample = P => { const cum = [0]; for(let i=1;i<P.length;i++) cum.push(cum[i-1] + Math.hypot(P[i].x-P[i-1].x, P[i].z-P[i-1].z));
+    const L = cum[cum.length-1], pts = [];
+    for(let s=0, j=0; s<=L; s+=DRV.step){ while(j < P.length-2 && cum[j+1] < s) j++;
+      const f = (s - cum[j])/((cum[j+1] - cum[j]) || 1), a = P[j], b = P[j+1];
+      pts.push({x:a.x + (b.x-a.x)*f, z:a.z + (b.z-a.z)*f, m:a.m + (b.m-a.m)*f, s}); }
+    return {L, pts}; };
+  // between stations the line swings out round a curve and back, so each station only comes into view round
+  // the last bend; the bows keep clear of the platforms, the viaduct, the tunnel, the river and the reservoir
+  const P0 = resample(P).pts, sAt = m => { let i = 0; while(i < P0.length-1 && P0[i+1].m < m) i++; return P0[i].s; };
+  const river = RIVER_PTS.map(([x,y])=>{ const p = W(x,y); return [p.x,p.z]; }), res = W(880,70);
+  const keep = [[miles[VIADUCT[0]], miles[VIADUCT[1]], 90], [miles[TUNNEL[0]], miles[TUNNEL[1]], 90]].map(([a,b,g])=>[sAt(a) - g, sAt(b) + g]);
+  const bows = [];
+  for(let i=0;i<STATIONS.length-1;i++){ const a = sAt(STATIONS[i].mile) + (i===0 ? DRV.plat : DRV.plat/2) + 45, b = sAt(STATIONS[i+1].mile) - (i+1===STATIONS.length-1 ? DRV.plat : DRV.plat/2) - 45;
+    let runs = [[a, b]];
+    for(const [k0, k1] of keep) runs = runs.flatMap(([r0, r1])=>k1 <= r0 || k0 >= r1 ? [[r0, r1]] : [[r0, k0], [k1, r1]].filter(([u,v])=>v - u > 0));
+    for(const [r0, r1] of runs){ const len = r1 - r0; if(len < 260) continue;
+      const A = Math.min(120, len*len*0.0034/19.7), mid = P0[Math.round((r0 + r1)/2/DRV.step)], nx = P0[Math.min(P0.length-1, Math.round((r0 + r1)/2/DRV.step) + 1)];
+      const yaw = Math.atan2(nx.x - mid.x, nx.z - mid.z), score = sd => { const x = mid.x + Math.cos(yaw)*sd*A, z = mid.z - Math.sin(yaw)*sd*A;
+        return Math.min(polyDist(river, x, z), Math.hypot(x - res.x, z - res.z) - 70*S); };
+      bows.push({r0, r1, A, side:score(1) >= score(-1) ? 1 : -1}); } }
+  const P1 = P0.map((p, i)=>{ const q = P0[Math.min(P0.length-1, i+1)], r = P0[Math.max(0, i-1)], yaw = Math.atan2(q.x - r.x, q.z - r.z);
+    let o = 0; for(const w of bows) if(p.s > w.r0 && p.s < w.r1) o += w.side*w.A*(1 - Math.cos(2*Math.PI*(p.s - w.r0)/(w.r1 - w.r0)))/2;
+    return {x:p.x + Math.cos(yaw)*o, z:p.z - Math.sin(yaw)*o, m:p.m}; });
+  const {L, pts} = resample(P1);
   const G = {loops, S, W, L, pts, lp:new Set(loopSet())};
+  G.bows = bows.map(w=>({m0:P0[Math.round(w.r0/DRV.step)].m, m1:P0[Math.min(P0.length-1, Math.round(w.r1/DRV.step))].m, side:w.side, A:w.A}));
   G.sOfMile = m => { let lo = 0, hi = pts.length-1; if(m <= pts[0].m) return 0; if(m >= pts[hi].m) return L;
     while(hi - lo > 1){ const md = (lo+hi)>>1; if(pts[md].m < m) lo = md; else hi = md; }
     return pts[lo].s + (m - pts[lo].m)/((pts[hi].m - pts[lo].m) || 1)*DRV.step; };
@@ -5525,6 +5546,13 @@ function scOverbridge(a, G, T, s){
     quad(a, [A.x - sn*3.6, ya, A.z - c*3.6], [A.x + sn*3.6, ya, A.z + c*3.6], [B.x + sn*3.6, yb, B.z + c*3.6], [B.x - sn*3.6, yb, B.z - c*3.6], SC.tar, [0,1,0]);
     for(const w of [-3.8, 3.8]) quad(a, [A.x + sn*w, ya, A.z + c*w], [B.x + sn*w, yb, B.z + c*w], [B.x + sn*w, Math.min(gb, yb) - 0.5, B.z + c*w], [A.x + sn*w, Math.min(ga, ya) - 0.5, A.z + c*w], [.4,.48,.3], [0,0,1]); }
 }
+// a tree in a wood: a broadleaf (trunk and a full crown) or a conifer (tiered dark green)
+function scTree(a, x, h, z, rnd, conifer){
+  if(conifer){ const ht = 9 + rnd()*6, col = [.09,.2 + rnd()*.06,.12], y = rnd()*1.5;
+    box(a, x, h + ht*0.36, z, ht*0.4, ht*0.66, ht*0.4, col, y); box(a, x, h + ht*0.82, z, ht*0.2, ht*0.36, ht*0.2, col, y + 0.7); return; }
+  const ht = 4 + rnd()*4, w = 5 + rnd()*2.5, y = rnd()*3;
+  box(a, x, h + ht/2, z, 0.6, ht, 0.6, [.3,.22,.15], y); box(a, x, h + ht + 2.2, z, w, 5, w*(0.8 + rnd()*0.3), [.15 + rnd()*.05,.29 + rnd()*.1,.13], y);
+}
 function scVillage(a, G, T, cx, cz, n, rnd, extras){
   const yaw0 = rnd()*Math.PI, put = (x, z, yaw, fn) => { const t = T.height(x, z); if(t.n.d < 26 || t.h < T.nat(x, z, t.n) - 5) return false; fn(scFrame(x, t.h, z, yaw)); return true; };
   // a street of terraced cottages, then detached houses round about
@@ -5551,15 +5579,30 @@ function lineScenery(a, G, T){
   // farm crossings and stone overbridges in the long sections
   for(const f of [0.5, 2.6, 3.45]){ const s = G.st[Math.floor(f)] + (G.st[Math.floor(f) + 1] - G.st[Math.floor(f)])*(f % 1 || 0.5); if(free(s, 80)){ scCrossing(a, G, T, s, 0, false); used.push(s); } }
   for(const f of [0.28, 1.6, 3.7, 4.35]){ const s = G.st[Math.floor(f)] + (G.st[Math.floor(f) + 1] - G.st[Math.floor(f)])*(f % 1); if(free(s, 90)){ scOverbridge(a, G, T, s); used.push(s); } }
-  // the villages on the map, each with its own pub, café, church or farm, and a lane down to the station
-  const V = [[118,500,16],[268,492,10],[386,458,9],[566,404,10],[652,352,7],[920,168,6],[200,535,3]];
+  // a town round Ravensgill and a village round each of the other loop stations, each with a lane down to the station;
+  // the halts stand on their own in the woods
+  const halt = i => !STATIONS[i].loop;
   const lane = (x0, z0, x1, z1) => { const n = Math.ceil(Math.hypot(x1-x0, z1-z0)/8), yaw = Math.atan2(x1-x0, z1-z0), c = Math.cos(yaw)*2.6, sn = Math.sin(yaw)*2.6;
     for(let k=0;k<n;k++){ const xa = x0 + (x1-x0)*k/n, za = z0 + (z1-z0)*k/n, xb = x0 + (x1-x0)*(k+1)/n, zb = z0 + (z1-z0)*(k+1)/n, ya = T.height(xa, za).h + 0.14, yb = T.height(xb, zb).h + 0.14;
       quad(a, [xa - c, ya, za + sn], [xa + c, ya, za - sn], [xb + c, yb, zb - sn], [xb - c, yb, zb + sn], SC.tar, [0,1,0]); } };
-  V.slice(0, 6).forEach(([mx, my], vi)=>{ const w = G.W(mx, my), st = G.at((G.plat[vi][0] + G.plat[vi][1])/2, 30); lane(st.x, st.z, w.x, w.z); });
+  const wet = (x, z) => polyDist(T.river, x, z) < 45 || ((x - T.res.x)/(70*G.S))**2 + ((z - T.res.z)/(30*G.S))**2 < 1.6;
+  const TOWNS = [
+    {i:0, parts:[[-40, -1, 150, 22], [140, 1, 150, 16], [300, -1, 175, 12], [40, 1, 260, 10]], church:"Ravensgill", pub:"The Junction Inn"},
+    {i:2, parts:[[20, -1, 140, 14], [-120, 1, 160, 6]], church:"Lowerdale", pub:"The Black Bull", farm:true},
+    {i:4, parts:[[-30, -1, 130, 12]], pub:"The Fleece", farm:true},
+    {i:6, parts:[[-60, 1, 130, 10], [-200, -1, 150, 5]], church:"Moorend"}];
+  const V = [];
+  TOWNS.forEach(tw=>{ const mid = (G.plat[tw.i][0] + G.plat[tw.i][1])/2, st = G.at(mid, 30);
+    tw.parts.forEach(([along, side, d, n], pi)=>{ let q = G.at(mid + along, side*d); if(wet(q.x, q.z)) q = G.at(mid + along, -side*d); if(wet(q.x, q.z)) return;
+      V.push([q.x, q.z]); lane(st.x, st.z, q.x, q.z);
+      scVillage(a, G, T, q.x, q.z, n, rnd, put=>{ if(pi) return;
+        if(tw.church) put(q.x + 55, q.z - 30, 0.4, F=>scChurch(a, F, 0, 0));
+        if(tw.pub) put(q.x - 38, q.z + 22, 1.2, F=>scPub(a, G, F, 0, 0, 1, tw.pub));
+        if(tw.farm) put(q.x + 75, q.z + 45, 2.4, F=>scFarm(a, F, 0, 0)); }); }); });
+  { const p = G.W(200, 535); scVillage(a, G, T, p.x, p.z, 3, rnd, put=>put(p.x, p.z, 0.9, F=>scFarm(a, F, 0, 0))); }
   // cottages round every station, on both sides of the line
-  STATIONS.forEach((st, i)=>{ const mid = (G.plat[i][0] + G.plat[i][1])/2;
-    for(let k=0;k<(i===0 ? 10 : 6);k++){ const side = k%2 ? 1 : -1, o = side*(34 + rnd()*40), q = G.at(mid - 90 + rnd()*180, o), t = T.height(q.x, q.z);
+  STATIONS.forEach((st, i)=>{ if(halt(i)) return; const mid = (G.plat[i][0] + G.plat[i][1])/2;
+    for(let k=0;k<(i===0 ? 16 : 9);k++){ const side = k%2 ? 1 : -1, o = side*(34 + rnd()*40), q = G.at(mid - 90 + rnd()*180, o), t = T.height(q.x, q.z);
       if(t.n.d < 28 || t.h < T.nat(q.x, q.z, t.n) - 5) continue;
       const F = scFrame(q.x, t.h, q.z, q.yaw); scHouse(a, F, 0, 0, 6, 8 + rnd()*4, rnd() < 0.6 ? 2 : 1, [SC.stone, SC.stone3, SC.stone2, SC.brick][Math.floor(rnd()*4)], -side);
       for(const dz of [-6, 6]) F.b(a, side*6.5, 0.45, dz, 7, 0.9, 0.4, SC.stone2); F.b(a, side*10, 0.45, 0, 0.4, 0.9, 12, SC.stone2); } });
@@ -5575,17 +5618,10 @@ function lineScenery(a, G, T){
       for(const dz of [-1.6, 1.6]) for(const sx of [-0.75, 0.75]){ const q = W.p(sx, 0.9, dz); cyl(a,"x", q[0], q[1], q[2], 0.45, 0.1, SC.dark, 10); } } }
   // hedgerows and hedgerow trees dividing the fields along the lower line
   for(const off of [-70, -150, 75, 160]) for(let s = 30; s < G.st[4]; s += 14){
-    if(near(s, 20) || Math.floor(s/90)%4===3) continue;
+    if(near(s, 20) || Math.floor(s/90)%4===3 || [1,3,5].some(i=>halt(i) && Math.abs(s - G.st[i]) < 260)) continue;
     const q = G.at(s, off + 6*Math.sin(s*0.013)), t = T.height(q.x, q.z); if(t.h < T.nat(q.x, q.z, t.n) - 5) continue;
     box(a, q.x, t.h + 0.75, q.z, 1.6, 1.5, 14.5, [.2,.34,.17], q.yaw);
     if(rnd() < 0.3){ const ht = 4 + rnd()*4; box(a, q.x, t.h + ht/2, q.z, 0.5, ht, 0.5, [.3,.22,.15], 0); box(a, q.x, t.h + ht + 1.8, q.z, 4 + rnd()*2, 4.2, 4 + rnd()*2, [.16,.3 + rnd()*.1,.14], rnd()*3); } }
-  V.forEach(([mx, my, n], vi)=>{ const p = G.W(mx, my);
-    scVillage(a, G, T, p.x, p.z, n, rnd, put=>{
-      if(vi===0){ put(p.x + 60, p.z - 30, 0.4, F=>scChurch(a, F, 0, 0)); put(p.x - 35, p.z + 25, 1.2, F=>scPub(a, G, F, 0, 0, 1, "The Junction Inn")); }
-      if(vi===3){ put(p.x + 50, p.z + 20, 2.0, F=>scChurch(a, F, 0, 0)); put(p.x - 40, p.z - 10, 0.3, F=>scPub(a, G, F, 0, 0, -1, "The Viaduct Inn")); }
-      if(vi===6) put(p.x, p.z, 0.9, F=>scFarm(a, F, 0, 0));
-      if(vi===2) put(p.x + 70, p.z + 40, 2.4, F=>scFarm(a, F, 0, 0));
-    }); });
   // the station's own: the pub by the crossing, the tea room in Lowerdale goods shed, cafés at the ends of the line
   { const q = G.at(ks + 30, 26), F = scFrame(q.x, T.height(q.x, q.z).h, q.z, q.yaw); scPub(a, G, F, 0, 0, -1, "The Thorpe Arms"); }
   { const [p0, p1] = G.plat[2], q = G.at(p0 - 40, 12), F = scFrame(q.x, T.height(q.x, q.z).h, q.z, q.yaw);   // the goods shed, a tea room now
@@ -5598,6 +5634,27 @@ function lineScenery(a, G, T){
     scSign(G, F, -1.9, 2.3, 0, "Summit Tea Hut", "cafe"); const sm = G.at(G.plat[5][0] + 20, 5.5); box(a, sm.x, sm.y + 1.2, sm.z, 0.12, 2.4, 0.12, SC.dark, sm.yaw); box(a, sm.x, sm.y + 2.3, sm.z, 0.05, 0.6, 1.6, SC.white, sm.yaw);
     G.signs.push({x:sm.x, y:sm.y + 2.3, z:sm.z, text:"Summit 1,120 ft", kind:"w"}); }
   { const q = G.at(G.plat[6][0] + 40, 18), F = scFrame(q.x, T.height(q.x, q.z).h, q.z, q.yaw); scCafe(a, G, F, 0, 0, -1, "Reservoir Café", [.15,.4,.45]); }
+  // the halts stand in woodland (conifer plantation up on the moor), and every bend before a station has a wood on its
+  // inside, so the next station only comes into sight round the curve
+  const roadP = ROAD_PTS.map(([x,y])=>{ const p = G.W(x,y); return [p.x,p.z]; });
+  const clearings = [];
+  { const q = G.at(ks, 0); clearings.push([q.x, q.z, 42]); const r = G.at(ks + 30, 26); clearings.push([r.x, r.z, 30]); }
+  { const q = G.at(G.plat[3][1] + 45, -30), F = scFrame(q.x, T.height(q.x, q.z).h, q.z, q.yaw); scPub(a, G, F, 0, 0, 1, "The Viaduct Inn"); clearings.push([q.x, q.z, 32]); }
+  { const q = G.at(G.plat[5][1] + 10, 10); clearings.push([q.x, q.z, 18]); }
+  const tree = (x, z, conifer) => { const t = T.height(x, z), n = t.n;
+    if(n.d < (G.plat.some(([p0, p1])=>n.s > p0 - 25 && n.s < p1 + 25) ? 24 : 11) || t.h < T.nat(x, z, n) - 5 || wet(x, z) || polyDist(roadP, x, z) < 9) return;
+    if(n.s > G.via[0] - 40 && n.s < G.via[1] + 40 && n.d < 70) return;
+    if(clearings.some(([cx, cz, r])=>Math.hypot(x - cx, z - cz) < r) || V.some(([vx, vz])=>Math.hypot(x - vx, z - vz) < 110)) return;
+    if(used.some(u=>Math.abs(u - n.s) < 30) && n.d < 40) return;
+    scTree(a, x, t.h, z, rnd, conifer); };
+  [1,3,5].forEach(i=>{ if(!halt(i)) return; const c = G.at(G.st[i], 0), R = 210;
+    for(let gx=-R; gx<=R; gx+=11) for(let gz=-R; gz<=R; gz+=11){ const x = c.x + gx + (rnd() - 0.5)*8, z = c.z + gz + (rnd() - 0.5)*8;
+      if(Math.hypot(x - c.x, z - c.z) > R*(0.75 + 0.35*rnd())) continue; tree(x, z, i===5 || rnd() < 0.15); } });
+  for(const w of G.bows){ const s0 = G.sOfMile(w.m0), s1 = G.sOfMile(w.m1), len = s1 - s0;
+    for(let s = s0 + len*0.04; s < s1 - len*0.04; s += 9){ const u = (s - s0)/len, bow = w.A*(1 - Math.cos(2*Math.PI*u))/2, hi = s > G.tun[0] - 400 && s < G.tun[1] + 400;
+      for(let o = 13; o < bow + 55; o += 9){ const q = G.at(s, -w.side*(o + (rnd() - 0.5)*6)); tree(q.x, q.z, hi || rnd() < 0.2); }
+      // a belt on the outside too as the line swings in towards the station
+      if(u < 0.2 || u > 0.8) for(let o = 13; o < 40; o += 9){ const q = G.at(s, w.side*(o + (rnd() - 0.5)*6)); tree(q.x, q.z, hi || rnd() < 0.2); } } }
   // the lineside: telegraph poles carrying their wires, quarter-mile posts, platelayers' huts
   let last = null;
   for(let s = 10; s < G.L - 10; s += 55){ if(s > G.tun[0] - 5 && s < G.tun[1] + 5){ last = null; continue; }
@@ -5621,9 +5678,10 @@ function lineScenery(a, G, T){
 }
 
 /* ---- the day's working: which trips the chosen train makes, call by call ---- */
-function driveWorking(plan, k, from){
+function driveWorking(plan, k, from, mode){
   const set = plan.sets[k], sim = simulateDay(plan.sets, null);
-  const trips = sim.trips.filter(t=>t.set===set && t.calls).slice(from);
+  let trips = sim.trips.filter(t=>t.set===set && t.calls).slice(from);
+  if(mode==="out" || mode==="back") trips = trips.slice(0, 1);
   if(!trips.length) return null;
   const stops = st => !set.stops || set.stops.has(st);
   const calls = [];
@@ -5632,32 +5690,39 @@ function driveWorking(plan, k, from){
     if(last && last.st===c.st && last.dep==null){ last.dep = c.dep; return; }   // home and out again
     calls.push({st:c.st, arr:c.arr, dep:c.dep, stop: c.st===set.lo || c.st===set.hi || stops(c.st)});
   }));
+  // one way: up to where the train turns back, or from there home
+  if(mode==="out" || mode==="back"){ const turn = calls.findIndex((c,i)=>i && calls[i+1] && Math.sign(calls[i+1].st - c.st)!==Math.sign(c.st - calls[i-1].st));
+    if(turn > 0){ if(mode==="out"){ calls.splice(turn + 1); calls[turn] = {...calls[turn], dep:null}; } else { calls.splice(0, turn); calls[0] = {...calls[0], arr:null}; } } }
   calls.forEach((c,i)=>{ const n = calls[i+1], p = calls[i-1];
     c.dirOut = n ? Math.sign(n.st - c.st) : 0; c.dirIn = p ? Math.sign(c.st - p.st) : 0; });
-  return {set, sim, calls, trips:trips.length, from};
+  return {set, sim, calls, trips:trips.length, from, mode:mode || "day"};
 }
 
 let dv = null;   // the driving session
+let driveMode = "day";   // the rest of the day, or one way out or back
 function driveChoice(){
   const plan = pendingPlan || currentPlan();
   const rows = plan.sets.map((s,k)=>`<div class="row" style="align-items:flex-start;gap:10px;flex-wrap:wrap">
       <span style="min-width:180px"><b>${s.label}</b><br><span class="sub" style="margin:0">${s.lcat.name}${s.pcat ? " + " + s.pcat.name : ""}${s.rcat ? " · " + s.rcat.name : ""}</span></span>
-      <span style="display:flex;gap:6px;flex-wrap:wrap">${s.deps.map((d,i)=>`<button class="act greenbtn" style="width:auto;padding:5px 9px" onclick="closeModal();startDrive(${k},${i})">${i ? "From" : "Whole day from"} ${ttTime(d)}</button>`).join("")}</span></div>`).join("");
-  openModal("Drive a Service", `<p>Pick a train and the trip to start from. You'll drive it from the cab, calling at its booked stations, through the passing loops, over Brackenby Viaduct and up through Highmoor Tunnel, for the rest of its day. Hand over to another driver whenever you've had enough.</p>
-    <p class="sub">The line is drawn to the map but squeezed five times, and the clock runs four times as fast, so a round trip takes about half an hour (less if you wait out the layovers with ⏩), not two hours.</p>
+      <span style="display:flex;gap:6px;flex-wrap:wrap">${s.deps.map((d,i)=>`<button class="act greenbtn" style="width:auto;padding:5px 9px" onclick="closeModal();startDrive(${k},${i},driveMode)">${driveMode==="day" ? (i ? "From" : "Whole day from") : driveMode==="out" ? "The" : "Back after the"} ${ttTime(d)}</button>`).join("")}</span></div>`).join("");
+  const top = STATIONS[plan.sets.reduce((m, s)=>Math.max(m, s.hi==null ? STATIONS.length-1 : s.hi), 0)].name;
+  const pick = (m, label) => `<button class="act${driveMode===m ? " greenbtn" : ""}" style="width:auto;padding:5px 10px" onclick="driveMode='${m}';driveChoice()">${label}</button>`;
+  openModal("Drive a Service", `<p>Pick a train and the trip to start from. You'll drive it from the cab, calling at its booked stations, through the passing loops, over Brackenby Viaduct and up through Highmoor Tunnel. Hand over to another driver whenever you've had enough.</p>
+    <div class="row" style="gap:6px;flex-wrap:wrap"><b style="margin-right:4px">Drive:</b>${pick("day", "The rest of its day")}${pick("out", `One way, out to ${top}`)}${pick("back", "One way, back to Ravensgill")}</div>
+    <p class="sub">The line is drawn to the map, squeezed to about a quarter of its length, so each way takes about a quarter of an hour. The clock runs about three times as fast while you're moving, and faster still while you stand at a station (wait out the layovers with ⏩).</p>
     ${rows}
     <div class="toolbar" style="margin-bottom:0"><button class="act" style="width:auto" onclick="closeModal();${pendingJobs.length ? "offerShunt(pendingJobs)" : "advanceWeek({go:true})"}">◂ Back</button></div>`, true);
 }
-function startDrive(k, from){
+function startDrive(k, from, mode){
   sndInit();
   const gl = yardGL();
   if(!gl){ alert("Your browser can't show the 3D line (WebGL is turned off)."); advanceWeek({go:true}); return; }
-  const plan = pendingPlan || currentPlan(), work = driveWorking(plan, k, from);
+  const plan = pendingPlan || currentPlan(), work = driveWorking(plan, k, from, mode);
   if(!work){ alert("That train doesn't run that trip today."); advanceWeek({go:true}); return; }
   const G = line3();
   if(!G.mesh){   // building the line takes a moment the first time
     openModal("Laying the Track", `<p>Building the line from Ravensgill to Moorend…</p>`, true);
-    setTimeout(()=>{ G.mesh = meshBuffer(gl, lineSceneMesh(G)); closeModal(); startDrive(k, from); }, 80);
+    setTimeout(()=>{ G.mesh = meshBuffer(gl, lineSceneMesh(G)); closeModal(); startDrive(k, from, mode); }, 80);
     return;
   }
   const set = work.set, train = driveConsist(gl, set), first = work.calls[0];
@@ -5750,6 +5815,13 @@ function agentMile(a, T){
   for(let i=0;i<P.length-1;i++) if(T >= P[i].t && T <= P[i+1].t){ const f = (T - P[i].t)/((P[i+1].t - P[i].t) || 1); return P[i].m + (P[i+1].m - P[i].m)*f; }
   return null;
 }
+// standing at a station the clock hurries on, unless another train is running nearby (it would race past)
+function dClock(){
+  if(dv.phase!=="stand" || dv.v > 0.05) return DRV.clock;
+  const m = dv.G.mileOfS(Math.max(0, Math.min(dv.G.L, dv.s)));
+  const near = dv.others.some(o=>{ const a = oMile(o, dv.T), b = oMile(o, dv.T + 0.2); return a!=null && b!=null && Math.abs(b - a) > 1e-5 && Math.abs(a - m) < 1.2; });
+  return near ? DRV.clock : DRV.standClock;
+}
 function dStep(dt){
   const G = dv.G, k = dv.keys, n = dNext(), c = dv.work.calls[dv.ci];
   if(k.up) dv.ctl = Math.min(1, dv.ctl + 0.6*dt);
@@ -5770,14 +5842,15 @@ function dStep(dt){
   // the buffer stops at the ends of the line
   if(dv.s > G.L + 15){ dv.s = G.L + 15; if(dv.v > 1) dRough("Bang! Into the buffer stops at Moorend"); dv.v = 0; }
   if(dv.s < -15){ dv.s = -15; if(dv.v > 1) dRough("Bang! Into the buffer stops at Ravensgill"); dv.v = 0; }
-  dOthers(dt*DRV.clock/60);
-  dv.T += dt*DRV.clock/60;
+  const clock = dClock();
+  dOthers(dt*clock/60);
+  dv.T += dt*clock/60;
   if(dv.v*MPH > DRV.lim + 2) dv.over += dt;
   // passing a starter signal at danger
   for(const sg of G.sigs) if(sg.dir===dv.dir && sg.i===dv.leftSt && (old - sg.s)*(dv.s - sg.s) <= 0 && old!==dv.s && !dv.leftClear){
     dv.leftClear = true; dv.spad++; dMsg("You passed the signal at danger! The signalman is not pleased", true); }
   if(dv.phase==="stand"){
-    if(dv.boarded < 1) dv.boarded = Math.min(1, dv.boarded + dt/(DWELL*60/DRV.clock));
+    if(dv.boarded < 1) dv.boarded = Math.min(1, dv.boarded + dt/(DWELL*60/clock));
     if(dv.v > 0.2 && dv.moveT==null) dv.moveT = dv.T;
     if(dv.v < 0.05) dv.moveT = null;
     if(Math.abs(dv.s - dv.standS) > 10){   // moving off
@@ -5830,9 +5903,9 @@ function dFinish(complete){
   dv.result = {stars, complete, stops:legs, total, late:mean, spad:dv.spad, overrun:dv.overrun, over:Math.round(dv.over),
                train:`${dTime(dv.work.calls[0].dep)} ${dv.set.label}`, at:STATIONS[dv.work.calls[dv.ci].st].name};
   const d = document.getElementById("dDone");
-  d.innerHTML = `<div class="card"><h3 style="justify-content:center">${complete ? "Shift complete!" : "Handed over"}</h3>
+  d.innerHTML = `<div class="card"><h3 style="justify-content:center">${complete ? (dv.work.mode==="day" ? "Shift complete!" : "Journey complete!") : "Handed over"}</h3>
     <div class="ystars">${"★".repeat(stars)}${"☆".repeat(3-stars)}</div>
-    <p>${complete ? `You brought ${dv.set.label} home: ${legs} station call${legs===1?"":"s"}.` : `You handed over at ${dv.result.at} after ${legs} of ${total} calls; another driver finishes the day.`}<br>
+    <p>${complete ? `You brought ${dv.set.label} ${dv.work.mode==='out' ? 'to ' + dv.result.at : 'home'}: ${legs} station call${legs===1?"":"s"}.` : `You handed over at ${dv.result.at} after ${legs} of ${total} calls; another driver finishes the day.`}<br>
       Average ${mean.toFixed(1)} min late · ${dv.spad} signal${dv.spad===1?"":"s"} passed at danger · ${dv.overrun} overrun${dv.overrun===1?"":"s"} · ${Math.round(dv.over)} s over the limit</p>
     <p class="sub">${stars===3 ? "Right time and smooth all the way (+2 reputation, morale up)." : stars===2 ? "A tidy turn (+1 reputation)." : stars ? "You got there." : "Not long enough to judge."}</p>
     <button class="act greenbtn" onclick="endDrive(dv.result)">Back to the laptop and run the weekend ▸</button></div>`;
