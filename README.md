@@ -258,6 +258,29 @@ bends round the points. Under 4 minutes with no bumps earns ★★★ (6 minutes
 if you start in the shunter). You can climb down and walk about in the yard
 on the coach job too.
 
+## Running Numbers
+
+Every engine you buy gets its own running number, drawn from the real number
+series of its class: a pannier tank is one of the 57xx family (5700–5799,
+7700–7799, 8700–8799, 3600–3799, 4600–4699 or 9600–9799), a Black Five one of
+44658–45499, a Class 37 one of 37001–37308, and so on, and never one you
+already own. The number is painted on the engine itself: on the cab side (a
+cast brass plate on a Great Western engine) and on the smokebox number plate
+of a BR or LMS steam engine, under the cab windows of a diesel (or large on the
+bodyside behind a wrap-round yellow cab), and low on the bodyside by the cab of
+a DMU.
+
+The number follows the era of the livery, so a repaint renumbers the engine as
+it would have been at the time: an Ivatt tank is 41241 in BR lined black and
+1241 in LMS black; a B1 is 61264 in BR black and 1264 in LNER apple green; a
+pannier sold to London Transport becomes an L number; a J27 carries its NER
+number in NER black; a diesel carries its D number in BR green and its TOPS
+number from blue onwards (D5209 and 25059); a DMU car keeps its region letter
+(E, M or Sc) until the prefixes were dropped. The repaint window shows the
+number each livery would bring. The two engines you start with keep their
+famous numbers (41241 and 25059) until you repaint them, and visiting engines
+carry their own.
+
 ## Liveries
 
 Every engine arrives in a real livery its class carried and can be repainted
