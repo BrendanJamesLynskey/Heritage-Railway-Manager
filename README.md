@@ -38,7 +38,7 @@ a DMU's driving seat) for the rest of its day, or just one way.
 
 The 3D line is built from the map's own alignment: all seven stations with
 their platforms and nameboards, the passing loops, Brackenby Viaduct's twelve
-arches over the River Raven, Highmoor Tunnel through the fell, the climb to the
+arches over the River Raven, Highmoor Tunnel through the fell (a stone portal across the end of each cutting, as high as the hill behind it), the climb to the
 summit, the B6481 and Highmoor Reservoir. Along it:
 
 - **Stations:** booking halls with windows, doors and chimneys, canopies on
@@ -81,7 +81,7 @@ away with you if you let it.
 | Power and brake lever | ↑ / ↓ or W / S, or hold Power ▲ / ▼ Brake |
 | Emergency brake | Space, or hold ■ Emergency |
 | Look round | ← / → or A / D, or drag |
-| Change view | C, or 🎥 View (cab or lineside chase) |
+| Change view | C, or 🎥 View: leaning out of the cab, sitting in the driver's seat (an engine), or the lineside chase |
 | Wait for the right away | T, or ⏩ Wait |
 | Hand over | H or Esc, or ✋ Hand over |
 | Whistle or horn | Q (hold), or hold 📯 |

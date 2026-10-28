@@ -540,7 +540,7 @@
       <ul style="font-size:.9rem">
         <li><b>The laptop:</b> each part of the railway is an app on the desktop. Double-click an icon (or tap it on a touch screen) to open its window; drag windows by the title bar, resize them from the corner, and switch between them on the taskbar. The <b>Start</b> button (the R&amp;H roundel) lists every app.</li>
         <li><b>Mail:</b> railtour companies and other heritage railways email asking to hire your locomotives. Accept their offer, decline, or send a counter-offer: ask for more, but push too hard and they'll go elsewhere. A hired-out engine is away for the weeks agreed, and comes back a little more worn.</li>
-        <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to make up the first train: the laptop folds away and you're in the cab. The coaches are already on the Platform road; the train engine (and the pilot, for a double-header) is in the engine shed with the rest of the fleet, every engine facing the shunter. Set the points for the right shed road, buffer up to the engine, draw it out, set the points back to the Platform road and buffer it up to the coaches, then uncouple. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the shunter. Buffer up gently (under 2 mph) to couple. Every class of engine is modelled from its own wheel arrangement, size and livery. <b>Drive a service:</b> or take a train out on the line yourself. Pick a train and the trip to start from, and drive it from the cab for the rest of its day, or just one way out or back: every booked call, the passing loops (the starter stays at danger until your time and a clear section), Brackenby Viaduct and Highmoor Tunnel. ↑/↓ (or W/S) move the power and brake lever, Space is the emergency brake, C changes the view, T waits for the right away, Q (held) sounds the whistle or horn, M turns the sound off and on, H hands the train to another driver to finish the day. Every engine has its own synthesised sound: exhaust beats, diesel engines, whistles and horns. The line is drawn to the map, squeezed to about a quarter of its length, so each way takes about a quarter of an hour; the stations are hidden from each other round bends, the halts stand in the woods and the other stations have their village or town round them. If the timetable runs DMUs, you can drive each unit yourself from its own cab instead: out of the shed onto the headshunt, change ends (E), then into the platform up to the STOP board. Or start in the shunter, climb down (F) and walk over to the unit (hold Shift or ⚡ Sprint to run). A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
+        <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to make up the first train: the laptop folds away and you're in the cab. The coaches are already on the Platform road; the train engine (and the pilot, for a double-header) is in the engine shed with the rest of the fleet, every engine facing the shunter. Set the points for the right shed road, buffer up to the engine, draw it out, set the points back to the Platform road and buffer it up to the coaches, then uncouple. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the shunter. Buffer up gently (under 2 mph) to couple. Every class of engine is modelled from its own wheel arrangement, size and livery. <b>Drive a service:</b> or take a train out on the line yourself. Pick a train and the trip to start from, and drive it from the cab for the rest of its day, or just one way out or back: every booked call, the passing loops (the starter stays at danger until your time and a clear section), Brackenby Viaduct and Highmoor Tunnel. ↑/↓ (or W/S) move the power and brake lever, Space is the emergency brake, C changes the view (leaning out of the cab, sitting in the driver's seat behind the desk or the backhead, or from the lineside), T waits for the right away, Q (held) sounds the whistle or horn, M turns the sound off and on, H hands the train to another driver to finish the day. Every engine has its own synthesised sound: exhaust beats, diesel engines, whistles and horns. The line is drawn to the map, squeezed to about a quarter of its length, so each way takes about a quarter of an hour; the stations are hidden from each other round bends, the halts stand in the woods and the other stations have their village or town round them. If the timetable runs DMUs, you can drive each unit yourself from its own cab instead: out of the shed onto the headshunt, change ends (E), then into the platform up to the STOP board. Or start in the shunter, climb down (F) and walk over to the unit (hold Shift or ⚡ Sprint to run). A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
         <li><b>Each turn is one week.</b> Plan the weekend in the <b>Timetable</b> app, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week. The weekend then plays out live on the <b>Line Map</b>, all its days together in the time of one (change the speed there, or pause it). You can't start the next week until the last train is home, but you can carry on booking events, buying stock and recruiting while it runs. The takings arrive when the weekend ends.</li>
         <li><b>Timetabling:</b> every train is a round trip from Ravensgill Junction to Moorend and back, about two hours with turn-rounds. Give each loco a set of departure times. If a train isn't back in time, its next trip leaves late.</li>
         <li><b>The printed timetable:</b> the Up and Down tables at the top of the Timetable app are the public timetable, a column for each train. The times are worked out by the signallers' plan, so a train held at a loop shows its real, later time. <b>|</b> means the train runs through without stopping.</li>
@@ -593,7 +593,7 @@
     <div class="yh ytr" id="dJob"></div>
     <div class="ybc"><div class="ydrive">
       <button data-dhold="down">▼ Brake</button><button data-dhold="up">Power ▲</button><button class="brake" data-dhold="emerg">■ Emergency</button>
-      <button data-horn="d">📯 Whistle / horn</button><button id="dSkip" onclick="dSkip()" hidden>⏩ Wait</button><button onclick="dv&&(dv.cam=1-dv.cam)">🎥 View</button><button onclick="dHandOver()">✋ Hand over</button><button class="sndbtn" onclick="sndToggle()">🔊 Sound</button>
+      <button data-horn="d">📯 Whistle / horn</button><button id="dSkip" onclick="dSkip()" hidden>⏩ Wait</button><button onclick="dNextCam()">🎥 View</button><button onclick="dHandOver()">✋ Hand over</button><button class="sndbtn" onclick="sndToggle()">🔊 Sound</button>
     </div></div>
     <div class="yh ybr"><canvas id="dmap" width="560" height="300"></canvas></div>
     <div class="ydone" id="dDone" hidden></div>
@@ -5343,7 +5343,8 @@ function lineTerrain(G){
     if(f > -0.25 && f < 1.25){   // the fell the tunnel goes through, with cuttings at each portal
       const amp = (9 + 16*Math.sin(Math.PI*Math.max(0, Math.min(1, f))))*(f < 0 ? 1 + f/0.25 : f > 1 ? 1 - (f-1)/0.25 : 1);
       h = Math.max(h, G.y(n.s) + amp*(1 - smooth01((n.d - 50)/140))); }
-    if(!inVia && !(f > 0 && f < 1)) h = h + (G.y(n.s) - 0.4 - h)*(1 - smooth01((n.d - 26)/70));
+    // the cuttings run on a little way into the hill, behind the portals, so the hillside never slopes down across them
+    if(!inVia && !(n.s > G.tun[0] + 26 && n.s < G.tun[1] - 26)) h = h + (G.y(n.s) - 0.4 - h)*(1 - smooth01((n.d - 26)/70));
     const er = ((x-res.x)/(70*S))**2 + ((z-res.z)/(30*S))**2; if(er < 1.3) h = Math.min(h, resLevel - 1.5 + 2*Math.max(0, er - 1));
     return {h, n}; };
   return {height, nat, river, res, resLevel};
@@ -5423,8 +5424,19 @@ function lineSceneMesh(G){
     for(let s = t0; s < t1; s += DRV.step){ const m = s + DRV.step/2;
       for(const o of [2.9,-2.9]){ const q = G.at(m, o); box(a, q.x, q.y + 3.0, q.z, 0.5, 6.0, DRV.step + 0.05, tc, q.yaw); }
       const p = G.at(m); box(a, p.x, p.y + 6.2, p.z, 6.3, 0.5, DRV.step + 0.05, tc, p.yaw); }
-    for(const s of [t0, t1]){ for(const o of [6.4,-6.4]){ const q = G.at(s, o); box(a, q.x, q.y + 5, q.z, 7.0, 10, 1.6, [.5,.47,.42], q.yaw); }
-      const q = G.at(s); box(a, q.x, q.y + 8.5, q.z, 6.0, 3.6, 1.6, [.5,.47,.42], q.yaw); } }
+    // each portal is a stone face across the end of the cutting, as high as the hill behind it, stepping down at the
+    // wings to meet the cutting sides, with a coping along the top and a ring of darker voussoirs round the bore
+    for(const [s, d] of [[t0, 1], [t1, -1]]){ const st = [.5,.47,.42], dk = [.4,.37,.33];
+      const want = xm => { const q = G.at(s, xm), back = G.at(s + d*34, xm), front = G.at(s - d*4, xm), k = smooth01((Math.abs(xm) - 12)/16);
+        return (T.height(back.x, back.z).h - q.y + 1.2)*(1 - k) + (T.height(front.x, front.z).h - q.y + 1.0)*k; };
+      let mid = 9; for(let x = -12; x <= 12; x += 3) mid = Math.max(mid, want(x));
+      for(let o = -30; o < 30; o += 1.5){ const xm = o + 0.75, q = G.at(s, xm), hh = Math.abs(xm) < 12 ? mid : Math.min(mid, want(xm));
+        if(hh < 0.8) continue;
+        if(Math.abs(xm) < 3) box(a, q.x, q.y + (6.4 + hh)/2, q.z, 1.55, hh - 6.4, 1.6, st, q.yaw);   // over the bore
+        else box(a, q.x, q.y + hh/2 - 1, q.z, 1.55, hh + 2, 1.6, st, q.yaw);
+        box(a, q.x, q.y + hh + 0.15, q.z, 1.6, 0.3, 1.9, dk, q.yaw); }
+      const r = G.at(s - d*0.82, 0); box(a, r.x, r.y + 6.75, r.z, 7.2, 0.7, 0.1, dk, r.yaw);   // the arch ring over the bore
+      for(const o of [3.25, -3.25]){ const q = G.at(s - d*0.82, o); box(a, q.x, q.y + 3.3, q.z, 0.7, 6.6, 0.1, dk, q.yaw); } } }
   // trees in the fields, cottages by the stations, and stone walls along the line
   let seed = 11; const rnd = () => (seed = (seed*16807) % 2147483647)/2147483647;
   for(let k=0;k<520;k++){ const x = X0 + rnd()*(X1-X0), z = Z0 + rnd()*(Z1-Z0), t = T.height(x, z);
@@ -5807,7 +5819,7 @@ function driveConsist(gl, set){
       const four = DMU_MODELS[cat.key].wheels==="single";
       parts.forEach((c,i)=>out.push({len:c.len, four, mesh:meshBuffer(gl, i===parts.length-1 ? open.mesh : c.mesh), plain:meshBuffer(gl, c.mesh), eye:i===parts.length-1 ? open.eye : null, front:i===parts.length-1}));
       out.reverse(); return; }
-    out.push({len:md.len, mesh:meshBuffer(gl, md.mesh()), eye:engineEye(cat.key, md)}); };
+    out.push({len:md.len, mesh:meshBuffer(gl, md.mesh()), eye:engineEye(cat.key, md), inCab:cabSeat(cat.key, md)}); };
   eng(set.loco, set.lcat, set.trainGuest);
   if(set.pilot) eng(set.pilot, set.pcat, set.pilotGuest), out.unshift(out.pop());
   if(set.rcat){ const vs = rakeVehicles(set.rcat.key, set.rake ? rakeLiveryOf(set.rake) : null), cache = {};
@@ -5817,6 +5829,16 @@ function driveConsist(gl, set){
   return out;
 }
 // where the driver looks out: leaning from the cab side of an engine
+// sitting in the driver's seat: the eye, how far ahead the cab front is (the view is clipped just beyond it, and the
+// cab is drawn round the edge of the screen instead) and whether it's a steam footplate or a diesel cab
+function cabSeat(key, md){
+  const L = md.len, st = STEAM_MODELS[key], d = DIESEL_MODELS[key];
+  if(st){ const front = L/2 - st.eng + (st.type!=="tender" ? 1.6 : 0.05) + (st.eng > 12 ? 2.6 : 2.35); return {eye:[-0.62, 3.98, front - 0.75], near:0.95, kind:"steam"}; }
+  if(!d) return null;
+  if(d.style==="hood"){ const cz = d.cab==="end" ? -(L/2 - 0.62) + 1.3 : (d.cabZ || 0); return {eye:[-0.6, 3.62, cz + 0.2], near:1.25, kind:"diesel"}; }
+  const h = L/2 - 0.62, front = d.style==="nose" ? h - (d.nose || 1.8) : h - (d.lean || 0.08) - (d.rake || 0.2)*0.4;
+  return {eye:[-0.6, 3.42, front - 1.15], near:1.3 + (d.style==="nose" ? 0 : 0.05), kind:"diesel"};
+}
 function engineEye(key, md){
   const L = md.len, st = STEAM_MODELS[key], d = DIESEL_MODELS[key];
   if(st){ const tank = st.type!=="tender", cl = st.eng > 12 ? 2.6 : 2.35; return [-1.85, 3.85, L/2 - st.eng + (tank ? 1.6 : 0.05) + cl + 0.3]; }
@@ -6010,14 +6032,15 @@ function driveDraw(){
   gl.clearColor(.64,.76,.86,1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   const mine = trainPoses(G, dv.train, dv.s, dv.dir), lead = mine[0], c = Math.cos(lead.yaw), sn = Math.sin(lead.yaw);
   let eye, head = lead.yaw;
-  if(dv.cam===0){ const e = lead.v.eye || [-1.75, 3.5, lead.v.len/2 - 1.7]; eye = [lead.x + c*e[0] + sn*e[2], lead.y + e[1], lead.z - sn*e[0] + c*e[2]]; }
+  const seat = dv.cam===2 && lead.v.inCab;
+  if(dv.cam===0 || seat){ const e = seat ? seat.eye : lead.v.eye || [-1.75, 3.5, lead.v.len/2 - 1.7]; eye = [lead.x + c*e[0] + sn*e[2], lead.y + e[1], lead.z - sn*e[0] + c*e[2]]; }
   else { const b = G.at(dv.s - dv.dir*(dv.train.len*0.5 + 22), 9); eye = [b.x, b.y + 11, b.z]; head = Math.atan2(lead.x - b.x, lead.z - b.z); }
-  const yaw = head + dv.look, dir = [Math.sin(yaw)*Math.cos(dv.pitch), Math.sin(dv.pitch) - (dv.cam ? 0.22 : 0), Math.cos(yaw)*Math.cos(dv.pitch)];
+  const yaw = head + dv.look, dir = [Math.sin(yaw)*Math.cos(dv.pitch), Math.sin(dv.pitch) - (dv.cam===1 ? 0.22 : 0), Math.cos(yaw)*Math.cos(dv.pitch)];
   if(dv.camX){ eye = dv.camX.eye; dir.splice(0, 3, ...dv.camX.dir); }   // a fixed camera, for pictures of the line
-  const vp = m4mul(m4persp(1.15, cv.width/cv.height, 0.25, 2600), m4look(eye, dir));
+  const vp = m4mul(m4persp(1.15, cv.width/cv.height, seat && !dv.camX ? seat.near : 0.25, 2600), m4look(eye, dir));
   gl.uniformMatrix4fv(YGL.vp, false, vp); gl.uniform3f(YGL.fog, .64,.76,.86); gl.uniform2f(YGL.fr, 350, 1500);
   glDraw(G.mesh, m4at(0,0,0,0));
-  mine.forEach((p,i)=>glDraw(dv.cam===0 || !p.v.plain ? p.v.mesh : p.v.plain, m4at(p.x, p.y, p.z, p.yaw + (p.v.flip ? Math.PI : 0))));
+  mine.forEach((p,i)=>glDraw(dv.cam!==1 || !p.v.plain ? p.v.mesh : p.v.plain, m4at(p.x, p.y, p.z, p.yaw + (p.v.flip ? Math.PI : 0))));
   // the other trains: in the platforms, out on the line, and through the loops on the loop road as they pass you
   for(const o of dv.others){ const p0 = dOtherPlace(o); if(!p0) continue;
     trainPoses(G, o.train, p0.s, p0.dir, dLoopOff).forEach(p=>glDraw(p.v.plain || p.v.mesh, m4at(p.x, p.y, p.z, p.yaw + (p.v.flip ? Math.PI : 0)))); }
@@ -6040,6 +6063,45 @@ function driveDraw(){
     g.font = `${wt} ${Math.round(sz*k)}px Georgia, serif`;
     const sx = (cx/cw + 1)/2*lab.width, sy = (1 - cy/cw)/2*lab.height, tw = g.measureText(b.text).width + 12*k;
     g.fillStyle = bg; g.fillRect(sx - tw/2, sy - 11*k, tw, 18*k); g.fillStyle = fg; g.fillText(b.text, sx, sy + 3*k); }
+  if(seat && !dv.camX) dCabFrame(g, lab.width, lab.height, seat.kind);
+}
+// the inside of the cab round the edge of the view: window pillars, roof and desk with its gauges (a diesel), or the
+// spectacle plate and the boiler backhead with the regulator, gauges and firehole (steam)
+function dCabFrame(g, W, H, kind){
+  const mph = dv.v*MPH, ang = v => Math.PI*0.75 + Math.PI*1.5*Math.max(0, Math.min(1, v));
+  const gauge = (x, y, r, v, label) => { g.fillStyle = "#e9e4d4"; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); g.strokeStyle = "#222"; g.lineWidth = r*0.12; g.stroke();
+    g.lineWidth = r*0.05; for(let i=0;i<=6;i++){ const a = ang(i/6); g.beginPath(); g.moveTo(x + Math.cos(a)*r*0.72, y + Math.sin(a)*r*0.72); g.lineTo(x + Math.cos(a)*r*0.88, y + Math.sin(a)*r*0.88); g.stroke(); }
+    const a = ang(v); g.strokeStyle = "#a01"; g.lineWidth = r*0.08; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a)*r*0.8, y + Math.sin(a)*r*0.8); g.stroke();
+    g.fillStyle = "#222"; g.font = `700 ${Math.round(r*0.3)}px Segoe UI, sans-serif`; g.textAlign = "center"; g.fillText(label, x, y + r*0.55); };
+  const brake = Math.max(0, -dv.ctl), power = Math.max(0, dv.ctl);
+  g.save();
+  if(kind==="steam"){
+    // the spectacle plate: dark steel with two round-topped windows, then the boiler backhead below
+    g.fillStyle = "#1e1c1a"; g.beginPath(); g.rect(0, 0, W, H*0.62);
+    const spec = (cx) => { const w = W*0.25, h = H*0.36, y = H*0.1; g.moveTo(cx - w/2, y + h); g.lineTo(cx - w/2, y + w/2*0.6); g.ellipse(cx, y + w/2*0.6, w/2, w/2*0.6, 0, Math.PI, 0); g.lineTo(cx + w/2, y + h); g.closePath(); };
+    spec(W*0.29); spec(W*0.71); g.fill("evenodd");
+    g.strokeStyle = "#b08a3a"; g.lineWidth = W*0.006; g.beginPath(); spec(W*0.29); g.stroke(); g.beginPath(); spec(W*0.71); g.stroke();
+    g.fillStyle = "#26231f"; g.fillRect(0, H*0.62, W, H*0.38);
+    g.fillStyle = "#3a3632"; g.beginPath(); g.ellipse(W*0.5, H*1.02, W*0.36, H*0.42, 0, Math.PI, 0); g.fill();   // the backhead
+    g.fillStyle = "#151311"; g.beginPath(); g.ellipse(W*0.5, H*0.93, W*0.08, H*0.05, 0, 0, 7); g.fill();       // the firehole door
+    g.fillStyle = "#c7a24a"; g.fillRect(W*0.47, H*0.66, W*0.06, H*0.03);                                       // the regulator
+    g.save(); g.translate(W*0.5, H*0.675); g.rotate(-0.9 + power*1.2); g.fillStyle = "#c7a24a"; g.fillRect(0, -H*0.006, W*0.12, H*0.012); g.restore();
+    for(const x of [0.4, 0.6]){ g.fillStyle = "#c7a24a"; g.fillRect(W*x - W*0.006, H*0.7, W*0.012, H*0.12); g.fillStyle = "rgba(170,200,220,.8)"; g.fillRect(W*x - W*0.003, H*0.72, W*0.006, H*0.08); }   // gauge glasses
+    gauge(W*0.5, H*0.79, H*0.06, 0.82, "lb/in²"); gauge(W*0.36, H*0.88, H*0.045, mph/40, "MPH"); gauge(W*0.64, H*0.88, H*0.045, 0.75 - brake*0.6, "VAC");
+    g.save(); g.translate(W*0.25, H*0.95); g.rotate(-1.2 + brake*1.0); g.fillStyle = "#555"; g.fillRect(0, -H*0.008, W*0.09, H*0.016); g.restore();   // the brake handle
+  } else {
+    // a diesel cab: roof lining, corner pillars and the centre pillar, and the desk across the front
+    g.fillStyle = "#2b2d2e"; g.beginPath(); g.rect(0, 0, W, H);
+    g.moveTo(W*0.07, H*0.13); g.lineTo(W*0.475, H*0.12); g.lineTo(W*0.475, H*0.6); g.lineTo(W*0.05, H*0.62); g.closePath();
+    g.moveTo(W*0.525, H*0.12); g.lineTo(W*0.93, H*0.13); g.lineTo(W*0.95, H*0.62); g.lineTo(W*0.525, H*0.6); g.closePath();
+    g.fill("evenodd");
+    g.fillStyle = "#3b3e40"; g.fillRect(0, H*0.62, W, H*0.05);
+    g.fillStyle = "#4a4d4e"; g.beginPath(); g.moveTo(0, H*0.67); g.lineTo(W, H*0.67); g.lineTo(W, H); g.lineTo(0, H); g.fill();   // the desk
+    gauge(W*0.3, H*0.77, H*0.065, mph/100, "MPH"); gauge(W*0.42, H*0.77, H*0.05, 0.3 + power*0.6, "AMPS"); gauge(W*0.58, H*0.77, H*0.05, 0.75 - brake*0.6, "BRAKE");
+    g.save(); g.translate(W*0.2, H*0.84); g.rotate(-0.4 - power*0.9); g.fillStyle = "#222"; g.fillRect(0, -H*0.01, W*0.07, H*0.02); g.fillStyle = "#c22"; g.beginPath(); g.arc(W*0.07, 0, H*0.018, 0, 7); g.fill(); g.restore();   // the power controller
+    g.save(); g.translate(W*0.72, H*0.84); g.rotate(-2.6 + brake*0.9); g.fillStyle = "#222"; g.fillRect(0, -H*0.01, W*0.07, H*0.02); g.restore();   // the brake handle
+  }
+  g.restore();
 }
 function dMap(){
   const c = document.getElementById("dmap"), g = c.getContext("2d"), W = c.width, H = c.height;
@@ -6054,6 +6116,13 @@ function dMap(){
   g.textAlign = "left";
   for(const o of dv.others){ const m = agentMile(o.a, dv.T); if(m==null) continue; const [px,py] = pointAtMile(m); g.fillStyle = "#9ab"; g.beginPath(); g.arc(X(px),Y(py),6,0,7); g.fill(); }
   const [px,py] = pointAtMile(dv.G.mileOfS(Math.max(0, Math.min(dv.G.L, dv.s)))); g.fillStyle = "#ffd24a"; g.beginPath(); g.arc(X(px),Y(py),8,0,7); g.fill();
+}
+// the views: leaning out of the cab, sitting in the driver's seat (an engine; a unit is always driven from its seat), or the chase
+function dNextCam(){
+  if(!dv) return;
+  const order = dv.train[0].inCab ? [0, 2, 1] : [0, 1];
+  dv.cam = order[(order.indexOf(dv.cam) + 1) % order.length];
+  dMsg(dv.cam===2 ? "In the driver's seat" : dv.cam===0 ? (dv.train[0].inCab ? "Leaning out of the cab" : "In the cab") : "Lineside view");
 }
 function dMsg(text, bad){
   const m = document.getElementById("yMsg"); m.textContent = text; m.className = "ymsg show" + (bad?" bad":"");
@@ -6116,7 +6185,7 @@ addEventListener("keydown", e=>{
   if(!dv || dv.done) return;
   if(DKEYS[e.key]){ dv.keys[DKEYS[e.key]] = true; e.preventDefault(); return; }
   if(e.key===" "){ dv.emerg = true; dv.ctl = -1; e.preventDefault(); }
-  else if(e.key==="c" || e.key==="C") dv.cam = 1 - dv.cam;
+  else if(e.key==="c" || e.key==="C") dNextCam();
   else if(e.key==="t" || e.key==="T") dSkip();
   else if(e.key==="h" || e.key==="H" || e.key==="Escape") dHandOver();
   else if((e.key==="q" || e.key==="Q") && !e.repeat && dv.snd) sndSignal(dv.snd.voice, true);
