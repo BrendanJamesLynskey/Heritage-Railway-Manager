@@ -140,7 +140,7 @@
   #yard[hidden]{display:none}
   #dHud{display:none} #yard.drv #dHud{display:block} #yard.drv > .yh, #yard.drv > .ybc{display:none}
   .dlever{position:relative;height:8px;background:rgba(255,255,255,.15);border-radius:4px;margin:5px 0 3px;overflow:hidden} .dlever span{position:absolute;top:0;bottom:0}
-  .dlever::after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:2px;background:#fff}
+  .dlevers{display:grid;grid-template-columns:auto 1fr 3.2em;align-items:center;gap:2px 8px;margin:5px 0 3px} .dlevers .dlever{margin:0} .dlevers b{text-align:right;font-size:.85rem}
   table.dtt{border-collapse:collapse;margin-top:6px;font-size:.78rem} table.dtt td{padding:2px 7px 2px 0;color:rgba(255,255,255,.6)}
   table.dtt tr.now td{color:#ffd24a;font-weight:700} table.dtt tr.done td{color:rgba(255,255,255,.4);text-decoration:line-through}
   #dmap{width:280px;height:150px;display:block}
@@ -540,7 +540,7 @@
       <ul style="font-size:.9rem">
         <li><b>The laptop:</b> each part of the railway is an app on the desktop. Double-click an icon (or tap it on a touch screen) to open its window; drag windows by the title bar, resize them from the corner, and switch between them on the taskbar. The <b>Start</b> button (the R&amp;H roundel) lists every app.</li>
         <li><b>Mail:</b> railtour companies and other heritage railways email asking to hire your locomotives. Accept their offer, decline, or send a counter-offer: ask for more, but push too hard and they'll go elsewhere. A hired-out engine is away for the weeks agreed, and comes back a little more worn.</li>
-        <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to make up the first train: the laptop folds away and you're in the cab. The coaches are already on the Platform road; the train engine (and the pilot, for a double-header) is in the engine shed with the rest of the fleet, every engine facing the shunter. Set the points for the right shed road, buffer up to the engine, draw it out, set the points back to the Platform road and buffer it up to the coaches, then uncouple. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the shunter. Buffer up gently (under 2 mph) to couple. Every class of engine is modelled from its own wheel arrangement, size and livery. <b>Drive a service:</b> or take a train out on the line yourself. Pick a train and the trip to start from, and drive it from the cab for the rest of its day, or just one way out or back: every booked call, the passing loops (the starter stays at danger until your time and a clear section), Brackenby Viaduct and Highmoor Tunnel. ↑/↓ (or W/S) move the power and brake lever, Space is the emergency brake, C changes the view (leaning out of the cab, sitting in the driver's seat behind the desk or the backhead, or from the lineside), T waits for the right away, Q (held) sounds the whistle or horn, M turns the sound off and on, H hands the train to another driver to finish the day. Every engine has its own synthesised sound: exhaust beats, diesel engines, whistles and horns. The line is drawn to the map, squeezed to about a quarter of its length, so each way takes about a quarter of an hour; the stations are hidden from each other round bends, the halts stand in the woods and the other stations have their village or town round them. If the timetable runs DMUs, you can drive each unit yourself from its own cab instead: out of the shed onto the headshunt, change ends (E), then into the platform up to the STOP board. Or start in the shunter, climb down (F) and walk over to the unit (hold Shift or ⚡ Sprint to run). A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
+        <li><b>The yard:</b> when you press <b>Run the Weekend</b> you can drive the Class 08 shunter yourself to make up the first train: the laptop folds away and you're in the cab. The coaches are already on the Platform road; the train engine (and the pilot, for a double-header) is in the engine shed with the rest of the fleet, every engine facing the shunter. Set the points for the right shed road, buffer up to the engine, draw it out, set the points back to the Platform road and buffer it up to the coaches, then uncouple. ↑/↓ (or W/S) drive, Space brakes, ←/→ (or A/D, or drag) look around, 1/2/3 set the points, U uncouples the shunter. Buffer up gently (under 2 mph) to couple. Every class of engine is modelled from its own wheel arrangement, size and livery. <b>Drive a service:</b> or take a train out on the line yourself. Pick a train and the trip to start from, and drive it from the cab for the rest of its day, or just one way out or back, while the weekend runs on behind you (the other trains you meet are the weekend's own, and when you climb down the map carries on from the cab's clock): every booked call, the passing loops (the starter stays at danger until your time and a clear section), Brackenby Viaduct and Highmoor Tunnel. the throttle (the regulator, on steam) and the brake are separate handles that stay where you leave them: W/S (or ↑/↓) open and close the throttle, E/D (or PgDn/PgUp) put the brake on and take it off, Space is the emergency brake, C changes the view (leaning out of the cab, sitting in the driver's seat behind the desk or the backhead, or from the lineside), T waits for the right away, Q (held) sounds the whistle or horn, M turns the sound off and on, H hands the train to another driver to finish the day. Every engine has its own synthesised sound: exhaust beats, diesel engines, whistles and horns. The line is drawn to the map, squeezed to about a quarter of its length, so each way takes about a quarter of an hour; the stations are hidden from each other round bends, the halts stand in the woods and the other stations have their village or town round them. If the timetable runs DMUs, you can drive each unit yourself from its own cab instead: out of the shed onto the headshunt, change ends (E), then into the platform up to the STOP board. Or start in the shunter, climb down (F) and walk over to the unit (hold Shift or ⚡ Sprint to run). A clean, quick job lifts reputation and morale; or let the shed staff do it.</li>
         <li><b>Each turn is one week.</b> Plan the weekend in the <b>Timetable</b> app, then press <b>Run the Weekend</b>. Choose how many days to run: weekends, four days a week in the summer school holidays, or close for the week. The weekend then plays out live on the <b>Line Map</b>, all its days together in the time of one (change the speed there, or pause it). You can't start the next week until the last train is home, but you can carry on booking events, buying stock and recruiting while it runs. The takings arrive when the weekend ends.</li>
         <li><b>Timetabling:</b> every train is a round trip from Ravensgill Junction to Moorend and back, about two hours with turn-rounds. Give each loco a set of departure times. If a train isn't back in time, its next trip leaves late.</li>
         <li><b>The printed timetable:</b> the Up and Down tables at the top of the Timetable app are the public timetable, a column for each train. The times are worked out by the signallers' plan, so a train held at a loop shows its real, later time. <b>|</b> means the train runs through without stopping.</li>
@@ -592,7 +592,7 @@
     <div class="yh ytl" id="dInfo"></div>
     <div class="yh ytr" id="dJob"></div>
     <div class="ybc"><div class="ydrive">
-      <button data-dhold="down">▼ Brake</button><button data-dhold="up">Power ▲</button><button class="brake" data-dhold="emerg">■ Emergency</button>
+      <button data-dhold="down">Throttle ▼</button><button data-dhold="up">Throttle ▲</button><button data-dhold="bOff">Brake off ▼</button><button data-dhold="bOn">Brake on ▲</button><button class="brake" data-dhold="emerg">■ Emergency</button>
       <button data-horn="d">📯 Whistle / horn</button><button id="dSkip" onclick="dSkip()" hidden>⏩ Wait</button><button onclick="dNextCam()">🎥 View</button><button onclick="dHandOver()">✋ Hand over</button><button class="sndbtn" onclick="sndToggle()">🔊 Sound</button>
     </div></div>
     <div class="yh ybr"><canvas id="dmap" width="560" height="300"></canvas></div>
@@ -1319,7 +1319,7 @@ let live = null;   // the weekend in progress: {plan, report, mk, day, t0, endT}
 function onLine(item){ return !!live && live.plan.sets.some(s=>s.loco===item || s.pilot===item || s.rake===item); }
 function advanceWeek(opt={}){
   if(state.over || live) return;
-  const plan = currentPlan();
+  const plan = opt.plan || currentPlan();
   const days = daysThisWeek();
   const ev = plan.ev, def = plan.def;
   const runDays = (days>0 && plan.sets.length) ? days : 0;
@@ -1339,12 +1339,13 @@ function advanceWeek(opt={}){
   }
 
   const report = {week:state.week, weather:state.weather, days:runDays, ev, def, dayRes:[], events:[], startCash:state.cash};
-  if(opt.drive && opt.drive.stops) report.events.push({cls:"good", text:`🚂 You drove the ${opt.drive.train} yourself: ${"★".repeat(opt.drive.stars)}${"☆".repeat(3-opt.drive.stars)} (${opt.drive.stops} call${opt.drive.stops===1?"":"s"}, average ${opt.drive.late.toFixed(1)} min late${opt.drive.complete ? "" : `, handed over at ${opt.drive.at}`}).`});
+  if(opt.drive && opt.drive.stops) report.events.push(driveEvent(opt.drive));
   if(opt.shunt) report.events.push({cls:"good", text:`${opt.shunt.dmu ? `🚃 You drove the ${opt.shunt.train} unit off shed and into the platform yourself` : `🚜 You marshalled the ${opt.shunt.train} train yourself`}: ${"★".repeat(opt.shunt.stars)}${"☆".repeat(3-opt.shunt.stars)} (${opt.shunt.time}, ${opt.shunt.rough} rough shunt${opt.shunt.rough===1?"":"s"}).`});
   for(let d=0; d<runDays; d++){
     // roll failures for each set: per-trip probability from condition and reliability
     const failTrip = plan.sets.map(s=>{
       for(let i=0;i<s.deps.length;i++){
+        if(s===opt.keep && d===runDays-1) break;   // the train you're driving yourself doesn't fail on you
         const p = Math.min(0.3, Math.max(0.006, 0.07*(1.05-s.condition)/s.reliability));
         if(Math.random()<p) return i;
       }
@@ -1356,12 +1357,16 @@ function advanceWeek(opt={}){
     report.dayRes.push(res);
   }
   if(!runDays){ settleWeek(plan, report, state.marketing); return; }   // closed: nothing to watch
-  live = {plan, report, mk:state.marketing, day:report.days-1};   // every day runs side by side; the map shows the last
+  live = {plan, report, mk:state.marketing, day:report.days-1, bg:!!opt.bg};   // every day runs side by side; the map shows the last
   render();
+  if(opt.bg){ startLiveDay(false); return; }   // running behind a drive: the cab's clock keeps the weekend's time
   openApp("map");
   startLiveDay();
 }
-function startLiveDay(){
+function driveEvent(d){
+  return {cls:"good", text:`🚂 You drove the ${d.train} yourself: ${"★".repeat(d.stars)}${"☆".repeat(3-d.stars)} (${d.stops} call${d.stops===1?"":"s"}, average ${d.late.toFixed(1)} min late${d.complete ? "" : `, handed over at ${d.at}`}).`};
+}
+function startLiveDay(play=true){
   const sim = live.report.dayRes[live.day].sim;
   const paths = sim.agents.filter(a=>a.path.length);
   const first = Math.min(...paths.map(a=>a.path[0].t)), last = Math.max(...paths.map(a=>a.path[a.path.length-1].t));
@@ -1369,7 +1374,7 @@ function startLiveDay(){
   live.endT = isFinite(last) ? last+10 : 1080;
   replay.source = "live"; replay.t = live.t0;
   replayControls();
-  replayDraw(true); setPlaying(true);
+  replayDraw(true); setPlaying(play);
 }
 function liveTick(){
   if(replay.t < live.endT) return;
@@ -1381,9 +1386,9 @@ function liveTick(){
   replayControls();
   settleWeek(plan, report, mk);
 }
+const livePax = () => live.report.dayRes.reduce((a,x)=>a + x.sim.trips.filter(t=>!t.cancelled && t.dep<=replay.t).reduce((b,t)=>b+t.pax, 0), 0);
 function liveStatus(){
-  const r = live.report;
-  const pax = r.dayRes.reduce((a,x)=>a + x.sim.trips.filter(t=>!t.cancelled && t.dep<=replay.t).reduce((b,t)=>b+t.pax, 0), 0);
+  const r = live.report, pax = livePax();
   const pct = Math.max(0, Math.min(100, (replay.t-live.t0)/(live.endT-live.t0) * 100));
   return `🚂 <b>Running the ${r.days>1?r.days+"-day weekend":"day"}</b> · ${fmtT(replay.t)} · ${pax.toLocaleString("en-GB")} passengers so far${replay.playing?"":" · <b>paused</b>"}
     <span class="liveprog"><i style="width:${pct.toFixed(1)}%"></i></span>`;
@@ -4883,7 +4888,7 @@ addEventListener("keyup", e=>{ if(yd && YKEYS[e.key]) yd.keys[YKEYS[e.key]] = fa
     for(const ev of ["pointerup","pointerleave","pointercancel"]) b.addEventListener(ev, ()=>set(false));
   });
   document.querySelectorAll("[data-dhold]").forEach(b=>{
-    const k = b.dataset.dhold, set = on => { if(!dv) return; if(k==="emerg"){ dv.emerg = on; if(on) dv.ctl = -1; } else dv.keys[k] = on; };
+    const k = b.dataset.dhold, set = on => { if(!dv) return; if(k==="emerg"){ dv.emerg = on; if(on){ dv.thr = 0; dv.brk = 1; } } else dv.keys[k] = on; };
     b.addEventListener("pointerdown", e=>{ e.preventDefault(); set(true); });
     for(const ev of ["pointerup","pointerleave","pointercancel"]) b.addEventListener(ev, ()=>set(false));
   });
@@ -5747,8 +5752,8 @@ function lineScenery(a, G, T){
 }
 
 /* ---- the day's working: which trips the chosen train makes, call by call ---- */
-function driveWorking(plan, k, from, mode){
-  const set = plan.sets[k], sim = simulateDay(plan.sets, null);
+function driveWorking(plan, k, from, mode, daySim){
+  const set = plan.sets[k], sim = daySim || simulateDay(plan.sets, null);
   let trips = sim.trips.filter(t=>t.set===set && t.calls).slice(from);
   if(mode==="out" || mode==="back") trips = trips.slice(0, 1);
   if(!trips.length) return null;
@@ -5786,8 +5791,12 @@ function startDrive(k, from, mode){
   sndInit();
   const gl = yardGL();
   if(!gl){ alert("Your browser can't show the 3D line (WebGL is turned off)."); advanceWeek({go:true}); return; }
-  const plan = pendingPlan || currentPlan(), work = driveWorking(plan, k, from, mode);
+  const plan = pendingPlan || currentPlan();
+  let work = driveWorking(plan, k, from, mode);
   if(!work){ alert("That train doesn't run that trip today."); advanceWeek({go:true}); return; }
+  // the weekend runs behind the drive: the other trains in the cab view are the weekend's own, on the cab's clock
+  if(!live) advanceWeek({go:true, plan, bg:true, keep:plan.sets[k]});
+  if(live && live.bg) work = driveWorking(plan, k, from, mode, live.report.dayRes[live.day].sim) || work;
   const G = line3();
   if(!G.mesh){   // building the line takes a moment the first time
     openModal("Laying the Track", `<p>Building the line from Ravensgill to Moorend…</p>`, true);
@@ -5796,7 +5805,7 @@ function startDrive(k, from, mode){
   }
   const set = work.set, train = driveConsist(gl, set), first = work.calls[0];
   dv = {plan, k, work, G, set, train, ci:0, phase:"stand", boarded:1, T:(first.dep || 0) - 1.5, dir:first.dirOut || 1,
-        v:0, ctl:0, emerg:false, look:0, pitch:-0.04, cam:0, keys:{}, raf:0, last:0, msgT:0, log:[], spad:0, over:0, early:0, overrun:0, done:false};
+        v:0, thr:0, brk:0, emerg:false, look:0, pitch:-0.04, cam:0, keys:{}, raf:0, last:0, msgT:0, log:[], spad:0, over:0, early:0, overrun:0, done:false};
   dv.s = dv.standS = G.stopAt(first.st, dv.dir);
   dv.others = work.sim.agents.filter(a=>a.k!==k).map(a=>{ const st = plan.sets[a.k];
     return {a, d:0, dir:1, train:driveConsist(gl, st), prof:sndProfile(st.pilot ? st.pcat.key : st.lcat.key)}; });
@@ -5903,8 +5912,11 @@ function dClock(){
 }
 function dStep(dt){
   const G = dv.G, k = dv.keys, n = dNext(), c = dv.work.calls[dv.ci];
-  if(k.up) dv.ctl = Math.min(1, dv.ctl + 0.6*dt);
-  if(k.down) dv.ctl = Math.max(-1, dv.ctl - 0.8*dt);
+  // the throttle (regulator or controller) and the brake are separate handles; each stays where you leave it
+  if(k.up) dv.thr = Math.min(1, dv.thr + 0.6*dt);
+  if(k.down) dv.thr = Math.max(0, dv.thr - 0.8*dt);
+  if(k.bOn) dv.brk = Math.min(1, dv.brk + 0.7*dt);
+  if(k.bOff) dv.brk = Math.max(0, dv.brk - 0.9*dt);
   // the engine's best speed on this section is the one the timetable was worked out from (load, pace and the climb),
   // with a little in hand; downhill the train will run away with you if you let it
   const set = dv.set, from = dv.phase==="run" ? c.st : c.st, to = n ? n.st : c.st, seg = Math.min(from, to), sd = Math.sign(to - from) || dv.dir;
@@ -5912,7 +5924,7 @@ function dStep(dt){
   const vSim = LINE_SPEED*(set.pace || 1)/(climb > 0 ? 1 + climb*(0.35 + 0.75*load) : 1), vmax = Math.min(vSim*0.447*1.3, (DRV.lim + 1)*0.447);
   const A = set.kind==="dmu" ? 0.5 : 0.42;
   const grade = (G.y(dv.s + 2) - G.y(dv.s - 2))/4*dv.dir*0.35;
-  let acc = dv.ctl > 0 ? dv.ctl*A*Math.max(-0.3, Math.min(1, 4*(1 - dv.v/vmax))) : dv.ctl*0.9;
+  let acc = dv.thr*A*Math.max(-0.3, Math.min(1, 4*(1 - dv.v/vmax))) - dv.brk*0.9;
   if(dv.emerg) acc = -1.5;
   acc -= (grade < 0 ? 9.81*grade : 0) + 0.012 + 0.0004*dv.v*dv.v;
   if(dv.v <= 0 && acc < 0) acc = 0;
@@ -5924,6 +5936,7 @@ function dStep(dt){
   const clock = dClock();
   dOthers(dt*clock/60);
   dv.T += dt*clock/60;
+  if(live && live.bg) replay.t = Math.max(replay.t, Math.min(live.endT, dv.T));   // the weekend keeps the cab's time
   if(dv.v*MPH > DRV.lim + 2) dv.over += dt;
   // passing a starter signal at danger
   for(const sg of G.sigs) if(sg.dir===dv.dir && sg.i===dv.leftSt && (old - sg.s)*(dv.s - sg.s) <= 0 && old!==dv.s && !dv.leftClear){
@@ -5946,7 +5959,7 @@ function dStep(dt){
       else if(past > 8){ dv.overrun++; dMsg(`A bit past the stop board at ${STATIONS[n.st].name}`, true); }
       const late = dv.T - n.arr;
       dv.log.push({st:n.st, arr:dv.T, booked:n.arr, late});
-      dv.ci++; dv.phase = "stand"; dv.boarded = 0; dv.v = 0; dv.ctl = Math.min(dv.ctl, 0); dv.standS = dv.s; dv.leftSt = null; dv.cleared = false;
+      dv.ci++; dv.phase = "stand"; dv.boarded = 0; dv.v = 0; dv.thr = 0; dv.standS = dv.s; dv.leftSt = null; dv.cleared = false;
       if(dv.ci===dv.work.calls.length-1){ dFinish(true); return; }
       const now = dv.work.calls[dv.ci];
       if(now.dirOut && now.dirOut!==dv.dir){   // turn round: the engine runs round, or the driver changes ends
@@ -5987,7 +6000,7 @@ function dFinish(complete){
     <p>${complete ? `You brought ${dv.set.label} ${dv.work.mode==='out' ? 'to ' + dv.result.at : 'home'}: ${legs} station call${legs===1?"":"s"}.` : `You handed over at ${dv.result.at} after ${legs} of ${total} calls; another driver finishes the day.`}<br>
       Average ${mean.toFixed(1)} min late · ${dv.spad} signal${dv.spad===1?"":"s"} passed at danger · ${dv.overrun} overrun${dv.overrun===1?"":"s"} · ${Math.round(dv.over)} s over the limit</p>
     <p class="sub">${stars===3 ? "Right time and smooth all the way (+2 reputation, morale up)." : stars===2 ? "A tidy turn (+1 reputation)." : stars ? "You got there." : "Not long enough to judge."}</p>
-    <button class="act greenbtn" onclick="endDrive(dv.result)">Back to the laptop and run the weekend ▸</button></div>`;
+    <button class="act greenbtn" onclick="endDrive(dv.result)">${live && live.bg ? `Back to the laptop: the weekend runs on from ${dTime(Math.max(replay.t, dv.T))} ▸` : "Back to the laptop and run the weekend ▸"}</button></div>`;
   d.hidden = false;
 }
 function endDrive(result){
@@ -6005,7 +6018,10 @@ function endDrive(result){
     state.vol.morale = Math.min(1, state.vol.morale + (result.stars===3 ? 0.03 : 0.01));
     logEntry(`Drove the ${result.train} yourself (${"★".repeat(result.stars)}).`, 0);
   }
-  setTimeout(()=>advanceWeek({go:true, drive:result}), 650);
+  // the weekend has been running behind the drive: it carries on, on the map, from the cab's clock
+  if(live && live.bg){ live.bg = false; if(result && result.stops) live.report.events.unshift(driveEvent(result));
+    setTimeout(()=>{ if(!live) return; openApp("map"); replayDraw(true); setPlaying(true); }, 650); }
+  else setTimeout(()=>advanceWeek({go:true, drive:result}), 650);
 }
 
 /* ---- drawing the line ---- */
@@ -6073,7 +6089,7 @@ function dCabFrame(g, W, H, kind){
     g.lineWidth = r*0.05; for(let i=0;i<=6;i++){ const a = ang(i/6); g.beginPath(); g.moveTo(x + Math.cos(a)*r*0.72, y + Math.sin(a)*r*0.72); g.lineTo(x + Math.cos(a)*r*0.88, y + Math.sin(a)*r*0.88); g.stroke(); }
     const a = ang(v); g.strokeStyle = "#a01"; g.lineWidth = r*0.08; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a)*r*0.8, y + Math.sin(a)*r*0.8); g.stroke();
     g.fillStyle = "#222"; g.font = `700 ${Math.round(r*0.3)}px Segoe UI, sans-serif`; g.textAlign = "center"; g.fillText(label, x, y + r*0.55); };
-  const brake = Math.max(0, -dv.ctl), power = Math.max(0, dv.ctl);
+  const brake = dv.emerg ? 1 : dv.brk, power = dv.thr;
   g.save();
   if(kind==="steam"){
     // the spectacle plate: dark steel with two round-topped windows, then the boiler backhead below
@@ -6137,17 +6153,19 @@ function dHud(){
       return `<tr class="${done ? "done" : now ? "now" : ""}"><td>${STATION_SHORT[c.st]}</td><td>${c.stop ? (c.arr!=null ? "arr " + dTime(c.arr) : "") : "pass"}</td><td>${c.dep!=null && c.stop ? "dep " + dTime(c.dep) : ""}</td><td>${l && l.late!=null ? (l.late > 1 ? `+${Math.round(l.late)}` : "✓") : ""}</td></tr>`; }).join("")}</table>`;
 }
 function dInfo(){
-  const mph = dv.v*MPH, c = dv.work.calls[dv.ci], n = dNext(), G = dv.G, sig = dSignal();
+  const mph = dv.v*MPH, c = dv.work.calls[dv.ci], n = dNext(), G = dv.G, sig = dSignal(), steam = dv.snd && dv.snd.voice && dv.snd.voice.kind==="steam";
   let next = "";
   if(dv.phase==="stand") next = c.dep==null ? "End of the shift" : sig.here ? (sig.clear ? "<b>Signal off: right away!</b>" : `Starter at danger${dv.T < c.dep ? " until " + dTime(c.dep) : ": section occupied"}`)
       : dv.T >= c.dep - 0.01 && dv.boarded >= 1 ? "<b>Right away!</b>" : `Right away at ${dTime(c.dep)}${dv.boarded < 1 ? " · passengers boarding" : ""}`;
   else if(n) next = `${n.stop ? "Next stop" : "Passing"} <b>${STATIONS[n.st].name}</b> ${n.stop ? "arr " + dTime(n.arr) : ""} · ${Math.max(0, Math.round((G.stopAt(n.st, dv.dir) - dv.s)*dv.dir))} m`;
   document.getElementById("dInfo").innerHTML = `<div class="ysub">${dv.set.loco.number} ${dv.set.lcat.name} · ${dv.dir>0 ? "up to Moorend" : "down to Ravensgill"}</div>
     <div class="yspeed" style="${mph > DRV.lim + 2 ? "color:#ff8a7a" : ""}">${mph.toFixed(0)} <span style="font-size:.9rem">mph</span> <span class="ysub" style="font-size:.8rem">limit ${DRV.lim}</span></div>
-    <div class="dlever"><span style="width:${Math.abs(dv.ctl)*50}%;${dv.ctl >= 0 ? "left:50%;background:#5fbf6a" : `right:50%;background:#e0604f`}"></span></div>
-    <div class="ysub">${dv.emerg ? "<b>Emergency brake</b>" : dv.ctl > 0.02 ? `Power ${Math.round(dv.ctl*100)}%` : dv.ctl < -0.02 ? `Brake ${Math.round(-dv.ctl*100)}%` : "Coasting"}</div>
+    <div class="dlevers"><span class="ysub">${steam ? "Regulator" : "Throttle"}</span><div class="dlever"><span style="width:${dv.thr*100}%;background:#5fbf6a"></span></div><b>${Math.round(dv.thr*100)}%</b>
+      <span class="ysub">Brake</span><div class="dlever"><span style="width:${(dv.emerg ? 1 : dv.brk)*100}%;background:#e0604f"></span></div><b>${Math.round((dv.emerg ? 1 : dv.brk)*100)}%</b></div>
+    <div class="ysub">${dv.emerg ? "<b>Emergency brake</b>" : dv.thr > 0.02 && dv.brk > 0.02 ? "<b>Power against the brake!</b>" : dv.thr > 0.02 ? "Under power" : dv.brk > 0.02 ? "Braking" : "Coasting"}</div>
     <div style="margin-top:6px">🕰 ${dTime(dv.T)} · ${next}</div>
-    <div class="ysub yhelp" style="margin:6px 0">↑/↓ or W/S power and brake · Space emergency · Q ${dv.snd && dv.snd.voice && dv.snd.voice.kind==="steam" ? "whistle" : "horn"} · ←/→ look · C camera · T wait · H hand over · M sound</div>`;
+    ${live && live.bg ? `<div class="ysub">The weekend runs on behind you: ${livePax().toLocaleString("en-GB")} passengers so far</div>` : ""}
+    <div class="ysub yhelp" style="margin:6px 0">W/S or ↑/↓ ${steam ? "regulator" : "throttle"} · E/D or PgDn/PgUp brake on/off · Space emergency · Q ${dv.snd && dv.snd.voice && dv.snd.voice.kind==="steam" ? "whistle" : "horn"} · ←/→ look · C camera · T wait · H hand over · M sound</div>`;
   document.getElementById("dSkip").hidden = !(dv.phase==="stand" && c.dep!=null && dv.T < c.dep - 0.5);
 }
 function driveFrame(ts){
@@ -6159,9 +6177,9 @@ function driveFrame(ts){
   if(dv.snd){   // the engine, the wheels and the brakes
     const G = dv.G, k = dv.snd, ready = dv.phase==="stand" && dRightAway();
     k.odo += dv.v*dt;
-    sndVoiceUpdate(k.voice, dv.v, dv.emerg ? -1 : dv.ctl, dt);
+    sndVoiceUpdate(k.voice, dv.v, dv.emerg ? -1 : dv.thr > 0.02 ? dv.thr : -dv.brk, dt);
     let cv = G.at(dv.s + 6).yaw - G.at(dv.s - 6).yaw; cv = Math.atan2(Math.sin(cv), Math.cos(cv))/12;
-    sndRunUpdate(k.run, k.odo, dv.v, cv, dv.emerg ? 1 : Math.max(0, -dv.ctl), dv.s > G.tun[0] && dv.s < G.tun[1], dv.train[0].four ? 1.6 : 1.2);
+    sndRunUpdate(k.run, k.odo, dv.v, cv, dv.emerg ? 1 : dv.brk, dv.s > G.tun[0] && dv.s < G.tun[1], dv.train[0].four ? 1.6 : 1.2);
     if(ready && !k.ready) sndGuard();
     if(!k.pass && SND.ctx){ k.pass = sndLoop(SND.brown, "lowpass", 200, 0.7); k.pass2 = sndLoop(SND.pink, "bandpass", 650, 0.6); }
     let near = 0; const me = G.at(dv.s);
@@ -6177,14 +6195,15 @@ function driveFrame(ts){
     if(dv.phase==="run") k.doors = false;
   }
   driveDraw();
-  if(Math.floor(dv.T*20) !== dv.hudTick){ dv.hudTick = Math.floor(dv.T*20); dInfo(); dMap(); }
+  if(Math.floor(dv.T*20) !== dv.hudTick){ dv.hudTick = Math.floor(dv.T*20); dInfo(); dMap(); liveBar(); }
   dv.raf = requestAnimationFrame(driveFrame);
 }
-const DKEYS = {ArrowUp:"up", w:"up", W:"up", ArrowDown:"down", s:"down", S:"down", ArrowLeft:"left", a:"left", A:"left", ArrowRight:"right", d:"right", D:"right"};
+const DKEYS = {ArrowUp:"up", w:"up", W:"up", ArrowDown:"down", s:"down", S:"down", e:"bOn", E:"bOn", PageDown:"bOn", d:"bOff", D:"bOff", PageUp:"bOff",
+               ArrowLeft:"left", ArrowRight:"right"};
 addEventListener("keydown", e=>{
   if(!dv || dv.done) return;
   if(DKEYS[e.key]){ dv.keys[DKEYS[e.key]] = true; e.preventDefault(); return; }
-  if(e.key===" "){ dv.emerg = true; dv.ctl = -1; e.preventDefault(); }
+  if(e.key===" "){ dv.emerg = true; dv.thr = 0; dv.brk = 1; e.preventDefault(); }
   else if(e.key==="c" || e.key==="C") dNextCam();
   else if(e.key==="t" || e.key==="T") dSkip();
   else if(e.key==="h" || e.key==="H" || e.key==="Escape") dHandOver();

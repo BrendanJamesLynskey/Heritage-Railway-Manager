@@ -76,11 +76,25 @@ Each engine's best speed on each section is the one the timetable was worked
 out from, for its load, its pace and the climb; downhill the train will run
 away with you if you let it.
 
+The throttle and the brake are separate handles, as in a real cab, and each
+stays where you leave it: open the throttle to get away, shut it to coast, put
+the brake on to slow down and take it off again before you start away. The
+driving panel shows both, and warns you if you're working the engine against
+the brake.
+
+**The weekend runs behind the drive.** When you take the cab the weekend starts
+at once: the other trains you meet are the weekend's own trains, the panel
+counts the weekend's passengers as you go, and when you climb down (journey
+done or handed over) the laptop map carries on from the cab's clock rather
+than starting the day again. Your own train never fails under you on the day
+you drive it.
+
 | Control | Keys / on screen |
 |---------|------------------|
-| Power and brake lever | ↑ / ↓ or W / S, or hold Power ▲ / ▼ Brake |
+| Throttle (regulator on steam) | W / S or ↑ / ↓, or hold Throttle ▲ / ▼ |
+| Train brake | E (on) / D (off), or PgDn / PgUp, or hold Brake on ▲ / Brake off ▼ |
 | Emergency brake | Space, or hold ■ Emergency |
-| Look round | ← / → or A / D, or drag |
+| Look round | ← / →, or drag |
 | Change view | C, or 🎥 View: leaning out of the cab, sitting in the driver's seat (an engine), or the lineside chase |
 | Wait for the right away | T, or ⏩ Wait |
 | Hand over | H or Esc, or ✋ Hand over |
