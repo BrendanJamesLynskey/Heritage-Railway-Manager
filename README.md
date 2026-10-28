@@ -41,6 +41,15 @@ their platforms and nameboards, the passing loops, Brackenby Viaduct's twelve
 arches over the River Raven, Highmoor Tunnel through the fell (a stone portal across the end of each cutting, as high as the hill behind it), the climb to the
 summit, the B6481 and Highmoor Reservoir. Along it:
 
+- **The River Raven** only ever runs downhill. Where the land rises across its
+  course it has cut a channel, and where its bed drops away it falls. Raven
+  Force and a second fall below it pour into rocky pools, with the water
+  animated as it tumbles. The B6481 runs along the river on a walled causeway.
+- **Brackenby Viaduct** stands on embankments whose sides fall away and narrow
+  to the abutments. The telegraph poles leave the line there and stride down
+  across the valley floor. Highmoor Tunnel's hill runs unbroken over the bore
+  right up to each portal face.
+
 - **Stations:** booking halls with windows, doors and chimneys, canopies on
   iron columns, white palings, benches, flower tubs, milk churns, barrows and
   clocks; signal boxes, footbridges and waiting shelters at the loops; water

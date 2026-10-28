@@ -2309,7 +2309,7 @@ function buildMap(){
   <text x="880" y="74" font-size="11" fill="#244a63" text-anchor="middle" font-style="italic">Highmoor Reservoir</text>
   <path d="M845,94 C820,130 785,160 750,192 S665,262 612,298 S522,368 487,404 S420,455 360,478 S240,522 190,560 S110,600 70,620" fill="none" stroke="#6e9fbf" stroke-width="5" stroke-linecap="round"/>
   <text x="300" y="512" font-size="12" fill="#3f6f8f" font-style="italic" transform="rotate(-20 300 512)">River Raven</text>
-  <text x="762" y="186" font-size="10" fill="#3f6f8f" font-style="italic">Raven Force ≋</text>
+  <text x="682" y="247" font-size="10" fill="#3f6f8f" font-style="italic">Raven Force ≋</text>
   <path d="M0,492 C120,470 240,505 360,462 S520,430 600,385 S700,300 760,262 S860,190 960,120" fill="none" stroke="#f0d79a" stroke-width="5"/>
   <path d="M0,492 C120,470 240,505 360,462 S520,430 600,385 S700,300 760,262 S860,190 960,120" fill="none" stroke="#c9a54a" stroke-width="1" stroke-dasharray="1 0"/>
   <text x="610" y="402" font-size="10" fill="#8a6d1f" transform="rotate(-30 610 402)">B6481</text>
@@ -3706,6 +3706,8 @@ function quad(a, p0,p1,p2,p3, col, out){
   if(out && n[0]*out[0]+n[1]*out[1]+n[2]*out[2] < 0) n = n.map(q=>-q);
   for(const p of [p0,p1,p2,p0,p2,p3]) a.push(p[0],p[1],p[2], n[0],n[1],n[2], col[0],col[1],col[2]);
 }
+// a quad lit as if it faced the sky whichever way it's turned: falling water, white from every side
+function quadLit(a, p0,p1,p2,p3, col){ for(const p of [p0,p1,p2,p0,p2,p3]) a.push(p[0],p[1],p[2], 0,1,0, col[0],col[1],col[2]); }
 // copy a mesh shifted along z, optionally turned end for end
 function placed(src, dz, flip){
   const o = [], f = flip ? -1 : 1;
@@ -5632,6 +5634,10 @@ function lineNear(G, x, z){
   for(let i=Math.max(0,bi-6); i<=Math.min(P.length-1,bi+6); i++){ const d = (P[i].x-x)**2 + (P[i].z-z)**2; if(d < best){ best = d; bi = i; } }
   // past either end the track runs on a little way to the buffer stops, straight along the end of the line
   const n = P.length - 1;
+  if(bi > 0 && bi < n){ let bd = 1e18, bs = P[bi].s;   // between the points: onto the segments either side
+    for(const j of [bi - 1, bi]){ const a = P[j], b = P[j+1], dx = b.x - a.x, dz = b.z - a.z, l2 = dx*dx + dz*dz || 1, t = Math.max(0, Math.min(1, ((x - a.x)*dx + (z - a.z)*dz)/l2));
+      const d = (a.x + dx*t - x)**2 + (a.z + dz*t - z)**2; if(d < bd){ bd = d; bs = a.s + (b.s - a.s)*t; } }
+    return {d:Math.sqrt(bd), s:bs}; }
   if(bi===0 || bi===n){ const e = P[bi], f = P[bi ? n-1 : 1], l = Math.hypot(e.x - f.x, e.z - f.z) || 1, ux = (e.x - f.x)/l, uz = (e.z - f.z)/l;
     const t = (x - e.x)*ux + (z - e.z)*uz;
     if(t > 0){ const tt = Math.min(t, -RAV_END + 30), px = e.x + ux*tt, pz = e.z + uz*tt; return {d:Math.hypot(x - px, z - pz), s:e.s + (bi ? tt : -tt)}; } }
@@ -5655,43 +5661,94 @@ function lineTerrain(G){
     h -= 24*Math.exp(-((polyDist(river, x, z)/75)**2));
     return h; };
   const resLevel = nat(res.x, res.z, lineNear(G, res.x, res.z)) - 3;
-  const height = (x, z) => { const n = lineNear(G, x, z); let h = nat(x, z, n);
+  const base = (x, z) => { const n = lineNear(G, x, z); let h = nat(x, z, n);
     const inVia = n.s > G.via[0] - 12 && n.s < G.via[1] + 12, f = (n.s - G.tun[0])/(G.tun[1] - G.tun[0]);
     if(f > -0.25 && f < 1.25){   // the fell the tunnel goes through, with cuttings at each portal
       const amp = (9 + 16*Math.sin(Math.PI*Math.max(0, Math.min(1, f))))*(f < 0 ? 1 + f/0.25 : f > 1 ? 1 - (f-1)/0.25 : 1);
       h = Math.max(h, G.y(n.s) + amp*(1 - smooth01((n.d - 50)/140))); }
-    // the cuttings run on a little way into the hill, behind the portals, so the hillside never slopes down across them
-    if(!inVia && !(n.s > G.tun[0] + 26 && n.s < G.tun[1] - 26)) h = h + (G.y(n.s) - 0.4 - h)*(1 - smooth01((n.d - 26)/70));
+    // the line's formation: cuttings and shelves, up to the tunnel portals (the hill runs unbroken over the bore)
+    if(!inVia && !(n.s > G.tun[0] && n.s < G.tun[1])){
+      let w = 1 - smooth01((n.d - 26)/70);
+      // by Brackenby Viaduct the line is on an embankment: its sides fall away at 1 in 2, narrowing to the abutments
+      const e = n.s < G.via[0] ? G.via[0] - 12 - n.s : n.s - G.via[1] - 12, rise = G.y(n.s) - 0.4 - h;
+      if(e < 300 && rise > 0){ const W = 4 + 2*rise*smooth01(e/60), we = 1 - smooth01((n.d - 4)/Math.max(1, W - 4)); w = we + (w - we)*smooth01((e - 180)/120); }
+      h = h + (G.y(n.s) - 0.4 - h)*w; }
     const er = ((x-res.x)/(70*S))**2 + ((z-res.z)/(30*S))**2; if(er < 1.3) h = Math.min(h, resLevel - 1.5 + 2*Math.max(0, er - 1));
-    return {h, n}; };
-  return {height, nat, river, res, resLevel};
+    return {h, n, keep:n.d < 10 && !inVia}; };
+  // The river, sampled every 4 m from the reservoir down the dale. Its water only ever runs downhill: where the land rises
+  // across its course it has cut itself a channel, and where its bed drops away steeply it falls (Raven Force and the rest)
+  const RS = []; { let d = 0;
+    for(let i=0;i<river.length-1;i++){ const [ax,az] = river[i], [bx,bz] = river[i+1], L = Math.hypot(bx-ax, bz-az);
+      for(let t = 0; t < L; t += 4) RS.push({x:ax + (bx-ax)*t/L, z:az + (bz-az)*t/L, d:d + t}); d += L; }
+    const [lx, lz] = river[river.length-1]; RS.push({x:lx, z:lz, d}); }
+  { let l = Infinity; for(const p of RS){ l = Math.min(l, base(p.x, p.z).h - 0.5); p.lvl = l; } }
+  const falls = [];
+  for(let i=0;i<RS.length-11;i++) if(RS[i].lvl - RS[i+10].lvl > 5){   // a steep drop: gather it into one fall
+    while(RS[i].lvl - RS[i+1].lvl <= 0.1) i++;
+    let j = i; while(j < RS.length-1 && RS[j].lvl - RS[j+1].lvl > 0.1) j++;
+    if(RS[i].lvl - RS[j].lvl < 4){ i = j; continue; }
+    for(let k=i+1;k<j;k++) RS[k].lvl = RS[j].lvl;
+    const a = RS[i], b = RS[i+1]; falls.push({x:a.x, z:a.z, x2:b.x, z2:b.z, top:a.lvl, bot:RS[j].lvl, i}); i = j; }
+  const HC = 24, hash = new Map();
+  RS.forEach((p,i)=>{ const k = Math.floor(p.x/HC) + "," + Math.floor(p.z/HC); if(!hash.has(k)) hash.set(k, []); hash.get(k).push(i); });
+  const riverNear = (x, z) => { let best = 1e18, bi = -1; const cx = Math.floor(x/HC), cz = Math.floor(z/HC);
+    for(let a=-2;a<=2;a++) for(let b=-2;b<=2;b++){ const L = hash.get((cx+a) + "," + (cz+b)); if(L) for(const i of L){ const d = (RS[i].x-x)**2 + (RS[i].z-z)**2; if(d < best){ best = d; bi = i; } } }
+    return bi < 0 ? null : {d:Math.sqrt(best), p:RS[bi]}; };
+  const height = (x, z) => { const b = base(x, z); let h = b.h;
+    const r = !b.keep && riverNear(x, z);   // the river's channel: a flat bed, and banks rising out of it
+    if(r) h = Math.min(h, r.p.lvl - 1.2 + Math.max(0, r.d - 9)*0.6);
+    return {h, n:b.n}; };
+  return {height, nat, river, res, resLevel, RS, falls, riverNear};
 }
 function lineSceneMesh(G){
   const a = [], T = lineTerrain(G), S = G.S;
   const xs = G.pts.map(p=>p.x), zs = G.pts.map(p=>p.z), X0 = Math.min(...xs) - 500, X1 = Math.max(...xs) + 500, Z0 = Math.min(...zs) - 450, Z1 = Math.max(...zs) + 600;
   const cell = 20, nx = Math.ceil((X1-X0)/cell), nz = Math.ceil((Z1-Z0)/cell), H = [], C = [];
   const heathA = (mx, my) => my < 345 - 0.575*mx, heathB = (mx, my) => mx > 690 && my < 120 + (mx - 690)*0.55;
+  const colOf = (x, z, h, n) => { const mx = x/S + 140, my = 520 - z/S, moor = heathA(mx, my) || heathB(mx, my) || h - G.y(n.s) > 22, k = 0.04*Math.sin(x*0.05 + z*0.03);
+    return n.d < 12 ? [.38,.35,.31] : moor ? [.42 + k,.37,.33 + k] : [.34 + k,.47 + k,.24]; };
+  // round each tunnel portal the ground steps straight up from the floor of the cutting to the hill over the bore, too
+  // sharp for the 20 m mesh: there it's left out, and a finer patch laid along the line takes its place (below)
+  const PR = [G.tun[0], G.tun[1]], inPR = n => { for(let k=0;k<2;k++) if(Math.abs(n.s - PR[k]) < 45 && n.d < 40) return k + 1; return 0; }, R0 = [];
   for(let j=0;j<=nz;j++) for(let i=0;i<=nx;i++){
-    const x = X0 + i*cell, z = Z0 + j*cell, {h, n} = T.height(x, z), mx = x/S + 140, my = 520 - z/S;
-    const moor = heathA(mx, my) || heathB(mx, my) || h - G.y(n.s) > 22, k = 0.04*Math.sin(x*0.05 + z*0.03);
-    H.push(h); C.push(n.d < 12 ? [.38,.35,.31] : moor ? [.42 + k,.37,.33 + k] : [.34 + k,.47 + k,.24]); }
+    const x = X0 + i*cell, z = Z0 + j*cell, {h, n} = T.height(x, z);
+    H.push(h); C.push(colOf(x, z, h, n)); R0.push(inPR(n)); }
   const v = (i, j) => { const q = j*(nx+1) + i; return [X0 + i*cell, H[q], Z0 + j*cell]; };
-  for(let j=0;j<nz;j++) for(let i=0;i<nx;i++){ const q = j*(nx+1) + i, c = C[q];
+  for(let j=0;j<nz;j++) for(let i=0;i<nx;i++){ const q = j*(nx+1) + i, c = C[q], r = R0[q];
+    if(r && R0[q+1]===r && R0[q+nx+1]===r && R0[q+nx+2]===r) continue;
     quad(a, v(i,j), v(i,j+1), v(i+1,j+1), v(i+1,j), c, [0,1,0]); }
+  for(const p of PR){ const ss = [], os = [];
+    for(let t = -45; t <= 45; t += 2) ss.push(p + t); ss.push(p - 0.02, p + 0.02); ss.sort((u, w)=>u - w);
+    for(let o = -40; o <= 40; o += 2) os.push(o);
+    const V = ss.map(sv=>os.map(o=>{ const q = G.at(sv, o), t = T.height(q.x, q.z);
+      const edge = Math.max(smooth01((Math.abs(sv - p) - 37)/8), smooth01((Math.abs(o) - 32)/8));   // tucked just under the mesh round its edge
+      return {p:[q.x, t.h - 0.3*edge, q.z], c:colOf(q.x, q.z, t.h, t.n)}; }));
+    for(let u=0;u<ss.length-1;u++) for(let w=0;w<os.length-1;w++){ const A = V[u][w], B = V[u+1][w], Cc = V[u+1][w+1], D = V[u][w+1];
+      if(ss[u] < p && ss[u+1] > p && Math.abs(os[w]) <= 4 && Math.abs(os[w+1]) <= 4) continue;   // the mouth of the bore
+      quad(a, A.p, B.p, Cc.p, D.p, A.c, [0,1,0]); } }
   // water: the river in its valley and the reservoir
-  const water = [.36,.52,.62];
-  for(let i=0;i<T.river.length-1;i++){ const [ax,az] = T.river[i], [bx,bz] = T.river[i+1], n = Math.ceil(Math.hypot(bx-ax, bz-az)/15);
-    for(let k=0;k<n;k++){ const p = [ax + (bx-ax)*k/n, az + (bz-az)*k/n], q = [ax + (bx-ax)*(k+1)/n, az + (bz-az)*(k+1)/n];
-      const ya = T.height(p[0], p[1]).h + 0.5, yb = T.height(q[0], q[1]).h + 0.5, yaw = Math.atan2(q[0]-p[0], q[1]-p[1]), cx = Math.cos(yaw)*5, cz = -Math.sin(yaw)*5;
-      quad(a, [p[0]-cx, ya, p[1]-cz], [p[0]+cx, ya, p[1]+cz], [q[0]+cx, yb, q[1]+cz], [q[0]-cx, yb, q[1]-cz], water, [0,1,0]); } }
+  const water = [.36,.52,.62], white = [.86,.91,.94];
+  for(let i=0;i<T.RS.length-1;i++){ const p = T.RS[i], q = T.RS[i+1], ya = p.lvl, yb = q.lvl, fall = ya - yb > 2;
+    const yaw = Math.atan2(q.x-p.x, q.z-p.z), cx = Math.cos(yaw)*6, cz = -Math.sin(yaw)*6;
+    (fall ? quadLit : quad)(a, [p.x-cx, ya, p.z-cz], [p.x+cx, ya, p.z+cz], [q.x+cx, yb, q.z+cz], [q.x-cx, yb, q.z-cz], fall ? white : water, [0,1,0]); }
+  // each fall: rocks breaking the lip, and the white water churning in the pool below (the falling water is animated)
+  G.falls = T.falls;
+  for(const f of T.falls){ const yaw = Math.atan2(f.x2 - f.x, f.z2 - f.z), c = Math.cos(yaw), sn = Math.sin(yaw);
+    for(const o of [-7.5, -4, 3.5, 7]) box(a, f.x + c*o, f.top - 0.4, f.z - sn*o, 1.6 + Math.abs(o)*0.1, 1.8, 1.4, [.38,.36,.33], yaw + o);
+    for(const o of [-9, 9]) box(a, f.x + c*o, (f.top + f.bot)/2, f.z - sn*o, 3, f.top - f.bot + 2, 3, [.36,.34,.31], yaw);   // the rock walls either side
+    const pz = 6; box(a, f.x2 + sn*pz, f.bot + 0.05, f.z2 + c*pz, 14, 0.12, 12, [.78,.86,.9], yaw); }
   for(let k=0;k<24;k++){ const t0 = k/24*Math.PI*2, t1 = (k+1)/24*Math.PI*2, R = (t)=>[T.res.x + Math.cos(t)*70*S, T.resLevel, T.res.z + Math.sin(t)*30*S];
     quad(a, [T.res.x, T.resLevel, T.res.z], R(t0), R(t1), R(t1), water, [0,1,0]); }
   // the B6481, laid on the land
   const road = ROAD_PTS.map(([x,y])=>{ const p = G.W(x,y); return [p.x,p.z]; });
+  // where the road meets the river it rises onto a little stone bridge over the channel
+  const roadY = (x, z) => { const h = T.height(x, z).h + 0.15, r = T.riverNear(x, z); return r ? Math.max(h, r.p.lvl + 2.4 - Math.max(0, r.d - 10)*0.3) : h; };
   for(let i=0;i<road.length-1;i++){ const [ax,az] = road[i], [bx,bz] = road[i+1], n = Math.ceil(Math.hypot(bx-ax, bz-az)/12);
     for(let k=0;k<n;k++){ const p = [ax + (bx-ax)*k/n, az + (bz-az)*k/n], q = [ax + (bx-ax)*(k+1)/n, az + (bz-az)*(k+1)/n];
-      const ya = T.height(p[0], p[1]).h + 0.15, yb = T.height(q[0], q[1]).h + 0.15, yaw = Math.atan2(q[0]-p[0], q[1]-p[1]), cx = Math.cos(yaw)*3.2, cz = -Math.sin(yaw)*3.2;
-      quad(a, [p[0]-cx, ya, p[1]-cz], [p[0]+cx, ya, p[1]+cz], [q[0]+cx, yb, q[1]+cz], [q[0]-cx, yb, q[1]-cz], [.3,.3,.31], [0,1,0]); } }
+      const ya = roadY(p[0], p[1]), yb = roadY(q[0], q[1]), yaw = Math.atan2(q[0]-p[0], q[1]-p[1]), cx = Math.cos(yaw)*3.2, cz = -Math.sin(yaw)*3.2;
+      quad(a, [p[0]-cx, ya, p[1]-cz], [p[0]+cx, ya, p[1]+cz], [q[0]+cx, yb, q[1]+cz], [q[0]-cx, yb, q[1]-cz], [.3,.3,.31], [0,1,0]);
+      const r = T.riverNear(p[0], p[1]); if(r && r.d < 13) for(const sd of [-1, 1])   // the bridge's parapets
+        beam3(a, [p[0] + sd*cx*1.08, ya + 0.55, p[1] + sd*cz*1.08], [q[0] + sd*cx*1.08, yb + 0.55, q[1] + sd*cz*1.08], 0.45, 1.1, SC.stone2); } }
   // the track: ballast, sleepers and rails on the main line and every loop
   const ballast = [.5,.47,.43], sleeper = [.27,.19,.13], railC = [.56,.54,.5];
   const lay = (s0, s1, offAt) => {
@@ -5749,7 +5806,7 @@ function lineSceneMesh(G){
   { const [t0, t1] = G.tun, tc = [.16,.15,.14];
     for(let s = t0; s < t1; s += DRV.step){ const m = s + DRV.step/2;
       for(const o of [2.9,-2.9]){ const q = G.at(m, o); box(a, q.x, q.y + 3.0, q.z, 0.5, 6.0, DRV.step + 0.05, tc, q.yaw); }
-      const p = G.at(m); box(a, p.x, p.y + 6.2, p.z, 6.3, 0.5, DRV.step + 0.05, tc, p.yaw); }
+      const p = G.at(m); box(a, p.x, p.y + 6.2, p.z, 6.3, 0.5, DRV.step + 0.05, tc, p.yaw); box(a, p.x, p.y + 0.05, p.z, 5.8, 0.1, DRV.step + 0.05, [.2,.19,.17], p.yaw); }
     // each portal is a stone face across the end of the cutting, as high as the hill behind it, stepping down at the
     // wings to meet the cutting sides, with a coping along the top and a ring of darker voussoirs round the bore
     for(const [s, d] of [[t0, 1], [t1, -1]]){ const st = [.5,.47,.42], dk = [.4,.37,.33];
@@ -6050,7 +6107,10 @@ function lineScenery(a, G, T){
   // the lineside: telegraph poles carrying their wires, quarter-mile posts, platelayers' huts
   let last = null;
   for(let s = 10; s < G.L - 10; s += 55){ if(s > G.tun[0] - 5 && s < G.tun[1] + 5){ last = null; continue; }
-    const q = G.at(s, 6.8), h = s > G.via[0] && s < G.via[1] ? q.y : T.height(q.x, q.z).h, F = scFrame(q.x, h, q.z, q.yaw);
+    // over Brackenby Viaduct the pole route leaves the line and strides down across the valley floor
+    const vw = smooth01(Math.max(0, 1 - Math.max(G.via[0] - 20 - s, s - G.via[1] - 20, 0)/140)), q = G.at(s, 6.8 + 30*vw);
+    const rv = T.riverNear(q.x, q.z); if(rv && rv.d < 14) continue;
+    const h = T.height(q.x, q.z).h, F = scFrame(q.x, h, q.z, q.yaw);
     F.b(a, 0, 3.6, 0, 0.22, 7.2, 0.22, [.33,.24,.16]); F.b(a, 0, 6.9, 0, 1.8, 0.12, 0.12, [.33,.24,.16]); F.b(a, 0, 6.3, 0, 1.4, 0.12, 0.12, [.33,.24,.16]);
     const tops = [-0.8, -0.3, 0.3, 0.8].map(x=>F.p(x, 7.02, 0)).concat([-0.6, 0.6].map(x=>F.p(x, 6.42, 0)));
     tops.forEach(t=>box(a, t[0], t[1] + 0.06, t[2], 0.07, 0.12, 0.07, SC.white));
@@ -6132,6 +6192,8 @@ function startDrive(k, from, mode){
   { // the engines not out today stand in the shed as you pass, and those in the works stand in the works bay
     const running = new Set(plan.sets.flatMap(s=>[s.loco, s.pilot]));
     dv.yard = {Y:yardPlace(G), statics:shedStatics(gl, state.locos.filter(l=>!running.has(l) && !isAway(l) && !isBusy(l)), worksEngines())}; }
+  dv.fallMesh = {s:meshBuffer(gl, (()=>{ const m = [], c = [.92,.96,.99], w = 0.35, h = 1.7;   // a crossed pair of flat-lit strips: bright from every side
+    quadLit(m, [-w,-h,0], [w,-h,0], [w,h,0], [-w,h,0], c); quadLit(m, [0,-h,-w], [0,-h,w], [0,h,w], [0,h,-w], c); return m; })()), f:meshBuffer(gl, (()=>{ const m = []; box(m, 0,0,0, 2.2,0.6,2.2, [.95,.97,.98]); return m; })())};
   dv.sigMesh = {r:meshBuffer(gl, (()=>{ const m = []; box(m, 0,0,0, 0.22,0.22,0.06, [1,.12,.08]); return m; })()), g:meshBuffer(gl, (()=>{ const m = []; box(m, 0,0,0, 0.22,0.22,0.06, [.2,1,.35]); return m; })())};
   document.querySelector(".laptop").classList.add("away");
   const y = document.getElementById("yard"); y.classList.add("drv");
@@ -6426,7 +6488,7 @@ function endDrive(result){
   cancelAnimationFrame(dv.raf);
   const gl = yardGL(), seen = new Set();
   [dv.train, ...dv.others.map(o=>o.train)].forEach(t=>t.forEach(v=>{ for(const m of [v.mesh, v.plain]) if(m && !seen.has(m)){ seen.add(m); gl.deleteBuffer(m.buf); } }));
-  for(const m of Object.values(dv.sigMesh)) gl.deleteBuffer(m.buf);
+  for(const m of [...Object.values(dv.sigMesh), ...Object.values(dv.fallMesh)]) gl.deleteBuffer(m.buf);
   for(const st of dv.yard.statics) gl.deleteBuffer(st.mesh.buf);
   if(dv.snd){ sndVoiceStop(dv.snd.voice); sndRunStop(dv.snd.run);
     for(const n of [dv.snd.pass, dv.snd.pass2]) if(n){ n.g.gain.setTargetAtTime(0, SND.ctx.currentTime, 0.1); n.src.stop(SND.ctx.currentTime + 0.5); } }
@@ -6462,6 +6524,16 @@ function dOtherPlace(o){
 }
 const dLoopOff = q => { const G = dv.G; for(const i of G.lp){ const v = G.loopOff(i, q); if(v) return v; } return 0; };
 function m4at(x, y, z, yaw){ const c = Math.cos(yaw), s = Math.sin(yaw); return new Float32Array([c,0,-s,0, 0,1,0,0, s,0,c,0, x,y,z,1]); }
+// the falling water: streaks pouring over each fall and quickening as they drop, and foam boiling up in the pool
+function dFalls(eye){
+  const t = performance.now()/1000;
+  for(const f of dv.G.falls || []){ if(Math.hypot(f.x - eye[0], f.z - eye[2]) > 1600) continue;
+    const yaw = Math.atan2(f.x2 - f.x, f.z2 - f.z), c = Math.cos(yaw), sn = Math.sin(yaw), H = f.top - f.bot;
+    for(let k=0;k<70;k++){ const ph = (t*9/Math.max(3, H) + k*0.618) % 1, o = ((k*0.37) % 1 - 0.5)*11, y = f.top - H*ph*ph, fw = 0.8 + 5*ph;
+      glDraw(dv.fallMesh.s, m4at(f.x + c*o + sn*fw, y, f.z - sn*o + c*fw, yaw)); }
+    for(let k=0;k<12;k++){ const o = ((k*0.53) % 1 - 0.5)*12, fw = 5 + (k%3)*2.5, bob = 0.3 + 0.35*Math.sin(t*4 + k*1.7);
+      glDraw(dv.fallMesh.f, m4at(f.x2 + c*o + sn*fw, f.bot + bob*0.5, f.z2 - sn*o + c*fw, yaw + k)); } }
+}
 function trainPoses(G, train, sFront, dir, off){   // each vehicle's place behind the front, on the main line or a loop
   const out = []; let d = 0;
   for(const v of train){ const sc = sFront - dir*(d + v.len/2), f = G.at(sc + dir*v.len*0.36, off ? off(sc) : 0), r = G.at(sc - dir*v.len*0.36, off ? off(sc) : 0);
@@ -6483,6 +6555,7 @@ function driveDraw(){
   const vp = m4mul(m4persp(1.15, cv.width/cv.height, seat && !dv.camX ? seat.near : 0.25, 2600), m4look(eye, dir));
   gl.uniformMatrix4fv(YGL.vp, false, vp); gl.uniform3f(YGL.fog, .64,.76,.86); gl.uniform2f(YGL.fr, 350, 1500);
   glDraw(G.mesh, m4at(0,0,0,0));
+  dFalls(eye);
   { const Y = dv.yard.Y; for(const st of dv.yard.statics){ const q = Y.toLine(st.x, st.z); glDraw(st.mesh, m4at(q.x, Y.B.y, q.z, Y.yawToLine(st.yaw))); } }
   mine.forEach((p,i)=>glDraw(dv.cam!==1 || !p.v.plain ? p.v.mesh : p.v.plain, m4at(p.x, p.y, p.z, p.yaw + (p.v.flip ? Math.PI : 0))));
   // the other trains: in the platforms, out on the line, and through the loops on the loop road as they pass you
